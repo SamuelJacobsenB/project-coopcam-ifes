@@ -1,16 +1,16 @@
 package user
 
 import (
-	"html/template"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/template"
 	weekly_preference "github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/weekly-preference"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 )
 
 type User struct {
-	ID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 
 	Name     string       `gorm:"uniqueIndex;not null" json:"name"`
 	Email    string       `gorm:"uniqueIndex;not null" json:"email"`
@@ -29,4 +29,21 @@ type User struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (entity *User) ToResponseDTO() *UserResponseDTO {
+	return &UserResponseDTO{
+		ID:        entity.ID,
+		Name:      entity.Name,
+		Email:     entity.Email,
+		Roles:     entity.Roles,
+		CPF:       entity.CPF,
+		Phone:     entity.Phone,
+		Adress:    entity.Adress,
+		CEP:       entity.CEP,
+		Birth:     entity.Birth.Format("01/01/2001"),
+		AvatarURL: entity.AvatarURL,
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

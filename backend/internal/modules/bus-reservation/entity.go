@@ -8,7 +8,7 @@ import (
 )
 
 type BusReservation struct {
-	ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	ID     uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 	UserID uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
 
 	Date     time.Time    `json:"date"`
@@ -19,4 +19,24 @@ type BusReservation struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (BusReservation) TableName() string {
+	return "bus_reservations"
+}
+
+func (entity *BusReservation) ToResponseDTO() *BusReservationResponseDTO {
+	return &BusReservationResponseDTO{
+		ID:     entity.ID,
+		UserID: entity.UserID,
+
+		Date:     entity.Date,
+		Period:   entity.Period,
+		Attended: entity.Attended,
+
+		WeeklyPreferenceID: entity.WeeklyPreferenceID,
+
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }
