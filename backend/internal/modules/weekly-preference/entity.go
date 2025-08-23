@@ -8,11 +8,13 @@ import (
 )
 
 type WeeklyPreference struct {
-	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	UserID     uuid.UUID `gorm:"type:uuid;index"`
-	TemplateID uuid.UUID `gorm:"type:uuid"`
-	WeekStart  time.Time
-	Overrides  []bus_reservation.BusReservation `gorm:"foreignKey:WeeklyPreferenceID"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	UserID     uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+	TemplateID uuid.UUID `gorm:"type:uuid" json:"template_id"`
+
+	WeekStart time.Time                        `json:"week_start"`
+	Overrides []bus_reservation.BusReservation `gorm:"foreignKey:WeeklyPreferenceID" json:"overrides"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

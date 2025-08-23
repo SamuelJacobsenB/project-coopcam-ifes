@@ -7,9 +7,11 @@ import (
 )
 
 type AvailableOverride struct {
-	ID        uuid.UUID
-	Date      time.Time
-	Reason    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+
+	Date   time.Time `json:"date"`
+	Reason string    `json:"reason"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

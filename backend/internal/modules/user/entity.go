@@ -1,30 +1,32 @@
 package user
 
 import (
+	"html/template"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/template"
 	weekly_preference "github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/weekly-preference"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 )
 
 type User struct {
-	ID       uuid.UUID
-	Name     string
-	Email    string
-	Password string
-	Roles    []types.Role
+	ID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
 
-	CPF    string
-	Phone  string
-	Adress string
-	CEP    string
-	Birth  time.Time
+	Name     string       `gorm:"uniqueIndex;not null" json:"name"`
+	Email    string       `gorm:"uniqueIndex;not null" json:"email"`
+	Password string       `json:"password"`
+	Roles    []types.Role `gorm:"type:text[]" json:"roles"`
 
-	Template         template.Template
-	WeeklyPreference weekly_preference.WeeklyPreference
+	CPF       string    `json:"cpf"`
+	Phone     string    `json:"phone"`
+	Adress    string    `json:"adress"`
+	CEP       string    `json:"cep"`
+	Birth     time.Time `json:"birth"`
+	AvatarURL string    `json:"avatar_url"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Template         template.Template                  `gorm:"foreignKey:UserID" json:"template"`
+	WeeklyPreference weekly_preference.WeeklyPreference `gorm:"foreignKey:UserID" json:"weekly_preference"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

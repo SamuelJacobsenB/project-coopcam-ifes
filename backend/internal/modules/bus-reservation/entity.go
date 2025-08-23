@@ -8,11 +8,15 @@ import (
 )
 
 type BusReservation struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	UserID    uuid.UUID `gorm:"type:uuid;index"`
-	Date      time.Time
-	Period    types.Period
-	Attended  *bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	UserID uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+
+	Date     time.Time    `json:"date"`
+	Period   types.Period `gorm:"type:text" json:"period"`
+	Attended *bool        `json:"attended"`
+
+	WeeklyPreferenceID *uuid.UUID `gorm:"type:uuid" json:"weekly_preference_id"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
