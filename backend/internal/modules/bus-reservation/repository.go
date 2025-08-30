@@ -1,6 +1,8 @@
 package bus_reservation
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -16,6 +18,12 @@ func NewBusReservationRepository(db *gorm.DB) *BusReservationRepository {
 func (repo *BusReservationRepository) FindAll() ([]BusReservation, error) {
 	var busReservations []BusReservation
 	err := repo.db.Find(&busReservations).Error
+	return busReservations, err
+}
+
+func (repo *BusReservationRepository) FindByDate(date time.Time) ([]BusReservation, error) {
+	var busReservations []BusReservation
+	err := repo.db.Where("date = ?", date).Find(&busReservations).Error
 	return busReservations, err
 }
 
@@ -37,6 +45,10 @@ func (repo *BusReservationRepository) Create(busReservation *BusReservation) err
 
 func (repo *BusReservationRepository) Update(busReservation *BusReservation) error {
 	return repo.db.Where("id = ?", busReservation.ID).Save(busReservation).Error
+}
+
+func (repo *BusReservationRepository) DeleteUntilNow() error {
+	return repo.db.Where("date < ?", time.Now()).Delete(&BusReservation{}).Error
 }
 
 func (repo *BusReservationRepository) Delete(id uuid.UUID) error {

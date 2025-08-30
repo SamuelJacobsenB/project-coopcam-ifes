@@ -1,5 +1,7 @@
 package types
 
+import "slices"
+
 type Role string
 
 const (
@@ -23,5 +25,15 @@ func ValidateUserRoles(roles []Role) bool {
 			return false
 		}
 	}
+	return true
+}
+
+func HasRoles(userRoles []Role, allowedRoles ...Role) bool {
+	for _, role := range allowedRoles {
+		if !slices.Contains(userRoles, role) {
+			return false
+		}
+	}
+
 	return true
 }

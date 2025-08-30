@@ -1,6 +1,8 @@
 package bus_reservation
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -27,6 +29,25 @@ func (handler *BusReservationHandler) FindAll(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, busReservationsResponse)
+}
+
+func (handler *BusReservationHandler) FindByDate(ctx *gin.Context) {
+	date, err := time.Parse("02-01-2006", ctx.Param("date"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "data inválida"})
+		return
+	}
+
+	busReservations, err := handler.service.FindByDate(date)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	busReservationsResponse := make([]BusReservationResponseDTO, len(busReservations))
+	for i, busReservation := range busReservations {
+		busReservationsResponse[i] = *busReservation.ToResponseDTO()
+	}
 }
 
 func (handler *BusReservationHandler) FindByUserID(ctx *gin.Context) {

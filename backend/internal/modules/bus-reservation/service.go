@@ -1,6 +1,10 @@
 package bus_reservation
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type BusReservationService struct {
 	repo *BusReservationRepository
@@ -12,6 +16,10 @@ func NewBusReservationService(repo *BusReservationRepository) *BusReservationSer
 
 func (service *BusReservationService) FindAll() ([]BusReservation, error) {
 	return service.repo.FindAll()
+}
+
+func (service *BusReservationService) FindByDate(date time.Time) ([]BusReservation, error) {
+	return service.repo.FindByDate(date)
 }
 
 func (service *BusReservationService) FindByUserID(userID uuid.UUID) ([]BusReservation, error) {
@@ -28,6 +36,23 @@ func (service *BusReservationService) Create(busReservation *BusReservation) err
 }
 
 func (service *BusReservationService) Update(busReservation *BusReservation) error {
+	busRes, err := service.repo.FindByID(busReservation.ID)
+	if err != nil {
+		return err
+	}
+
+	if busReservation.Date.IsZero() || busReservation.Date.Equal(busRes.Date) {
+		busReservation.Date = busRes.Date
+	}
+
+	if busReservation.Period == "" || busReservation.Period == busRes.Period {
+		busRes.Period = busReservation.Period
+	}
+
+	if busReservation.Attended != busRes.Attended {
+		busRes.Attended = busReservation.Attended
+	}
+
 	return service.repo.Update(busReservation)
 }
 

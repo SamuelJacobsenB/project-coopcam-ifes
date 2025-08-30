@@ -41,7 +41,7 @@ func (entity *User) ToResponseDTO() *UserResponseDTO {
 		Phone:     entity.Phone,
 		Adress:    entity.Adress,
 		CEP:       entity.CEP,
-		Birth:     entity.Birth.Format("01/01/2001"),
+		Birth:     entity.Birth.Format("02/01/2006"),
 		AvatarURL: entity.AvatarURL,
 		CreatedAt: entity.CreatedAt,
 		UpdatedAt: entity.UpdatedAt,

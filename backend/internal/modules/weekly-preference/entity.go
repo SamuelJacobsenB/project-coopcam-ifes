@@ -22,3 +22,22 @@ type WeeklyPreference struct {
 func (WeeklyPreference) TableName() string {
 	return "weekly_preferences"
 }
+
+func (weeklyPreference *WeeklyPreference) ToResponseDTO() *WeeklyPreferenceResponseDTO {
+	overridesResponse := make([]bus_reservation.BusReservationResponseDTO, len(weeklyPreference.Overrides))
+	for i, override := range weeklyPreference.Overrides {
+		overridesResponse[i] = *override.ToResponseDTO()
+	}
+
+	return &WeeklyPreferenceResponseDTO{
+		ID:         weeklyPreference.ID,
+		UserID:     weeklyPreference.UserID,
+		TemplateID: weeklyPreference.TemplateID,
+
+		WeekStart: weeklyPreference.WeekStart,
+		Overrides: overridesResponse,
+
+		CreatedAt: weeklyPreference.CreatedAt,
+		UpdatedAt: weeklyPreference.UpdatedAt,
+	}
+}
