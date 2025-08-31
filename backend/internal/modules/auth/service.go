@@ -12,8 +12,8 @@ type AuthService struct {
 	userRepo *user.UserRepository
 }
 
-func NewAuthService() *AuthService {
-	return &AuthService{}
+func NewAuthService(userRepo *user.UserRepository) *AuthService {
+	return &AuthService{userRepo}
 }
 
 func (service *AuthService) Login(loginDTO *dtos.LoginDTO) (string, error) {

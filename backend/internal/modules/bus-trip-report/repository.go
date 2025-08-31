@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -40,6 +41,12 @@ func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusT
 	return busTripReports, err
 }
 
+func (repo *BusTripReportRepository) FindByUserIDAndDateAndPeriod(userID uuid.UUID, date time.Time, period types.Period) ([]entities.BusTripReport, error) {
+	var busTripReport []entities.BusTripReport
+	err := repo.db.Where("user_id = ? AND date = ? AND period = ?", userID, date, period).First(&busTripReport).Error
+	return busTripReport, err
+}
+
 func (repo *BusTripReportRepository) FindByNextDate(date time.Time) ([]entities.BusTripReport, error) {
 	var busTripReport []entities.BusTripReport
 	err := repo.db.Where("date >= ?", date).Find(&busTripReport).Error
@@ -63,7 +70,7 @@ func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripRepor
 }
 
 func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripReport) error {
-	return repo.db.Save(busTripReport).Error
+	return repo.db.Where("id = ? AND user_id = ?", busTripReport.ID, busTripReport.UserID).Save(busTripReport).Error
 }
 
 func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {

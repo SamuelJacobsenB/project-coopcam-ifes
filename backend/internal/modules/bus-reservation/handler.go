@@ -89,6 +89,12 @@ func (handler *BusReservationHandler) FindByID(ctx *gin.Context) {
 }
 
 func (handler *BusReservationHandler) Create(ctx *gin.Context) {
+	userID, err := uuid.Parse(ctx.GetString("user_id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "id inválido"})
+		return
+	}
+
 	var busReservationRequest dtos.BusReservationRequestDTO
 	if err := ctx.ShouldBindJSON(&busReservationRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -101,6 +107,7 @@ func (handler *BusReservationHandler) Create(ctx *gin.Context) {
 	}
 
 	busReservation := busReservationRequest.ToEntity()
+	busReservation.UserID = userID
 	if err := handler.service.Create(busReservation); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -111,6 +118,12 @@ func (handler *BusReservationHandler) Create(ctx *gin.Context) {
 
 func (handler *BusReservationHandler) Update(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "id inválido"})
+		return
+	}
+
+	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
 		return
@@ -129,6 +142,7 @@ func (handler *BusReservationHandler) Update(ctx *gin.Context) {
 
 	busReservation := busReservationRequest.ToEntity()
 	busReservation.ID = id
+	busReservation.UserID = userID
 	if err := handler.service.Update(busReservation); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return

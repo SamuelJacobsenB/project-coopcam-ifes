@@ -1,18 +1,21 @@
 package bus_trip_report
 
 import (
+	"errors"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
 	"github.com/google/uuid"
 )
 
 type BusTripReportService struct {
-	repo *BusTripReportRepository
+	repo     *BusTripReportRepository
+	userRepo *user.UserRepository
 }
 
-func NewBusTripReportService(repo *BusTripReportRepository) *BusTripReportService {
-	return &BusTripReportService{repo}
+func NewBusTripReportService(repo *BusTripReportRepository, userRepo *user.UserRepository) *BusTripReportService {
+	return &BusTripReportService{repo, userRepo}
 }
 
 func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error) {
@@ -43,9 +46,23 @@ func (service *BusTripReportService) FindByUserIDNextDate(userID uuid.UUID, date
 	return service.repo.FindByUserIDNextDate(userID, date)
 }
 
-// Verify if user exists
-// Verify if date exists
 func (service *BusTripReportService) Create(busTripReport *entities.BusTripReport) error {
+	userExists, err := service.userRepo.FindByID(busTripReport.UserID)
+	if err != nil {
+		return err
+	}
+	if userExists == nil {
+		return errors.New("user not found")
+	}
+
+	busTripReportExists, err := service.repo.FindByUserIDAndDateAndPeriod(busTripReport.UserID, busTripReport.Date, busTripReport.Period)
+	if err != nil {
+		return err
+	}
+	if busTripReportExists != nil {
+		return errors.New("bus trip report already exists")
+	}
+
 	return service.repo.Create(busTripReport)
 }
 

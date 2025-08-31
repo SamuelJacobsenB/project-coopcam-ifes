@@ -17,7 +17,7 @@ func main() {
 	db.ConnectDB()
 	db.MigrateDB()
 
-	handlers := config.SetupModules()
+	handlers := config.SetupModules(db.DB)
 	router := routes.SetupRoutes(handlers)
 
 	router.Use(cors.New(cors.Config{

@@ -22,7 +22,6 @@ func (service *UserService) FindByID(id uuid.UUID) (*entities.User, error) {
 	return service.repo.FindByID(id)
 }
 
-// Add Logic
 func (service *UserService) Create(user *entities.User) error {
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {

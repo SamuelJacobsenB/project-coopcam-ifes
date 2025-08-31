@@ -137,7 +137,7 @@ func (handler *BusTripReportHandler) FindByUserIDAndDate(ctx *gin.Context) {
 	ctx.JSON(200, busTripReportsResponse)
 }
 
-func (handler *BusTripReportHandler) FindByUserIDNextDate(ctx *gin.Context) {
+func (handler *BusTripReportHandler) FindByUserIDAndNextDate(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
@@ -166,6 +166,12 @@ func (handler *BusTripReportHandler) FindByUserIDNextDate(ctx *gin.Context) {
 }
 
 func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
+	userID, err := uuid.Parse(ctx.GetString("user_id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "id inválido"})
+		return
+	}
+
 	var busTripReportRequest dtos.BusTripReportRequestDTO
 	if err := ctx.ShouldBindJSON(&busTripReportRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -178,6 +184,7 @@ func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
 	}
 
 	busTripReport := busTripReportRequest.ToEntity()
+	busTripReport.UserID = userID
 	if err := handler.service.Create(busTripReport); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -188,6 +195,12 @@ func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
 
 func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "id inválido"})
+		return
+	}
+
+	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
 		return
@@ -206,6 +219,7 @@ func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
 
 	busTripReport := busTripReportRequest.ToEntity()
 	busTripReport.ID = id
+	busTripReport.UserID = userID
 	if err := handler.service.Update(busTripReport); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return

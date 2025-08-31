@@ -10,7 +10,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-func AuthMiddlewareGin(allowedRoles ...types.Role) gin.HandlerFunc {
+func AuthMiddleware(allowedRoles ...types.Role) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tokenStr string
 		var err error

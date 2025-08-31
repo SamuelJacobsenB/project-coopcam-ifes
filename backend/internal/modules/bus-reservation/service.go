@@ -1,6 +1,7 @@
 package bus_reservation
 
 import (
+	"errors"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
@@ -33,8 +34,23 @@ func (service *BusReservationService) FindByID(id uuid.UUID) (*entities.BusReser
 	return service.repo.FindByID(id)
 }
 
-// add validation if user exists
 func (service *BusReservationService) Create(busReservation *entities.BusReservation) error {
+	userExists, err := service.userRepo.FindByID(busReservation.UserID)
+	if err != nil {
+		return err
+	}
+	if userExists == nil {
+		return errors.New("user not found")
+	}
+
+	busReservationExists, err := service.repo.FindByUserIDAndDateAndPeriod(busReservation.UserID, busReservation.Date, busReservation.Period)
+	if err != nil {
+		return err
+	}
+	if busReservationExists != nil {
+		return errors.New("bus reservation already exists")
+	}
+
 	return service.repo.Create(busReservation)
 }
 

@@ -1,25 +1,43 @@
 package template
 
 import (
+	"errors"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
 	"github.com/google/uuid"
 )
 
 type TemplateService struct {
-	repo *TemplateRepository
+	repo     *TemplateRepository
+	userRepo *user.UserRepository
 }
 
-func NewTemplateService(repo *TemplateRepository) *TemplateService {
-	return &TemplateService{repo}
+func NewTemplateService(repo *TemplateRepository, userRepo *user.UserRepository) *TemplateService {
+	return &TemplateService{repo, userRepo}
 }
 
 func (service *TemplateService) FindByUserID(userID uuid.UUID) (*entities.Template, error) {
 	return service.repo.FindByUserID(userID)
 }
 
-// Verify if user exists
-// Verify if template exists
 func (service *TemplateService) Create(template *entities.Template) error {
+	userExists, err := service.userRepo.FindByID(template.UserID)
+	if err != nil {
+		return err
+	}
+	if userExists == nil {
+		return errors.New("user not found")
+	}
+
+	templateExists, err := service.repo.FindByUserID(template.UserID)
+	if err != nil {
+		return err
+	}
+	if templateExists != nil {
+		return errors.New("template already exists")
+	}
+
 	return service.repo.Create(template)
 }
 
