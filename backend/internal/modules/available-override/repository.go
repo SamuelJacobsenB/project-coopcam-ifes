@@ -3,6 +3,7 @@ package available_override
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -15,30 +16,30 @@ func NewAvailableOverrideRepository(db *gorm.DB) *AvailableOverrideRepository {
 	return &AvailableOverrideRepository{db}
 }
 
-func (repo *AvailableOverrideRepository) FindAll() ([]AvailableOverride, error) {
-	var availableOverrides []AvailableOverride
+func (repo *AvailableOverrideRepository) FindAll() ([]entities.AvailableOverride, error) {
+	var availableOverrides []entities.AvailableOverride
 	err := repo.db.Find(&availableOverrides).Error
 	return availableOverrides, err
 }
 
-func (repo *AvailableOverrideRepository) FindByID(id uuid.UUID) (*AvailableOverride, error) {
-	var availableOverride AvailableOverride
+func (repo *AvailableOverrideRepository) FindByID(id uuid.UUID) (*entities.AvailableOverride, error) {
+	var availableOverride entities.AvailableOverride
 	err := repo.db.First(&availableOverride, id).Error
 	return &availableOverride, err
 }
 
-func (repo *AvailableOverrideRepository) Create(availableOverride *AvailableOverride) error {
+func (repo *AvailableOverrideRepository) Create(availableOverride *entities.AvailableOverride) error {
 	return repo.db.Create(availableOverride).Error
 }
 
-func (repo *AvailableOverrideRepository) Update(availableOverride *AvailableOverride) error {
+func (repo *AvailableOverrideRepository) Update(availableOverride *entities.AvailableOverride) error {
 	return repo.db.Where("id = ?", availableOverride.ID).Save(availableOverride).Error
 }
 
 func (repo *AvailableOverrideRepository) DeleteUntilNow() error {
-	return repo.db.Where("date < ?", time.Now()).Delete(&AvailableOverride{}).Error
+	return repo.db.Where("date < ?", time.Now()).Delete(&entities.AvailableOverride{}).Error
 }
 
 func (repo *AvailableOverrideRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&AvailableOverride{}).Error
+	return repo.db.Where("id = ?", id).Delete(&entities.AvailableOverride{}).Error
 }

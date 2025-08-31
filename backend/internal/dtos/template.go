@@ -1,8 +1,9 @@
-package template
+package dtos
 
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 )
@@ -24,8 +25,8 @@ func (dto *TemplateRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *TemplateRequestDTO) ToEntity() *Template {
-	return &Template{
+func (dto *TemplateRequestDTO) ToEntity() *entities.Template {
+	return &entities.Template{
 		GoSchedule:     dto.GoSchedule,
 		ReturnSchedule: dto.ReturnSchedule,
 	}
@@ -48,8 +49,8 @@ func (dto *TemplateUpdateRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *TemplateUpdateRequestDTO) ToEntity() *Template {
-	return &Template{
+func (dto *TemplateUpdateRequestDTO) ToEntity() *entities.Template {
+	return &entities.Template{
 		GoSchedule:     dto.GoSchedule,
 		ReturnSchedule: dto.ReturnSchedule,
 	}
@@ -64,4 +65,17 @@ type TemplateResponseDTO struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ToTemplateResponseDTO(entity *entities.Template) *TemplateResponseDTO {
+	return &TemplateResponseDTO{
+		ID:     entity.ID,
+		UserID: entity.UserID,
+
+		GoSchedule:     entity.GoSchedule,
+		ReturnSchedule: entity.ReturnSchedule,
+
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

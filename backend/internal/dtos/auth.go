@@ -1,4 +1,4 @@
-package auth
+package dtos
 
 type LoginDTO struct {
 	Email    string `json:"email"`

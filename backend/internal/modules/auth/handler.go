@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +17,7 @@ func NewAuthHandler(service *AuthService) *AuthHandler {
 }
 
 func (handler *AuthHandler) Login(ctx *gin.Context) {
-	var loginDTO LoginDTO
+	var loginDTO dtos.LoginDTO
 	if err := ctx.ShouldBindJSON(&loginDTO); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

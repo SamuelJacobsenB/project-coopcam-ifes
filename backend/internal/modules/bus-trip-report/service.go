@@ -3,6 +3,7 @@ package bus_trip_report
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -14,41 +15,41 @@ func NewBusTripReportService(repo *BusTripReportRepository) *BusTripReportServic
 	return &BusTripReportService{repo}
 }
 
-func (service *BusTripReportService) FindAll() ([]BusTripReport, error) {
+func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error) {
 	return service.repo.FindAll()
 }
 
-func (service *BusTripReportService) FindByID(id uuid.UUID) (*BusTripReport, error) {
+func (service *BusTripReportService) FindByID(id uuid.UUID) (*entities.BusTripReport, error) {
 	return service.repo.FindByID(id)
 }
 
-func (service *BusTripReportService) FindByUserID(userID uuid.UUID) ([]BusTripReport, error) {
+func (service *BusTripReportService) FindByUserID(userID uuid.UUID) ([]entities.BusTripReport, error) {
 	return service.repo.FindByUserID(userID)
 }
 
-func (service *BusTripReportService) FindByDate(date time.Time) ([]BusTripReport, error) {
+func (service *BusTripReportService) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
 	return service.repo.FindByDate(date)
 }
 
-func (service *BusTripReportService) FindByNextDate(date time.Time) ([]BusTripReport, error) {
+func (service *BusTripReportService) FindByNextDate(date time.Time) ([]entities.BusTripReport, error) {
 	return service.repo.FindByNextDate(date)
 }
 
-func (service *BusTripReportService) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]BusTripReport, error) {
+func (service *BusTripReportService) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
 	return service.repo.FindByUserIDAndDate(userID, date)
 }
 
-func (service *BusTripReportService) FindByUserIDNextDate(userID uuid.UUID, date time.Time) ([]BusTripReport, error) {
+func (service *BusTripReportService) FindByUserIDNextDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
 	return service.repo.FindByUserIDNextDate(userID, date)
 }
 
 // Verify if user exists
 // Verify if date exists
-func (service *BusTripReportService) Create(busTripReport *BusTripReport) error {
+func (service *BusTripReportService) Create(busTripReport *entities.BusTripReport) error {
 	return service.repo.Create(busTripReport)
 }
 
-func (service *BusTripReportService) Update(busTripReport *BusTripReport) error {
+func (service *BusTripReportService) Update(busTripReport *entities.BusTripReport) error {
 	return service.repo.Update(busTripReport)
 }
 

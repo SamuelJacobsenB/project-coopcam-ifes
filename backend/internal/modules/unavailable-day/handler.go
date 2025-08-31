@@ -1,6 +1,7 @@
 package unavailable_day
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -20,9 +21,9 @@ func (handler *UnavailableDayHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	unavailableDaysResponse := make([]UnavailableDayResponseDTO, len(unavailableDays))
+	unavailableDaysResponse := make([]dtos.UnavailableDayResponseDTO, len(unavailableDays))
 	for i, unavailableDay := range unavailableDays {
-		unavailableDaysResponse[i] = *unavailableDay.ToResponseDTO()
+		unavailableDaysResponse[i] = *dtos.ToUnavailableDayResponseDTO(&unavailableDay)
 	}
 
 	ctx.JSON(200, unavailableDaysResponse)
@@ -41,11 +42,11 @@ func (handler *UnavailableDayHandler) FindByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, unavailableDay.ToResponseDTO())
+	ctx.JSON(200, dtos.ToUnavailableDayResponseDTO(unavailableDay))
 }
 
 func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
-	var unavailableDayRequest UnavailableDayRequestDTO
+	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -62,7 +63,7 @@ func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, unavailableDay.ToResponseDTO())
+	ctx.JSON(201, dtos.ToUnavailableDayResponseDTO(unavailableDay))
 }
 
 func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
@@ -72,7 +73,7 @@ func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var unavailableDayRequest UnavailableDayRequestDTO
+	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -90,7 +91,7 @@ func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, unavailableDay.ToResponseDTO())
+	ctx.JSON(200, dtos.ToUnavailableDayResponseDTO(unavailableDay))
 }
 
 func (handler *UnavailableDayHandler) Delete(ctx *gin.Context) {

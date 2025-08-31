@@ -3,6 +3,7 @@ package bus_reservation
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -15,42 +16,42 @@ func NewBusReservationRepository(db *gorm.DB) *BusReservationRepository {
 	return &BusReservationRepository{db}
 }
 
-func (repo *BusReservationRepository) FindAll() ([]BusReservation, error) {
-	var busReservations []BusReservation
+func (repo *BusReservationRepository) FindAll() ([]entities.BusReservation, error) {
+	var busReservations []entities.BusReservation
 	err := repo.db.Find(&busReservations).Error
 	return busReservations, err
 }
 
-func (repo *BusReservationRepository) FindByDate(date time.Time) ([]BusReservation, error) {
-	var busReservations []BusReservation
+func (repo *BusReservationRepository) FindByDate(date time.Time) ([]entities.BusReservation, error) {
+	var busReservations []entities.BusReservation
 	err := repo.db.Where("date = ?", date).Find(&busReservations).Error
 	return busReservations, err
 }
 
-func (repo *BusReservationRepository) FindByUserID(userID uuid.UUID) ([]BusReservation, error) {
-	var busReservations []BusReservation
+func (repo *BusReservationRepository) FindByUserID(userID uuid.UUID) ([]entities.BusReservation, error) {
+	var busReservations []entities.BusReservation
 	err := repo.db.Where("user_id = ?", userID).Find(&busReservations).Error
 	return busReservations, err
 }
 
-func (repo *BusReservationRepository) FindByID(id uuid.UUID) (*BusReservation, error) {
-	var busReservation BusReservation
+func (repo *BusReservationRepository) FindByID(id uuid.UUID) (*entities.BusReservation, error) {
+	var busReservation entities.BusReservation
 	err := repo.db.First(&busReservation, id).Error
 	return &busReservation, err
 }
 
-func (repo *BusReservationRepository) Create(busReservation *BusReservation) error {
+func (repo *BusReservationRepository) Create(busReservation *entities.BusReservation) error {
 	return repo.db.Create(busReservation).Error
 }
 
-func (repo *BusReservationRepository) Update(busReservation *BusReservation) error {
+func (repo *BusReservationRepository) Update(busReservation *entities.BusReservation) error {
 	return repo.db.Where("id = ?", busReservation.ID).Save(busReservation).Error
 }
 
 func (repo *BusReservationRepository) DeleteUntilNow() error {
-	return repo.db.Where("date < ?", time.Now()).Delete(&BusReservation{}).Error
+	return repo.db.Where("date < ?", time.Now()).Delete(&entities.BusReservation{}).Error
 }
 
 func (repo *BusReservationRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&BusReservation{}).Error
+	return repo.db.Where("id = ?", id).Delete(&entities.BusReservation{}).Error
 }

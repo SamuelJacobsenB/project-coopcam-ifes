@@ -1,9 +1,10 @@
-package bus_trip_report
+package dtos
 
 import (
 	"errors"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 )
@@ -42,8 +43,8 @@ func (dto *BusTripReportRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *BusTripReportRequestDTO) ToEntity() *BusTripReport {
-	return &BusTripReport{
+func (dto *BusTripReportRequestDTO) ToEntity() *entities.BusTripReport {
+	return &entities.BusTripReport{
 		UserID:    dto.UserID,
 		Date:      dto.Date,
 		Period:    dto.Period,
@@ -85,8 +86,8 @@ func (dto *BusTripReportUpdateDTO) Validate() error {
 	return nil
 }
 
-func (dto *BusTripReportUpdateDTO) ToEntity() *BusTripReport {
-	busTripReport := BusTripReport{}
+func (dto *BusTripReportUpdateDTO) ToEntity() *entities.BusTripReport {
+	busTripReport := entities.BusTripReport{}
 
 	if dto.Date != nil {
 		busTripReport.Date = *dto.Date
@@ -123,4 +124,20 @@ type BusTripReportResponseDTO struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ToBusTripReportResponseDTO(entity *entities.BusTripReport) *BusTripReportResponseDTO {
+	return &BusTripReportResponseDTO{
+		ID:     entity.ID,
+		UserID: entity.UserID,
+
+		Date:      entity.Date,
+		Period:    entity.Period,
+		Direction: entity.Direction,
+		Marked:    entity.Marked,
+		Attended:  entity.Attended,
+
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

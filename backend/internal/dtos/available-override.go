@@ -1,18 +1,19 @@
-package unavailable_day
+package dtos
 
 import (
 	"errors"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/google/uuid"
 )
 
-type UnavailableDayRequestDTO struct {
+type AvailableOverrideRequestDTO struct {
 	Date   time.Time `json:"date"`
 	Reason string    `json:"reason"`
 }
 
-func (dto *UnavailableDayRequestDTO) Validate() error {
+func (dto *AvailableOverrideRequestDTO) Validate() error {
 	if dto.Date.IsZero() {
 		return errors.New("data é obrigatória")
 	}
@@ -24,19 +25,19 @@ func (dto *UnavailableDayRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *UnavailableDayRequestDTO) ToEntity() *UnavailableDay {
-	return &UnavailableDay{
+func (dto *AvailableOverrideRequestDTO) ToEntity() *entities.AvailableOverride {
+	return &entities.AvailableOverride{
 		Date:   dto.Date,
 		Reason: dto.Reason,
 	}
 }
 
-type UnavailableDayUpdateDTO struct {
+type AvailableOverrideUpdateDTO struct {
 	Date   *time.Time `json:"date,omitempty"`
 	Reason *string    `json:"reason,omitempty"`
 }
 
-func (dto *UnavailableDayUpdateDTO) Validate() error {
+func (dto *AvailableOverrideUpdateDTO) Validate() error {
 	if dto.Date != nil && dto.Date.IsZero() {
 		return errors.New("data deve ser válida")
 	}
@@ -48,8 +49,8 @@ func (dto *UnavailableDayUpdateDTO) Validate() error {
 	return nil
 }
 
-func (dto *UnavailableDayUpdateDTO) ToEntity() *UnavailableDay {
-	availableOverride := UnavailableDay{}
+func (dto *AvailableOverrideUpdateDTO) ToEntity() *entities.AvailableOverride {
+	availableOverride := entities.AvailableOverride{}
 
 	if dto.Date != nil {
 		availableOverride.Date = *dto.Date
@@ -62,7 +63,7 @@ func (dto *UnavailableDayUpdateDTO) ToEntity() *UnavailableDay {
 	return &availableOverride
 }
 
-type UnavailableDayResponseDTO struct {
+type AvailableOverrideResponseDTO struct {
 	ID uuid.UUID `json:"id"`
 
 	Date   time.Time `json:"date"`
@@ -70,4 +71,16 @@ type UnavailableDayResponseDTO struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ToAvailableOverrideResponseDTO(entity *entities.AvailableOverride) *AvailableOverrideResponseDTO {
+	return &AvailableOverrideResponseDTO{
+		ID: entity.ID,
+
+		Date:   entity.Date,
+		Reason: entity.Reason,
+
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

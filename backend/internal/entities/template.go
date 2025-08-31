@@ -1,4 +1,4 @@
-package template
+package entities
 
 import (
 	"time"
@@ -18,19 +18,6 @@ type Template struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (t *Template) TableName() string {
+func (Template) TableName() string {
 	return "templates"
-}
-
-func (entity *Template) ToResponseDTO() *TemplateResponseDTO {
-	return &TemplateResponseDTO{
-		ID:     entity.ID,
-		UserID: entity.UserID,
-
-		GoSchedule:     entity.GoSchedule,
-		ReturnSchedule: entity.ReturnSchedule,
-
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-	}
 }

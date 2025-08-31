@@ -1,9 +1,10 @@
-package bus_reservation
+package dtos
 
 import (
 	"errors"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 )
@@ -36,8 +37,8 @@ func (dto *BusReservationRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *BusReservationRequestDTO) ToEntity() *BusReservation {
-	return &BusReservation{
+func (dto *BusReservationRequestDTO) ToEntity() *entities.BusReservation {
+	return &entities.BusReservation{
 		UserID:   dto.UserID,
 		Date:     dto.Date,
 		Period:   types.Period(dto.Period),
@@ -69,8 +70,8 @@ func (dto *BusReservationUpdateDTO) Validate() error {
 	return nil
 }
 
-func (dto *BusReservationUpdateDTO) ToEntity() *BusReservation {
-	busReservation := BusReservation{}
+func (dto *BusReservationUpdateDTO) ToEntity() *entities.BusReservation {
+	busReservation := entities.BusReservation{}
 
 	if dto.Date != nil {
 		busReservation.Date = *dto.Date
@@ -97,4 +98,20 @@ type BusReservationResponseDTO struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ToBusReservationResponseDTO(entity *entities.BusReservation) *BusReservationResponseDTO {
+	return &BusReservationResponseDTO{
+		ID:     entity.ID,
+		UserID: entity.UserID,
+
+		Date:     entity.Date,
+		Period:   entity.Period,
+		Attended: entity.Attended,
+
+		WeeklyPreferenceID: entity.WeeklyPreferenceID,
+
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

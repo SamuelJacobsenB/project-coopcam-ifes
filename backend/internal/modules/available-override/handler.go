@@ -1,6 +1,7 @@
 package available_override
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -20,9 +21,9 @@ func (handler *AvailableOverrideHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	availableOverridesResponse := make([]AvailableOverrideResponseDTO, len(availableOverrides))
+	availableOverridesResponse := make([]dtos.AvailableOverrideResponseDTO, len(availableOverrides))
 	for i, availableOverride := range availableOverrides {
-		availableOverridesResponse[i] = *availableOverride.ToResponseDTO()
+		availableOverridesResponse[i] = *dtos.ToAvailableOverrideResponseDTO(&availableOverride)
 	}
 
 	ctx.JSON(200, availableOverridesResponse)
@@ -41,11 +42,11 @@ func (handler *AvailableOverrideHandler) FindByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, availableOverride.ToResponseDTO())
+	ctx.JSON(200, dtos.ToAvailableOverrideResponseDTO(availableOverride))
 }
 
 func (handler *AvailableOverrideHandler) Create(ctx *gin.Context) {
-	var availableOverrideRequest AvailableOverrideRequestDTO
+	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
 	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -62,7 +63,7 @@ func (handler *AvailableOverrideHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, availableOverride.ToResponseDTO())
+	ctx.JSON(201, dtos.ToAvailableOverrideResponseDTO(availableOverride))
 }
 
 func (handler *AvailableOverrideHandler) Update(ctx *gin.Context) {
@@ -72,7 +73,7 @@ func (handler *AvailableOverrideHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var availableOverrideRequest AvailableOverrideRequestDTO
+	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
 	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -90,7 +91,7 @@ func (handler *AvailableOverrideHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, availableOverride.ToResponseDTO())
+	ctx.JSON(200, dtos.ToAvailableOverrideResponseDTO(availableOverride))
 }
 
 func (handler *AvailableOverrideHandler) Delete(ctx *gin.Context) {

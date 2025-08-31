@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils"
 	"github.com/google/uuid"
 )
@@ -13,16 +14,16 @@ func NewUserService(repo *UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (service *UserService) FindAll() ([]User, error) {
+func (service *UserService) FindAll() ([]entities.User, error) {
 	return service.repo.FindAll()
 }
 
-func (service *UserService) FindByID(id uuid.UUID) (*User, error) {
+func (service *UserService) FindByID(id uuid.UUID) (*entities.User, error) {
 	return service.repo.FindByID(id)
 }
 
 // Add Logic
-func (service *UserService) Create(user *User) error {
+func (service *UserService) Create(user *entities.User) error {
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return err
@@ -33,7 +34,7 @@ func (service *UserService) Create(user *User) error {
 	return service.repo.Create(user)
 }
 
-func (service *UserService) Update(user *User) error {
+func (service *UserService) Update(user *entities.User) error {
 	if user.Password != "" {
 		hashedPassword, err := utils.HashPassword(user.Password)
 		if err != nil {

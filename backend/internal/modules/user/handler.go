@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -20,9 +21,9 @@ func (handler *UserHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	usersResponse := make([]UserResponseDTO, len(users))
+	usersResponse := make([]dtos.UserResponseDTO, len(users))
 	for i, user := range users {
-		usersResponse[i] = *user.ToResponseDTO()
+		usersResponse[i] = *dtos.ToUserResponseDTO(&user)
 	}
 
 	ctx.JSON(200, usersResponse)
@@ -41,11 +42,11 @@ func (handler *UserHandler) FindByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, user.ToResponseDTO())
+	ctx.JSON(200, dtos.ToUserResponseDTO(user))
 }
 
 func (handler *UserHandler) Create(ctx *gin.Context) {
-	var userRequest UserRequestDTO
+	var userRequest dtos.UserRequestDTO
 	if err := ctx.ShouldBindJSON(&userRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -62,7 +63,7 @@ func (handler *UserHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, user.ToResponseDTO())
+	ctx.JSON(201, dtos.ToUserResponseDTO(user))
 }
 
 func (handler *UserHandler) Update(ctx *gin.Context) {
@@ -72,7 +73,7 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var userRequest UserRequestDTO
+	var userRequest dtos.UserRequestDTO
 	if err := ctx.ShouldBindJSON(&userRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -90,7 +91,7 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, user.ToResponseDTO())
+	ctx.JSON(200, dtos.ToUserResponseDTO(user))
 }
 
 func (handler *UserHandler) UpdateAvatar(ctx *gin.Context) {

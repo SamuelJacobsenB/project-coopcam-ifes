@@ -1,4 +1,4 @@
-package unavailable_day
+package entities
 
 import (
 	"time"
@@ -18,16 +18,4 @@ type UnavailableDay struct {
 
 func (UnavailableDay) TableName() string {
 	return "unavailable_days"
-}
-
-func (entity *UnavailableDay) ToResponseDTO() *UnavailableDayResponseDTO {
-	return &UnavailableDayResponseDTO{
-		ID: entity.ID,
-
-		Date:   entity.Date,
-		Reason: entity.Reason,
-
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-	}
 }

@@ -1,4 +1,4 @@
-package available_override
+package entities
 
 import (
 	"time"
@@ -18,16 +18,4 @@ type AvailableOverride struct {
 
 func (AvailableOverride) TableName() string {
 	return "available_overrides"
-}
-
-func (entity *AvailableOverride) ToResponseDTO() *AvailableOverrideResponseDTO {
-	return &AvailableOverrideResponseDTO{
-		ID: entity.ID,
-
-		Date:   entity.Date,
-		Reason: entity.Reason,
-
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-	}
 }

@@ -1,6 +1,7 @@
 package weekly_preference
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -26,11 +27,11 @@ func (handler *WeeklyPreferenceHandler) FindByUserID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, weeklyPreference.ToResponseDTO())
+	ctx.JSON(200, dtos.ToWeeklyPreferenceResponseDTO(weeklyPreference))
 }
 
 func (handler *WeeklyPreferenceHandler) Create(ctx *gin.Context) {
-	var weeklyPreferenceRequest WeeklyPreferenceRequestDTO
+	var weeklyPreferenceRequest dtos.WeeklyPreferenceRequestDTO
 	if err := ctx.ShouldBindJSON(&weeklyPreferenceRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -47,7 +48,7 @@ func (handler *WeeklyPreferenceHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, weeklyPreference.ToResponseDTO())
+	ctx.JSON(201, dtos.ToWeeklyPreferenceResponseDTO(weeklyPreference))
 }
 
 func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
@@ -57,7 +58,7 @@ func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var weeklyPreferenceRequest WeeklyPreferenceRequestDTO
+	var weeklyPreferenceRequest dtos.WeeklyPreferenceRequestDTO
 	if err := ctx.ShouldBindJSON(&weeklyPreferenceRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -75,7 +76,7 @@ func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, weeklyPreference.ToResponseDTO())
+	ctx.JSON(200, dtos.ToWeeklyPreferenceResponseDTO(weeklyPreference))
 }
 
 func (handler *WeeklyPreferenceHandler) Delete(ctx *gin.Context) {

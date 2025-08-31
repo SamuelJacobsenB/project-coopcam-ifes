@@ -1,6 +1,7 @@
 package template
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -26,11 +27,11 @@ func (handler *TemplateHandler) FindByUserID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, template.ToResponseDTO())
+	ctx.JSON(200, dtos.ToTemplateResponseDTO(template))
 }
 
 func (handler *TemplateHandler) Create(ctx *gin.Context) {
-	var templateRequest TemplateRequestDTO
+	var templateRequest dtos.TemplateRequestDTO
 	if err := ctx.ShouldBindJSON(&templateRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -47,7 +48,7 @@ func (handler *TemplateHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, template.ToResponseDTO())
+	ctx.JSON(201, dtos.ToTemplateResponseDTO(template))
 }
 
 func (handler *TemplateHandler) Update(ctx *gin.Context) {
@@ -57,7 +58,7 @@ func (handler *TemplateHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var templateRequest TemplateRequestDTO
+	var templateRequest dtos.TemplateRequestDTO
 	if err := ctx.ShouldBindJSON(&templateRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -75,7 +76,7 @@ func (handler *TemplateHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, template.ToResponseDTO())
+	ctx.JSON(200, dtos.ToTemplateResponseDTO(template))
 }
 
 func (handler *TemplateHandler) Delete(ctx *gin.Context) {

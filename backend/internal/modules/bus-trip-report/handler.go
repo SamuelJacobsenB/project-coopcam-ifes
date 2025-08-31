@@ -3,6 +3,7 @@ package bus_trip_report
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -22,9 +23,9 @@ func (handler *BusTripReportHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
@@ -43,7 +44,7 @@ func (handler *BusTripReportHandler) FindByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, busTripReport.ToResponseDTO())
+	ctx.JSON(200, dtos.ToBusTripReportResponseDTO(busTripReport))
 }
 
 func (handler *BusTripReportHandler) FindByUserID(ctx *gin.Context) {
@@ -59,9 +60,9 @@ func (handler *BusTripReportHandler) FindByUserID(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
@@ -80,9 +81,9 @@ func (handler *BusTripReportHandler) FindByDate(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
@@ -101,9 +102,9 @@ func (handler *BusTripReportHandler) FindByNextDate(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
@@ -128,9 +129,9 @@ func (handler *BusTripReportHandler) FindByUserIDAndDate(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
@@ -156,16 +157,16 @@ func (handler *BusTripReportHandler) FindByUserIDNextDate(ctx *gin.Context) {
 		return
 	}
 
-	busTripReportsResponse := make([]BusTripReportResponseDTO, len(busTripReports))
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
 	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *busTripReport.ToResponseDTO()
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
 	ctx.JSON(200, busTripReportsResponse)
 }
 
 func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
-	var busTripReportRequest BusTripReportRequestDTO
+	var busTripReportRequest dtos.BusTripReportRequestDTO
 	if err := ctx.ShouldBindJSON(&busTripReportRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -182,7 +183,7 @@ func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, busTripReport.ToResponseDTO())
+	ctx.JSON(201, dtos.ToBusTripReportResponseDTO(busTripReport))
 }
 
 func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
@@ -192,7 +193,7 @@ func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var busTripReportRequest BusTripReportRequestDTO
+	var busTripReportRequest dtos.BusTripReportRequestDTO
 	if err := ctx.ShouldBindJSON(&busTripReportRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -210,7 +211,7 @@ func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, busTripReport.ToResponseDTO())
+	ctx.JSON(200, dtos.ToBusTripReportResponseDTO(busTripReport))
 }
 
 func (handler *BusTripReportHandler) Delete(ctx *gin.Context) {

@@ -1,10 +1,11 @@
-package user
+package dtos
 
 import (
 	"errors"
 	"strings"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils/validators"
 	"github.com/google/uuid"
@@ -73,8 +74,8 @@ func (dto *UserRequestDTO) Validate() error {
 	return nil
 }
 
-func (dto *UserRequestDTO) ToEntity() *User {
-	return &User{
+func (dto *UserRequestDTO) ToEntity() *entities.User {
+	return &entities.User{
 		Name:     dto.Name,
 		Email:    dto.Email,
 		Password: dto.Password,
@@ -150,8 +151,8 @@ func (dto *UserUpdateDTO) Validate() error {
 	return nil
 }
 
-func (dto *UserUpdateDTO) ToEntity() *User {
-	user := User{}
+func (dto *UserUpdateDTO) ToEntity() *entities.User {
+	user := entities.User{}
 
 	if dto.Name != nil {
 		user.Name = *dto.Name
@@ -204,4 +205,21 @@ type UserResponseDTO struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func ToUserResponseDTO(entity *entities.User) *UserResponseDTO {
+	return &UserResponseDTO{
+		ID:        entity.ID,
+		Name:      entity.Name,
+		Email:     entity.Email,
+		Roles:     entity.Roles,
+		CPF:       entity.CPF,
+		Phone:     entity.Phone,
+		Adress:    entity.Adress,
+		CEP:       entity.CEP,
+		Birth:     entity.Birth.Format("02/01/2006"),
+		AvatarURL: entity.AvatarURL,
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
 }

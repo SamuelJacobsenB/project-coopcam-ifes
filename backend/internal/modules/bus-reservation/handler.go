@@ -3,6 +3,7 @@ package bus_reservation
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -23,9 +24,9 @@ func (handler *BusReservationHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	busReservationsResponse := make([]BusReservationResponseDTO, len(busReservations))
+	busReservationsResponse := make([]dtos.BusReservationResponseDTO, len(busReservations))
 	for i, busReservation := range busReservations {
-		busReservationsResponse[i] = *busReservation.ToResponseDTO()
+		busReservationsResponse[i] = *dtos.ToBusReservationResponseDTO(&busReservation)
 	}
 
 	ctx.JSON(200, busReservationsResponse)
@@ -44,9 +45,9 @@ func (handler *BusReservationHandler) FindByDate(ctx *gin.Context) {
 		return
 	}
 
-	busReservationsResponse := make([]BusReservationResponseDTO, len(busReservations))
+	busReservationsResponse := make([]dtos.BusReservationResponseDTO, len(busReservations))
 	for i, busReservation := range busReservations {
-		busReservationsResponse[i] = *busReservation.ToResponseDTO()
+		busReservationsResponse[i] = *dtos.ToBusReservationResponseDTO(&busReservation)
 	}
 }
 
@@ -63,9 +64,9 @@ func (handler *BusReservationHandler) FindByUserID(ctx *gin.Context) {
 		return
 	}
 
-	busReservationsResponse := make([]BusReservationResponseDTO, len(busReservations))
+	busReservationsResponse := make([]dtos.BusReservationResponseDTO, len(busReservations))
 	for i, busReservation := range busReservations {
-		busReservationsResponse[i] = *busReservation.ToResponseDTO()
+		busReservationsResponse[i] = *dtos.ToBusReservationResponseDTO(&busReservation)
 	}
 
 	ctx.JSON(200, busReservationsResponse)
@@ -84,11 +85,11 @@ func (handler *BusReservationHandler) FindByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, busReservation.ToResponseDTO())
+	ctx.JSON(200, dtos.ToBusReservationResponseDTO(busReservation))
 }
 
 func (handler *BusReservationHandler) Create(ctx *gin.Context) {
-	var busReservationRequest BusReservationRequestDTO
+	var busReservationRequest dtos.BusReservationRequestDTO
 	if err := ctx.ShouldBindJSON(&busReservationRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -105,7 +106,7 @@ func (handler *BusReservationHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, busReservation.ToResponseDTO())
+	ctx.JSON(201, dtos.ToBusReservationResponseDTO(busReservation))
 }
 
 func (handler *BusReservationHandler) Update(ctx *gin.Context) {
@@ -115,7 +116,7 @@ func (handler *BusReservationHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var busReservationRequest BusReservationRequestDTO
+	var busReservationRequest dtos.BusReservationRequestDTO
 	if err := ctx.ShouldBindJSON(&busReservationRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -133,7 +134,7 @@ func (handler *BusReservationHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, busReservation.ToResponseDTO())
+	ctx.JSON(200, dtos.ToBusReservationResponseDTO(busReservation))
 }
 
 func (handler *BusReservationHandler) Delete(ctx *gin.Context) {

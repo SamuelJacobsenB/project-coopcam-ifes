@@ -1,4 +1,4 @@
-package bus_reservation
+package entities
 
 import (
 	"time"
@@ -23,20 +23,4 @@ type BusReservation struct {
 
 func (BusReservation) TableName() string {
 	return "bus_reservations"
-}
-
-func (entity *BusReservation) ToResponseDTO() *BusReservationResponseDTO {
-	return &BusReservationResponseDTO{
-		ID:     entity.ID,
-		UserID: entity.UserID,
-
-		Date:     entity.Date,
-		Period:   entity.Period,
-		Attended: entity.Attended,
-
-		WeeklyPreferenceID: entity.WeeklyPreferenceID,
-
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-	}
 }

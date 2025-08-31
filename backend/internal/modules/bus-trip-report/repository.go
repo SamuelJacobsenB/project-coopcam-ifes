@@ -3,6 +3,7 @@ package bus_trip_report
 import (
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -15,56 +16,56 @@ func NewBusTripReportRepository(db *gorm.DB) *BusTripReportRepository {
 	return &BusTripReportRepository{db}
 }
 
-func (repo *BusTripReportRepository) FindAll() ([]BusTripReport, error) {
-	var busTripReports []BusTripReport
+func (repo *BusTripReportRepository) FindAll() ([]entities.BusTripReport, error) {
+	var busTripReports []entities.BusTripReport
 	err := repo.db.Find(&busTripReports).Error
 	return busTripReports, err
 }
 
-func (repo *BusTripReportRepository) FindByID(id uuid.UUID) (*BusTripReport, error) {
-	var busTripReport BusTripReport
+func (repo *BusTripReportRepository) FindByID(id uuid.UUID) (*entities.BusTripReport, error) {
+	var busTripReport entities.BusTripReport
 	err := repo.db.First(&busTripReport, id).Error
 	return &busTripReport, err
 }
 
-func (repo *BusTripReportRepository) FindByUserID(userID uuid.UUID) ([]BusTripReport, error) {
-	var busTripReports []BusTripReport
+func (repo *BusTripReportRepository) FindByUserID(userID uuid.UUID) ([]entities.BusTripReport, error) {
+	var busTripReports []entities.BusTripReport
 	err := repo.db.Where("user_id = ?", userID).Find(&busTripReports).Error
 	return busTripReports, err
 }
 
-func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]BusTripReport, error) {
-	var busTripReports []BusTripReport
+func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
+	var busTripReports []entities.BusTripReport
 	err := repo.db.Where("date = ?", date).Find(&busTripReports).Error
 	return busTripReports, err
 }
 
-func (repo *BusTripReportRepository) FindByNextDate(date time.Time) ([]BusTripReport, error) {
-	var busTripReport []BusTripReport
+func (repo *BusTripReportRepository) FindByNextDate(date time.Time) ([]entities.BusTripReport, error) {
+	var busTripReport []entities.BusTripReport
 	err := repo.db.Where("date >= ?", date).Find(&busTripReport).Error
 	return busTripReport, err
 }
 
-func (repo *BusTripReportRepository) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]BusTripReport, error) {
-	var busTripReport []BusTripReport
+func (repo *BusTripReportRepository) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
+	var busTripReport []entities.BusTripReport
 	err := repo.db.Where("user_id = ? AND date = ?", userID, date).Find(&busTripReport).Error
 	return busTripReport, err
 }
 
-func (repo *BusTripReportRepository) FindByUserIDNextDate(userID uuid.UUID, date time.Time) ([]BusTripReport, error) {
-	var busTripReport []BusTripReport
+func (repo *BusTripReportRepository) FindByUserIDNextDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
+	var busTripReport []entities.BusTripReport
 	err := repo.db.Where("user_id = ? AND date >= ?", userID, date).Find(&busTripReport).Error
 	return busTripReport, err
 }
 
-func (repo *BusTripReportRepository) Create(busTripReport *BusTripReport) error {
+func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripReport) error {
 	return repo.db.Create(busTripReport).Error
 }
 
-func (repo *BusTripReportRepository) Update(busTripReport *BusTripReport) error {
+func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripReport) error {
 	return repo.db.Save(busTripReport).Error
 }
 
 func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {
-	return repo.db.Delete(&BusTripReport{}, id).Error
+	return repo.db.Delete(&entities.BusTripReport{}, id).Error
 }
