@@ -8,7 +8,9 @@ import (
 )
 
 type User struct {
-	ID uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	ID                 uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	TemplateID         uuid.UUID `gorm:"type:uuid" json:"template_id"`
+	WeeklyPreferenceID uuid.UUID `gorm:"type:uuid" json:"weekly_preference_id"`
 
 	Name     string       `gorm:"uniqueIndex;not null" json:"name"`
 	Email    string       `gorm:"uniqueIndex;not null" json:"email"`
@@ -22,8 +24,8 @@ type User struct {
 	Birth     time.Time `json:"birth"`
 	AvatarURL string    `json:"avatar_url"`
 
-	Template         Template         `gorm:"foreignKey:UserID" json:"template"`
-	WeeklyPreference WeeklyPreference `gorm:"foreignKey:UserID" json:"weekly_preference"`
+	Template         *Template         `gorm:"foreignKey:TemplateID" json:"template"`
+	WeeklyPreference *WeeklyPreference `gorm:"foreignKey:WeeklyPreferenceID" json:"weekly_preference"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

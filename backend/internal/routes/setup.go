@@ -25,6 +25,9 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 	busReservationGroup := v1.Group("/bus-reservation")
 	SetupBusReservationRoutes(busReservationGroup, handlers.BusReservationHandler)
 
+	busTripGroup := v1.Group("/bus-trip")
+	SetupBusTripRoutes(busTripGroup, handlers.BusTripHandler)
+
 	busTripReportGroup := v1.Group("/bus-trip-report")
 	SetupBusTripReportRoutes(busTripReportGroup, handlers.BusTripReportHandler)
 

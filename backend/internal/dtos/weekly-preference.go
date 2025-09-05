@@ -9,15 +9,10 @@ import (
 )
 
 type WeeklyPreferenceRequestDTO struct {
-	TemplateID uuid.UUID `json:"template_id"`
-	WeekStart  time.Time `json:"week_start"`
+	WeekStart time.Time `json:"week_start"`
 }
 
 func (dto *WeeklyPreferenceRequestDTO) Validate() error {
-	if dto.TemplateID == uuid.Nil {
-		return errors.New("id do template é obrigatório")
-	}
-
 	if dto.WeekStart.IsZero() {
 		return errors.New("data da semana é obrigatória")
 	}
@@ -27,21 +22,15 @@ func (dto *WeeklyPreferenceRequestDTO) Validate() error {
 
 func (dto *WeeklyPreferenceRequestDTO) ToEntity() *entities.WeeklyPreference {
 	return &entities.WeeklyPreference{
-		TemplateID: dto.TemplateID,
-		WeekStart:  dto.WeekStart,
+		WeekStart: dto.WeekStart,
 	}
 }
 
 type WeeklyPreferenceUpdateDTO struct {
-	TemplateID uuid.UUID `json:"template_id"`
-	WeekStart  time.Time `json:"week_start"`
+	WeekStart time.Time `json:"week_start"`
 }
 
 func (dto *WeeklyPreferenceUpdateDTO) Validate() error {
-	if dto.TemplateID == uuid.Nil {
-		return errors.New("id do template é obrigatório")
-	}
-
 	if dto.WeekStart.IsZero() {
 		return errors.New("data da semana é obrigatória")
 	}
@@ -51,8 +40,7 @@ func (dto *WeeklyPreferenceUpdateDTO) Validate() error {
 
 func (dto *WeeklyPreferenceUpdateDTO) ToEntity() *entities.WeeklyPreference {
 	return &entities.WeeklyPreference{
-		TemplateID: dto.TemplateID,
-		WeekStart:  dto.WeekStart,
+		WeekStart: dto.WeekStart,
 	}
 }
 
@@ -75,9 +63,8 @@ func ToWeeklyPreferenceResponseDTO(entity *entities.WeeklyPreference) *WeeklyPre
 	}
 
 	return &WeeklyPreferenceResponseDTO{
-		ID:         entity.ID,
-		UserID:     entity.UserID,
-		TemplateID: entity.TemplateID,
+		ID:     entity.ID,
+		UserID: entity.UserID,
 
 		WeekStart: entity.WeekStart,
 		Overrides: overridesResponse,

@@ -5,13 +5,13 @@ import "errors"
 type Period string
 
 const (
-	PeriodGo     Period = "go"
-	PeriodReturn Period = "return"
+	PeriodMorning   Period = "morning"
+	PeriodAfternoon Period = "afternoon"
 )
 
 func ValidatePeriod(period Period) error {
 	switch period {
-	case PeriodGo, PeriodReturn:
+	case PeriodMorning, PeriodAfternoon:
 		return nil
 	default:
 		return errors.New("período inválido")

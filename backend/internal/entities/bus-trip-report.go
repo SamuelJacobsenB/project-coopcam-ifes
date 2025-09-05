@@ -8,8 +8,9 @@ import (
 )
 
 type BusTripReport struct {
-	ID     uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	UserID uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	UserID    uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+	BusTripID uuid.UUID `gorm:"type:uuid;index" json:"bus_trip_id"`
 
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `gorm:"type:text" json:"period"`
@@ -17,7 +18,8 @@ type BusTripReport struct {
 	Marked    bool            `json:"marked"`
 	Attended  bool            `json:"attended"`
 
-	User *User `gorm:"foreignKey:UserID" json:"user"`
+	User    *User    `gorm:"foreignKey:UserID" json:"user"`
+	BusTrip *BusTrip `gorm:"foreignKey:BusTripID" json:"bus_trip"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
