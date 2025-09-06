@@ -1,23 +1,23 @@
-import type { Role, Template, WeeklyPreference } from "../"
+export interface UserRequestDTO {
+  name: string;
+  email: string;
+  password: string;
 
-export interface User {
-    id: string
-    template_id: string
-    weekly_preference_id: string
+  cpf: string;
+  phone: string;
+  adress: string;
+  cep: string;
+  birth: Date;
+}
 
-    name: string
-    email: string
-    password: string
-    roles: Role[]
+export interface UserUpdateDTO {
+  name: string | null;
+  email: string | null;
+  password: string | null;
 
-    cpf: string
-    phone: string
-    adress: string
-    cep: string
-
-    template: Template | null
-    weekly_preference: WeeklyPreference | null
-
-    createdAt: Date
-    updatedAt: Date
+  cpf: string | null;
+  phone: string | null;
+  adress: string | null;
+  cep: string | null;
+  birth: Date | null;
 }

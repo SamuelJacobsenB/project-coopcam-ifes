@@ -1,9 +1,9 @@
-export interface UnavailableDay {
-    id: string;
-    
-    date: Date;
-    reason: string;
+export interface UnavailableDayRequestDTO {
+  date: Date;
+  reason: string;
+}
 
-    createdAt: Date;
-    updatedAt: Date;
+export interface UnavailableDayUpdateDTO {
+  date: Date | null;
+  reason: string | null;
 }

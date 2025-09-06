@@ -1,10 +1,13 @@
-export interface BusTrip {
-    id: string;
+import type { Direction, Period } from "../others";
 
-    date: Date;
-    period: string;
-    direction: string;
-    
-    createdAt: Date;
-    updatedAt: Date;
+export interface BusTripRequestDTO {
+  date: Date;
+  period: Period;
+  direction: Direction;
+}
+
+export interface BusTripUpdateDTO {
+  date: Date | null;
+  period: Period | null;
+  direction: Direction | null;
 }

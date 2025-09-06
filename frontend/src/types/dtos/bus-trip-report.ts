@@ -1,19 +1,17 @@
-import type { User, BusTrip } from ".";
+import type { Direction, Period } from "../";
 
-export interface BusTripReport {
-    id: string;
-    user_id: string;
-    bus_trip_id: string;
+export interface BusTripReportRequestDTO {
+  user_id: string;
 
-    date: Date;
-    period: string;
-    direction: string;
-    marked: boolean;
-    attended: boolean;
+  date: Date;
+  period: Period;
+  direction: Direction;
+  marked: boolean; // TODO: remove
+  attended: boolean; // TODO: remove
+}
 
-    user: User | null;
-    bus_trip: BusTrip | null;
-
-    created_at: Date;
-    updated_at: Date;
+export interface BusTripReportUpdateDTO {
+  date: Date | null;
+  period: Period | null;
+  direction: Direction | null;
 }

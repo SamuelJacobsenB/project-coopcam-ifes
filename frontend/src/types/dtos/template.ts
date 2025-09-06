@@ -1,12 +1,11 @@
 import type { DaySchedule } from "../";
 
-export interface Template {
-    id: string;
-    user_id: string;
+export interface TemplateRequestDTO {
+  go_schedule: DaySchedule;
+  return_schedule: DaySchedule;
+}
 
-    go_schedule: DaySchedule;
-    return_schedule: DaySchedule;
-
-    created_at: Date;
-    updated_at: Date;
+export interface TemplateUpdateDTO {
+  go_schedule: DaySchedule | null;
+  return_schedule: DaySchedule | null;
 }
