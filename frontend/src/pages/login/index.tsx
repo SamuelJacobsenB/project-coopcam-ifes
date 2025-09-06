@@ -1,12 +1,20 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { FormPage, Input, Error } from "../../components";
+import { useLogin } from "../../hooks";
 import { validateLoginDTO } from "../../utils";
 import type { LoginDTO } from "../../types";
 
 import styles from "./styles.module.css";
+import { useMessage } from "../../contexts";
 
 export function LoginPage() {
+  const navigate = useNavigate();
+
+  const { showMessage } = useMessage();
+  const { login } = useLogin();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,13 +28,20 @@ export function LoginPage() {
     };
 
     const error = validateLoginDTO(loginDTO);
-    console.log(error);
     if (error) {
       setError(error);
       return;
     }
 
     setError("");
+
+    const res = await login(loginDTO);
+    if (res) {
+      navigate("/");
+      showMessage("Login realizado com sucesso", "success");
+    } else {
+      setError("Email ou senha incorretos");
+    }
   }
 
   return (

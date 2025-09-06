@@ -8,7 +8,8 @@ import (
 func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 	router := gin.Default()
 
-	v1 := router.Group("/v1")
+	api := router.Group("/api")
+	v1 := api.Group("/v1")
 
 	authGroup := v1.Group("/auth")
 	SetupAuthRoutes(authGroup, handlers.AuthHandler)
