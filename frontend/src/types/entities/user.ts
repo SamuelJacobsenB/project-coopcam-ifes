@@ -18,6 +18,6 @@ export interface User {
     template: Template | null
     weekly_preference: WeeklyPreference | null
 
-    createdAt: Date
-    updatedAt: Date
+    created_at: Date
+    updated_at: Date
 }

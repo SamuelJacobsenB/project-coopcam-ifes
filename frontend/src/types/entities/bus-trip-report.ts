@@ -1,4 +1,4 @@
-import type { User, BusTrip } from ".";
+import type { Direction, Period, User, BusTrip } from "../";
 
 export interface BusTripReport {
     id: string;
@@ -6,8 +6,8 @@ export interface BusTripReport {
     bus_trip_id: string;
 
     date: Date;
-    period: string;
-    direction: string;
+    period: Period;
+    direction: Direction;
     marked: boolean;
     attended: boolean;
 

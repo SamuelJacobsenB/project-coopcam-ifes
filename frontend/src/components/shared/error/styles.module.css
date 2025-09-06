@@ -1,0 +1,18 @@
+.error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--color-error);
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
+}
+
+.close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  color: white;
+}

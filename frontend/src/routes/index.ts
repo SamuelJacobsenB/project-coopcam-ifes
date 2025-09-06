@@ -7,15 +7,19 @@ import {
 } from "../pages";
 
 export const routes = [
-  { path: "/", label: "Home", element: DashboardPage },
-  { path: "/login", label: "Login", element: LoginPage },
-  { path: "/users", label: "Usuários", element: UsersPage },
-  { path: "/users/create", label: "Criar Usuário", element: UsersPage },
-  { path: "/calendar", label: "Calendário", element: CalendarPage },
-  { path: "/calendar/:month", label: "Mês", element: CalendarMonthPage },
-] as const;
+  { path: "/", element: DashboardPage },
+  { path: "/:bus-trip-stats", element: DashboardPage },
+  { path: "/login", element: LoginPage },
+  { path: "/users", element: UsersPage },
+  { path: "/users/create", element: UsersPage },
+  { path: "/bus-trip", element: DashboardPage },
+  { path: "/calendar", element: CalendarPage },
+  { path: "/calendar/:month", element: CalendarMonthPage },
+];
 
-export const navRoutes = routes.filter(
-  ({ path }) =>
-    path !== "/login" && path !== "/users/create" && path !== "/calendar/:month"
-);
+export const navRoutes = [
+  { path: "/", label: "Home" },
+  { path: "/users", label: "Usuários" },
+  { path: "/bus-trip", label: "Viagens" },
+  { path: "/calendar", label: "Calendário" },
+];

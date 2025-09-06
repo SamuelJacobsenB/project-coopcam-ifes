@@ -1,5 +1,10 @@
-button:hover {
-  opacity: 0.8;
+button {
+  font-size: 1rem;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 button:disabled {
@@ -22,10 +27,16 @@ button:disabled {
   background-color: var(--color-primary);
   color: white;
 }
+.btn-primary:hover {
+  background-color: var(--color-secondary);
+}
 
 .btn-secondary {
   background-color: var(--color-secondary);
   color: white;
+}
+.btn-secondary:hover {
+  background-color: var(--color-primary);
 }
 
 .btn-success {

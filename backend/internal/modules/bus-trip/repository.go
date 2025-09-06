@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -41,6 +42,7 @@ func (repo *BusTripRepository) FindByID(id uuid.UUID) (*entities.BusTrip, error)
 }
 
 func (repo *BusTripRepository) Create(busTrip *entities.BusTrip) error {
+	busTrip.Status = types.Unstarted
 	return repo.db.Create(busTrip).Error
 }
 

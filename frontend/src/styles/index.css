@@ -8,3 +8,12 @@
 html {
   scroll-behavior: smooth;
 }
+
+hr {
+  border: none;
+  border-top: 2px solid var(--color-gray);
+}
+
+li {
+  list-style: none;
+}

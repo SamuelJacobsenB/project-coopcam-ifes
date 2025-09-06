@@ -1,4 +1,4 @@
-import type { Direction, Period } from "../others";
+import type { Direction, Period, Status } from "../";
 
 export interface BusTripRequestDTO {
   date: Date;
@@ -10,4 +10,5 @@ export interface BusTripUpdateDTO {
   date: Date | null;
   period: Period | null;
   direction: Direction | null;
+  status: Status | null;
 }

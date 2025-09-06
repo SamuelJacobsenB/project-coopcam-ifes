@@ -1,0 +1,25 @@
+.form_page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rem;
+  background-color: var(--color-primary);
+  width: 100vw;
+  height: 100vh;
+}
+
+.form_section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: white;
+  width: 400px;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.logo {
+  width: auto;
+  height: 30px;
+}

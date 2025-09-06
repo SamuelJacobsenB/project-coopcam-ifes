@@ -2,11 +2,11 @@ import type { BusReservation } from "./";
 
 export interface WeeklyPreference {
     id: string;
-    userID: string;
+    user_id: string;
 
-    weekStart: Date;
+    week_start: Date;
     overrides: BusReservation[];
 
-    createdAt: Date;
-    updatedAt: Date;
+    created_at: Date;
+    updated_at: Date;
 }

@@ -47,6 +47,7 @@ type BusTripUpdateDTO struct {
 	Date      *time.Time       `json:"date,omitempty"`
 	Period    *types.Period    `json:"period,omitempty"`
 	Direction *types.Direction `json:"direction,omitempty"`
+	Status    *types.Status    `json:"status,omitempty"`
 }
 
 func (dto *BusTripUpdateDTO) Validate() error {
@@ -70,6 +71,12 @@ func (dto *BusTripUpdateDTO) Validate() error {
 		}
 	}
 
+	if dto.Status != nil {
+		if err := types.ValidateStatus(*dto.Status); err != nil {
+			return errors.New(err.Error())
+		}
+	}
+
 	return nil
 }
 
@@ -88,6 +95,10 @@ func (dto *BusTripUpdateDTO) ToEntity() *entities.BusTrip {
 		busTrip.Direction = *dto.Direction
 	}
 
+	if dto.Status != nil {
+		busTrip.Status = *dto.Status
+	}
+
 	return &busTrip
 }
 
@@ -97,6 +108,7 @@ type BusTripResponseDTO struct {
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `json:"period"`
 	Direction types.Direction `json:"direction"`
+	Status    types.Status    `json:"status"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -108,6 +120,7 @@ func ToBusTripResponseDTO(entity *entities.BusTrip) *BusTripResponseDTO {
 		Date:      entity.Date,
 		Period:    entity.Period,
 		Direction: entity.Direction,
+		Status:    entity.Status,
 		CreatedAt: entity.CreatedAt,
 		UpdatedAt: entity.UpdatedAt,
 	}
