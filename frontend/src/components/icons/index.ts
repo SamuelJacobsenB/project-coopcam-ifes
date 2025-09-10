@@ -7,6 +7,7 @@ import {
   IoIosClose,
 } from "react-icons/io";
 import { BiSolidError } from "react-icons/bi";
+import { LuLoaderCircle } from "react-icons/lu";
 
 export const I = {
   arrow_back: IoIosArrowBack,
@@ -17,5 +18,6 @@ export const I = {
   check: FaCheckCircle,
   close: IoIosClose,
   error: BiSolidError,
+  loader: LuLoaderCircle,
   user: FaUserCircle,
 };
