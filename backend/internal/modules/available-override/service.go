@@ -1,7 +1,7 @@
 package available_override
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -36,3 +36,4 @@ func (service *AvailableOverrideService) DeleteUntilNow() error {
 func (service *AvailableOverrideService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

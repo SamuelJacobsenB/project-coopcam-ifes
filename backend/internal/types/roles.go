@@ -37,3 +37,4 @@ func HasRoles(userRoles []Role, allowedRoles ...Role) bool {
 
 	return true
 }
+

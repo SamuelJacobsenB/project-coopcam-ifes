@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 )
 
@@ -34,3 +34,4 @@ type User struct {
 func (User) TableName() string {
 	return "users"
 }
+

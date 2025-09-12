@@ -17,3 +17,4 @@ func ValidatePeriod(period Period) error {
 		return errors.New("período inválido")
 	}
 }
+

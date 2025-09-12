@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 )
 
@@ -21,3 +21,4 @@ type Template struct {
 func (Template) TableName() string {
 	return "templates"
 }
+

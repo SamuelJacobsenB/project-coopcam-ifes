@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 )
 
 func MigrateDB() {
@@ -11,3 +11,4 @@ func MigrateDB() {
 		panic("Falha na migração do banco de dados: " + err.Error())
 	}
 }
+

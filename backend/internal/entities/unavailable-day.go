@@ -19,3 +19,4 @@ type UnavailableDay struct {
 func (UnavailableDay) TableName() string {
 	return "unavailable_days"
 }
+

@@ -3,9 +3,9 @@ package auth
 import (
 	"errors"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 )
 
 type AuthService struct {
@@ -28,3 +28,4 @@ func (service *AuthService) Login(loginDTO *dtos.LoginDTO) (string, error) {
 
 	return utils.GenerateJWT(user.ID, user.Roles)
 }
+

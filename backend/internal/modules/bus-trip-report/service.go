@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
 )
 
@@ -73,3 +73,4 @@ func (service *BusTripReportService) Update(busTripReport *entities.BusTripRepor
 func (service *BusTripReportService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

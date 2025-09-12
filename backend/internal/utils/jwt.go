@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -35,3 +35,4 @@ func ParseJWT(tokenString string) (*jwt.Token, error) {
 		return jwtKey, nil
 	})
 }
+

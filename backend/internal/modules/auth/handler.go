@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,3 +52,4 @@ func (handler *AuthHandler) VerifyCoordinator(ctx *gin.Context) {
 func (handler *AuthHandler) VerifyAdmin(ctx *gin.Context) {
 	ctx.JSON(200, nil)
 }
+

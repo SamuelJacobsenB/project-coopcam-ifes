@@ -1,7 +1,7 @@
 package unavailable_day
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -36,3 +36,4 @@ func (service *UnavailableDayService) DeleteUntilNow() error {
 func (service *UnavailableDayService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

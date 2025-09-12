@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -73,3 +73,4 @@ func ToWeeklyPreferenceResponseDTO(entity *entities.WeeklyPreference) *WeeklyPre
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
+

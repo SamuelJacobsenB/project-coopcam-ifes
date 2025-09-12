@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 )
 
@@ -28,3 +28,4 @@ type BusTripReport struct {
 func (BusTripReport) TableName() string {
 	return "bus_trip_reports"
 }
+

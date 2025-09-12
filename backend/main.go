@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/config"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/db"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/routes"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/db"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/routes"
 	"github.com/gin-contrib/cors"
 )
 
@@ -31,3 +31,4 @@ func main() {
 
 	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
+

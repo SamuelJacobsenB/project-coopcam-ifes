@@ -3,7 +3,7 @@ package bus_trip
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -138,3 +138,4 @@ func (handler *BusTripHandler) Delete(ctx *gin.Context) {
 
 	ctx.JSON(204, nil)
 }
+

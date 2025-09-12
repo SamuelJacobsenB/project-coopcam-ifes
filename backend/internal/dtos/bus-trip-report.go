@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 )
 
@@ -141,3 +141,4 @@ func ToBusTripReportResponseDTO(entity *entities.BusTripReport) *BusTripReportRe
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
+

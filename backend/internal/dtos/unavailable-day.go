@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -84,3 +84,4 @@ func ToUnavailableDayResponseDTO(entity *entities.UnavailableDay) *UnavailableDa
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
+

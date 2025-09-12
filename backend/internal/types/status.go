@@ -18,3 +18,4 @@ func ValidateStatus(status Status) error {
 		return errors.New("status invalido")
 	}
 }
+

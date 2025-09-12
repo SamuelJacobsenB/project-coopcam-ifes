@@ -17,3 +17,4 @@ func ValidateDirection(direction Direction) error {
 		return errors.New("direção inválida")
 	}
 }
+

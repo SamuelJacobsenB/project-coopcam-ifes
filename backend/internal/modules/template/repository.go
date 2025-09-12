@@ -1,7 +1,7 @@
 package template
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -31,3 +31,4 @@ func (repo *TemplateRepository) Update(template *entities.Template) error {
 func (repo *TemplateRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.Template{}).Error
 }
+

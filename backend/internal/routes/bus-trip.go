@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/middlewares"
-	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/bus-trip"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
+	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,3 +16,4 @@ func SetupBusTripRoutes(rg *gin.RouterGroup, handler *bus_trip.BusTripHandler) {
 	rg.PUT("/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Update)
 	rg.DELETE("/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Delete)
 }
+

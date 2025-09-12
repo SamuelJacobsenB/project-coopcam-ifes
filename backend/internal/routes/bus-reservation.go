@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/middlewares"
-	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/bus-reservation"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
+	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-reservation"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,3 +16,4 @@ func SetupBusReservationRoutes(rg *gin.RouterGroup, handler *bus_reservation.Bus
 	rg.PUT("/:id", middlewares.AuthMiddleware(types.RoleUser), handler.Update)
 	rg.DELETE("/:id", middlewares.AuthMiddleware(types.RoleUser), handler.Delete)
 }
+

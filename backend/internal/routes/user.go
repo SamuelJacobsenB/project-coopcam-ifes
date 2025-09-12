@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/middlewares"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,3 +19,4 @@ func SetupUserRoutes(rg *gin.RouterGroup, handler *user.UserHandler) {
 	rg.POST("/promote-to-admin/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.PromoteToAdmin)
 	rg.POST("/demote-from-admin/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.DemoteFromAdmin)
 }
+

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
 )
@@ -67,3 +67,4 @@ func AuthMiddleware(allowedRoles ...types.Role) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+

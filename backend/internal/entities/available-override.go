@@ -19,3 +19,4 @@ type AvailableOverride struct {
 func (AvailableOverride) TableName() string {
 	return "available_overrides"
 }
+

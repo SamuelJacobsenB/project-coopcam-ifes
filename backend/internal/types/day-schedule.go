@@ -45,3 +45,4 @@ func ValidateDaySchedule(schedule *DaySchedule) error {
 
 	return nil
 }
+

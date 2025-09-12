@@ -22,3 +22,4 @@ func LoadEnv() {
 		log.Fatalf("Erro ao carregar %s: %v", envFile, err)
 	}
 }
+

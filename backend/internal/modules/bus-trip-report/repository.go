@@ -3,8 +3,8 @@ package bus_trip_report
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -76,3 +76,4 @@ func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripRepor
 func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {
 	return repo.db.Delete(&entities.BusTripReport{}, id).Error
 }
+

@@ -3,8 +3,8 @@ package bus_reservation
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -62,3 +62,4 @@ func (repo *BusReservationRepository) DeleteUntilNow() error {
 func (repo *BusReservationRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.BusReservation{}).Error
 }
+

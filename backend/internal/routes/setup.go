@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/config"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,3 +40,4 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 
 	return router
 }
+

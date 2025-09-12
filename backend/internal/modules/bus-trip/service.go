@@ -3,7 +3,7 @@ package bus_trip
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
 
@@ -42,3 +42,4 @@ func (service *BusTripService) Update(busTrip *entities.BusTrip) error {
 func (service *BusTripService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

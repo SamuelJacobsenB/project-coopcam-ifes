@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -70,3 +70,4 @@ func (service *UserService) DemoteFromAdmin(id uuid.UUID) error {
 func (service *UserService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

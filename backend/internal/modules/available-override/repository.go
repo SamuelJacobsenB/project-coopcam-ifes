@@ -3,7 +3,7 @@ package available_override
 import (
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -43,3 +43,4 @@ func (repo *AvailableOverrideRepository) DeleteUntilNow() error {
 func (repo *AvailableOverrideRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.AvailableOverride{}).Error
 }
+

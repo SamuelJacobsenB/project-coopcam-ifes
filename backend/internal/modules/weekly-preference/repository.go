@@ -1,7 +1,7 @@
 package weekly_preference
 
 import (
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -31,3 +31,4 @@ func (repo *WeeklyPreferenceRepository) Update(weeklyPreference *entities.Weekly
 func (repo *WeeklyPreferenceRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.WeeklyPreference{}).Error
 }
+

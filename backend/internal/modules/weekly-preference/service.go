@@ -3,8 +3,8 @@ package weekly_preference
 import (
 	"errors"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/modules/user"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
 )
 
@@ -48,3 +48,4 @@ func (service *WeeklyPreferenceService) Update(weeklyPreference *entities.Weekly
 func (service *WeeklyPreferenceService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
+

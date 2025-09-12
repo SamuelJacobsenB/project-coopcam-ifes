@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/types"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/internal/utils/validators"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -39,7 +39,7 @@ func (dto *UserRequestDTO) Validate() error {
 		return errors.New("senha é obrigatória")
 	}
 
-	if err := validators.ValidatePassword(dto.Password); err != nil {
+	if err := utils.ValidatePassword(dto.Password); err != nil {
 		return err
 	}
 
@@ -47,7 +47,7 @@ func (dto *UserRequestDTO) Validate() error {
 		return errors.New("cpf é obrigatório")
 	}
 
-	if err := validators.ValidateCPF(dto.CPF); err != nil {
+	if err := utils.ValidateCPF(dto.CPF); err != nil {
 		return err
 	}
 
@@ -63,7 +63,7 @@ func (dto *UserRequestDTO) Validate() error {
 		return errors.New("cep é obrigatório")
 	}
 
-	if err := validators.ValidateCEP(dto.CEP); err != nil {
+	if err := utils.ValidateCEP(dto.CEP); err != nil {
 		return err
 	}
 
@@ -116,7 +116,7 @@ func (dto *UserUpdateDTO) Validate() error {
 		return errors.New("senha é obrigatória")
 	}
 
-	if err := validators.ValidatePassword(*dto.Password); err != nil {
+	if err := utils.ValidatePassword(*dto.Password); err != nil {
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (dto *UserUpdateDTO) Validate() error {
 		return errors.New("cpf é obrigatório")
 	}
 
-	if err := validators.ValidateCPF(*dto.CPF); err != nil {
+	if err := utils.ValidateCPF(*dto.CPF); err != nil {
 		return err
 	}
 
@@ -140,7 +140,7 @@ func (dto *UserUpdateDTO) Validate() error {
 		return errors.New("cep é obrigatório")
 	}
 
-	if err := validators.ValidateCEP(*dto.CEP); err != nil {
+	if err := utils.ValidateCEP(*dto.CEP); err != nil {
 		return err
 	}
 

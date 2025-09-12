@@ -20,3 +20,4 @@ type WeeklyPreference struct {
 func (WeeklyPreference) TableName() string {
 	return "weekly_preferences"
 }
+
