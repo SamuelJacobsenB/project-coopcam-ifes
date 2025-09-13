@@ -1,0 +1,37 @@
+.left {
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tripList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 4px;
+  max-height: max-content;
+  overflow-y: auto;
+}
+
+.tripItem {
+  cursor: pointer;
+}
+
+.tripItem:hover,
+.selectedTrip {
+  border: 2px solid var(--color-primary);
+}
+
+.nonSelectedTripBox {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem !important;
+  gap: 0 !important;
+}

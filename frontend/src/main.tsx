@@ -34,12 +34,14 @@ const router = createBrowserRouter(
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Provider>
-        <>
-          <Message />
-          <RouterProvider router={router} />
-        </>
-      </Provider>
+      <main className="main">
+        <Provider>
+          <>
+            <Message />
+            <RouterProvider router={router} />
+          </>
+        </Provider>
+      </main>
     </QueryClientProvider>
   </StrictMode>
 );

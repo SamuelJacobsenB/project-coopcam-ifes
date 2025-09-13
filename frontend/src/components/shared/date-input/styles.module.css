@@ -1,0 +1,8 @@
+.dateInput {
+  width: 100%;
+  height: auto;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}

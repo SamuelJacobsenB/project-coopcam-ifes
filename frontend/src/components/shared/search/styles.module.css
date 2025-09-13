@@ -1,0 +1,24 @@
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+}
+
+.searchLabel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  color: rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: 0.8rem;
+  border: none;
+  outline: none;
+}

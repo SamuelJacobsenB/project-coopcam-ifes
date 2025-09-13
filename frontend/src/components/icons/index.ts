@@ -1,4 +1,9 @@
-import { FaCalendarAlt, FaCheckCircle, FaUserCircle } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaCheckCircle,
+  FaSearch,
+  FaUserCircle,
+} from "react-icons/fa";
 import {
   IoIosArrowBack,
   IoIosArrowDown,
@@ -19,5 +24,6 @@ export const I = {
   close: IoIosClose,
   error: BiSolidError,
   loader: LuLoaderCircle,
+  search: FaSearch,
   user: FaUserCircle,
 };
