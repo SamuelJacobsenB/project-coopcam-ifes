@@ -47,7 +47,7 @@ export function LoginPage() {
   return (
     <FormPage>
       <section className={styles.header}>
-        <h1>Login</h1>
+        <h1 className={styles.title}>Login</h1>
         <hr />
       </section>
       <form onSubmit={handleSubmit} className={styles.form}>

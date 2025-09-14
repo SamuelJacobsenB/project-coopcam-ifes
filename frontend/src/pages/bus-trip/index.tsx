@@ -1,9 +1,10 @@
 import { useState } from "react";
+
 import { Card, DateInput, DualPage, I, Navbar } from "../../components";
+import { isSameDate, parseDateInput } from "../../utils";
+import type { BusTrip } from "../../types";
 
 import styles from "./styles.module.css";
-import type { BusTrip } from "../../types";
-import { isSameDate, parseDateInput } from "../../utils";
 
 export function BusTripPage() {
   const [date, setDate] = useState(new Date());
@@ -87,9 +88,29 @@ export function BusTripPage() {
         rightSide={
           <>
             {selectedTrip ? (
-              <Card className={styles.selectedTripBox}>
-                <h1>{selectedTrip.id}</h1>
-              </Card>
+              <>
+                <Card className={styles.selectedTripBox}>
+                  <div className={styles.tripGraph}></div>
+                  <div className={styles.tripInfo}>
+                    <h1>{selectedTrip.direction == "go" ? "Ida" : "Volta"}</h1>
+                    <hr />
+                    <small>
+                      {selectedTrip.period == "morning" ? "Manhã" : "Tarde"}
+                    </small>
+                    <small>
+                      <I.calendar /> {selectedTrip.date.toLocaleDateString()}
+                    </small>
+                    <small>
+                      Status:{" "}
+                      {selectedTrip.status == "unstarted"
+                        ? "Não iniciado"
+                        : selectedTrip.status == "started"
+                        ? "Iniciado"
+                        : "Terminado"}
+                    </small>
+                  </div>
+                </Card>
+              </>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
                 <h1>Selecione uma viagem</h1>

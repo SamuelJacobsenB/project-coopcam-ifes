@@ -1,23 +1,22 @@
-import type { Role, Template, WeeklyPreference } from "../"
+import type { Role, Template, WeeklyPreference } from "../";
 
 export interface User {
-    id: string
-    template_id: string
-    weekly_preference_id: string
+  id: string;
+  template_id: string;
+  weekly_preference_id: string;
 
-    name: string
-    email: string
-    password: string
-    roles: Role[]
+  name: string;
+  email: string;
+  roles: Role[];
 
-    cpf: string
-    phone: string
-    adress: string
-    cep: string
+  cpf: string;
+  phone: string;
+  adress: string;
+  cep: string;
 
-    template: Template | null
-    weekly_preference: WeeklyPreference | null
+  template: Template | null;
+  weekly_preference: WeeklyPreference | null;
 
-    created_at: Date
-    updated_at: Date
+  created_at: Date;
+  updated_at: Date;
 }
