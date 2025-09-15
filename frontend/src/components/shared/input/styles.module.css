@@ -1,6 +1,7 @@
 .input_area {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .label {

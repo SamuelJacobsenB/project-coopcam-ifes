@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import { Card, DateInput, DualPage, I, Navbar } from "../../components";
 import { isSameDate, parseDateInput } from "../../utils";
@@ -7,6 +8,8 @@ import type { BusTrip } from "../../types";
 import styles from "./styles.module.css";
 
 export function BusTripPage() {
+  const { id } = useParams();
+
   const [date, setDate] = useState(new Date());
   const [trips, setTrips] = useState<BusTrip[]>([
     {
@@ -48,6 +51,12 @@ export function BusTripPage() {
   ]);
 
   const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
+
+  useEffect(() => {
+    if (id) {
+      setSelectedTrip(trips.find((trip) => trip.id === id) || null);
+    }
+  }, [id, trips]);
 
   return (
     <>

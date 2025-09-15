@@ -1,0 +1,38 @@
+.selectedUserBox {
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem !important;
+  min-width: 80%;
+  min-height: 40%;
+  padding: 1.6rem !important;
+}
+
+.buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 0.2rem;
+}
+
+.userInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.userDetails {
+  display: flex;
+  gap: 0.2rem;
+  width: 100%;
+}
+
+.userDetails > section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+}

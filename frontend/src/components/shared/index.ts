@@ -6,6 +6,8 @@ export * from "./date-input";
 export * from "./search";
 export * from "./error";
 
+export * from "./calendar";
+
 export * from "./loader";
 
 export * from "./message";

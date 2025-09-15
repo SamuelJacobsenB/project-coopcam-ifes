@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { Card, DualPage, I, Navbar, Search } from "../../components";
 import type { User } from "../../types";
+
+import { SelectedUserCard } from "./components";
 
 import styles from "./styles.module.css";
 
@@ -19,6 +22,8 @@ export function UsersPage() {
       phone: "+55 11 91234-5678",
       adress: "Rua das Flores, 123",
       cep: "01001-000",
+      birth: new Date("1990-01-01T00:00:00Z"),
+      avatar_url: null,
       template: null,
       weekly_preference: null,
       created_at: new Date("2025-09-01T10:00:00Z"),
@@ -35,6 +40,8 @@ export function UsersPage() {
       phone: "+55 21 99876-5432",
       adress: "Av. Atlântica, 456",
       cep: "22041-001",
+      birth: new Date("1990-01-01T00:00:00Z"),
+      avatar_url: null,
       template: null,
       weekly_preference: null,
       created_at: new Date("2025-08-25T08:45:00Z"),
@@ -51,6 +58,8 @@ export function UsersPage() {
       phone: "+55 31 91111-2222",
       adress: "Rua do Sol, 789",
       cep: "30140-110",
+      birth: new Date("1990-01-01T00:00:00Z"),
+      avatar_url: null,
       template: null,
       weekly_preference: null,
       created_at: new Date("2025-09-05T14:20:00Z"),
@@ -67,6 +76,8 @@ export function UsersPage() {
       phone: "+55 41 93456-7890",
       adress: "Travessa das Palmeiras, 321",
       cep: "80010-000",
+      birth: new Date("1990-01-01T00:00:00Z"),
+      avatar_url: null,
       template: null,
       weekly_preference: null,
       created_at: new Date("2025-09-03T11:15:00Z"),
@@ -82,6 +93,12 @@ export function UsersPage() {
       <DualPage
         leftSide={
           <>
+            <Link
+              to="/usuarios/criar"
+              className={`btn-sm btn-secondary ${styles.createUserButton}`}
+            >
+              Criar usuário
+            </Link>
             <section className={styles.header}>
               <h1>Usuários</h1>
               <p>Pesquise por usuários</p>
@@ -118,25 +135,7 @@ export function UsersPage() {
           <>
             {selectedUser ? (
               <>
-                <Card className={styles.selectedUserBox}>
-                  <div className={styles.userPicture}>
-                    <I.user size={128} />
-                  </div>
-                  <div className={styles.userInfo}>
-                    <h1>{selectedUser.name}</h1>
-                    <div className={styles.userDetails}>
-                      <section>
-                        <p>Email: {selectedUser.email}</p>
-                        <p>CPF: {selectedUser.cpf}</p>
-                        <p>Telefone: {selectedUser.phone}</p>
-                      </section>
-                      <section>
-                        <p>Endereço: {selectedUser.adress}</p>
-                        <p>CEP: {selectedUser.cep}</p>
-                      </section>
-                    </div>
-                  </div>
-                </Card>
+                <SelectedUserCard selectedUser={selectedUser} />
               </>
             ) : (
               <Card className={styles.nonSelectedUserBox}>

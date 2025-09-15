@@ -13,6 +13,8 @@ export interface User {
   phone: string;
   adress: string;
   cep: string;
+  birth: Date;
+  avatar_url: string | null;
 
   template: Template | null;
   weekly_preference: WeeklyPreference | null;
