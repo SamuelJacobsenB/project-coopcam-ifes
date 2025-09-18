@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/google/uuid"
 )
@@ -192,16 +191,16 @@ func (dto *UserUpdateDTO) ToEntity() *entities.User {
 type UserResponseDTO struct {
 	ID uuid.UUID `json:"id"`
 
-	Name  string       `json:"name"`
-	Email string       `json:"email"`
-	Roles []types.Role `json:"roles"`
+	Name  string   `json:"name"`
+	Email string   `json:"email"`
+	Roles []string `json:"roles"`
 
-	CPF       string `json:"cpf"`
-	Phone     string `json:"phone"`
-	Adress    string `json:"adress"`
-	CEP       string `json:"cep"`
-	Birth     string `json:"birth"`
-	AvatarURL string `json:"avatar_url"`
+	CPF       string  `json:"cpf"`
+	Phone     string  `json:"phone"`
+	Adress    string  `json:"adress"`
+	CEP       string  `json:"cep"`
+	Birth     string  `json:"birth"`
+	AvatarURL *string `json:"avatar_url"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

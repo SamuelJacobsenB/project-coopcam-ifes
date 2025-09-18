@@ -21,6 +21,7 @@ func (repo *WeeklyPreferenceRepository) FindByUserID(userID uuid.UUID) (*entitie
 }
 
 func (repo *WeeklyPreferenceRepository) Create(weeklyPreference *entities.WeeklyPreference) error {
+	weeklyPreference.ID = uuid.New()
 	return repo.db.Create(weeklyPreference).Error
 }
 
@@ -31,4 +32,3 @@ func (repo *WeeklyPreferenceRepository) Update(weeklyPreference *entities.Weekly
 func (repo *WeeklyPreferenceRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.WeeklyPreference{}).Error
 }
-

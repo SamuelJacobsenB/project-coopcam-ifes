@@ -66,6 +66,7 @@ func (repo *BusTripReportRepository) FindByUserIDNextDate(userID uuid.UUID, date
 }
 
 func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripReport) error {
+	busTripReport.ID = uuid.New()
 	return repo.db.Create(busTripReport).Error
 }
 
@@ -76,4 +77,3 @@ func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripRepor
 func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {
 	return repo.db.Delete(&entities.BusTripReport{}, id).Error
 }
-

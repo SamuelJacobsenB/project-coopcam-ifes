@@ -18,6 +18,10 @@ func (service *UserService) FindAll() ([]entities.User, error) {
 	return service.repo.FindAll()
 }
 
+func (service *UserService) FindPaginated(offset, limit int, namePrefix string) ([]entities.User, error) {
+	return service.repo.FindPaginated(offset, limit, namePrefix)
+}
+
 func (service *UserService) FindByID(id uuid.UUID) (*entities.User, error) {
 	return service.repo.FindByID(id)
 }
@@ -70,4 +74,3 @@ func (service *UserService) DemoteFromAdmin(id uuid.UUID) error {
 func (service *UserService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

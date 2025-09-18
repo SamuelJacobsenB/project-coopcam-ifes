@@ -4,22 +4,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
 var jwtKey = []byte(os.Getenv("JWT_KEY"))
 
-func GenerateJWT(userID uuid.UUID, roles []types.Role) (string, error) {
-	roleStrings := make([]string, len(roles))
-	for i, role := range roles {
-		roleStrings[i] = string(role)
-	}
-
+func GenerateJWT(userID uuid.UUID, roles []string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID.String(),
-		"roles":   roleStrings,
+		"roles":   roles,
 		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
 	}
 
@@ -35,4 +29,3 @@ func ParseJWT(tokenString string) (*jwt.Token, error) {
 		return jwtKey, nil
 	})
 }
-

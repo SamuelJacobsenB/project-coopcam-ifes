@@ -29,6 +29,7 @@ func (repo *AvailableOverrideRepository) FindByID(id uuid.UUID) (*entities.Avail
 }
 
 func (repo *AvailableOverrideRepository) Create(availableOverride *entities.AvailableOverride) error {
+	availableOverride.ID = uuid.New()
 	return repo.db.Create(availableOverride).Error
 }
 
@@ -43,4 +44,3 @@ func (repo *AvailableOverrideRepository) DeleteUntilNow() error {
 func (repo *AvailableOverrideRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.AvailableOverride{}).Error
 }
-

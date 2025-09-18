@@ -1,5 +1,9 @@
-import { MessageProvider } from "./";
+import { MessageProvider, UserProvider } from "./";
 
 export function Provider({ children }: { children: React.ReactNode }) {
-  return <MessageProvider>{children}</MessageProvider>;
+  return (
+    <MessageProvider>
+      <UserProvider>{children}</UserProvider>
+    </MessageProvider>
+  );
 }

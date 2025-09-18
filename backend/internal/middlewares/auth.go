@@ -10,7 +10,7 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-func AuthMiddleware(allowedRoles ...types.Role) gin.HandlerFunc {
+func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var tokenStr string
 		var err error
@@ -51,10 +51,10 @@ func AuthMiddleware(allowedRoles ...types.Role) gin.HandlerFunc {
 			return
 		}
 
-		userRoles := make([]types.Role, len(roleInterfaces))
+		userRoles := make([]string, len(roleInterfaces))
 		for i, role := range roleInterfaces {
 			if roleStr, ok := role.(string); ok {
-				userRoles[i] = types.Role(roleStr)
+				userRoles[i] = roleStr
 			}
 		}
 
@@ -67,4 +67,3 @@ func AuthMiddleware(allowedRoles ...types.Role) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-

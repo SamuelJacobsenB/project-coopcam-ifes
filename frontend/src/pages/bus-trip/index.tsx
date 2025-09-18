@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Card, DateInput, DualPage, I, Navbar } from "../../components";
+import {
+  Card,
+  DateInput,
+  DualPage,
+  I,
+  Navbar,
+  Private,
+} from "../../components";
 import { isSameDate, parseDateInput } from "../../utils";
 import type { BusTrip } from "../../types";
 
@@ -59,7 +66,7 @@ export function BusTripPage() {
   }, [id, trips]);
 
   return (
-    <>
+    <Private>
       <Navbar />
       <DualPage
         leftSide={
@@ -130,6 +137,6 @@ export function BusTripPage() {
         }
         leftClassName={styles.left}
       />
-    </>
+    </Private>
   );
 }

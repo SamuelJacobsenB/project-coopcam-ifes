@@ -29,6 +29,7 @@ func (repo *UnavailableDayRepository) FindByID(id uuid.UUID) (*entities.Unavaila
 }
 
 func (repo *UnavailableDayRepository) Create(unavailableDay *entities.UnavailableDay) error {
+	unavailableDay.ID = uuid.New()
 	return repo.db.Create(unavailableDay).Error
 }
 
@@ -43,4 +44,3 @@ func (repo *UnavailableDayRepository) DeleteUntilNow() error {
 func (repo *UnavailableDayRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.UnavailableDay{}).Error
 }
-

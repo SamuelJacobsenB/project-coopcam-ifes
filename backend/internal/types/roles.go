@@ -2,15 +2,13 @@ package types
 
 import "slices"
 
-type Role string
-
 const (
-	RoleAdmin       Role = "admin"
-	RoleCoordinator Role = "coordinator"
-	RoleUser        Role = "user"
+	RoleAdmin       string = "admin"
+	RoleCoordinator string = "coordinator"
+	RoleUser        string = "user"
 )
 
-func ValidateRole(role Role) bool {
+func ValidateRole(role string) bool {
 	switch role {
 	case RoleAdmin, RoleCoordinator, RoleUser:
 		return true
@@ -19,7 +17,7 @@ func ValidateRole(role Role) bool {
 	}
 }
 
-func ValidateUserRoles(roles []Role) bool {
+func ValidateUserRoles(roles []string) bool {
 	for _, role := range roles {
 		if !ValidateRole(role) {
 			return false
@@ -28,7 +26,7 @@ func ValidateUserRoles(roles []Role) bool {
 	return true
 }
 
-func HasRoles(userRoles []Role, allowedRoles ...Role) bool {
+func HasRoles(userRoles []string, allowedRoles ...string) bool {
 	for _, role := range allowedRoles {
 		if !slices.Contains(userRoles, role) {
 			return false
@@ -37,4 +35,3 @@ func HasRoles(userRoles []Role, allowedRoles ...Role) bool {
 
 	return true
 }
-

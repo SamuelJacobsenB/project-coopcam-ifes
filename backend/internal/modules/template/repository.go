@@ -21,6 +21,7 @@ func (repo *TemplateRepository) FindByUserID(userID uuid.UUID) (*entities.Templa
 }
 
 func (repo *TemplateRepository) Create(template *entities.Template) error {
+	template.ID = uuid.New()
 	return repo.db.Create(template).Error
 }
 
@@ -31,4 +32,3 @@ func (repo *TemplateRepository) Update(template *entities.Template) error {
 func (repo *TemplateRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.Template{}).Error
 }
-

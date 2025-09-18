@@ -1,12 +1,24 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{os.Getenv("FRONTEND_URL")},
+		AllowMethods:     []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
@@ -40,4 +52,3 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 
 	return router
 }
-

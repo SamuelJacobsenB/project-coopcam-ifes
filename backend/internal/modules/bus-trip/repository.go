@@ -43,6 +43,7 @@ func (repo *BusTripRepository) FindByID(id uuid.UUID) (*entities.BusTrip, error)
 
 func (repo *BusTripRepository) Create(busTrip *entities.BusTrip) error {
 	busTrip.Status = types.Unstarted
+	busTrip.ID = uuid.New()
 	return repo.db.Create(busTrip).Error
 }
 
@@ -53,4 +54,3 @@ func (repo *BusTripRepository) Update(busTrip *entities.BusTrip) error {
 func (repo *BusTripRepository) Delete(id uuid.UUID) error {
 	return repo.db.Where("id = ?", id).Delete(&entities.BusTrip{}).Error
 }
-

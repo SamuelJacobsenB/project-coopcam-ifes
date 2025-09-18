@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { FormPage, Input, Error } from "../../components";
+import { useMessage, useUser } from "../../contexts";
 import { useLogin } from "../../hooks";
+import { FormPage, Input, Error } from "../../components";
 import { validateLoginDTO } from "../../utils";
 import type { LoginDTO } from "../../types";
 
 import styles from "./styles.module.css";
-import { useMessage } from "../../contexts";
 
 export function LoginPage() {
   const navigate = useNavigate();
 
+  const { findUser } = useUser();
   const { showMessage } = useMessage();
   const { login } = useLogin();
 
@@ -37,8 +38,10 @@ export function LoginPage() {
 
     const res = await login(loginDTO);
     if (res) {
-      navigate("/");
+      await findUser();
+
       showMessage("Login realizado com sucesso", "success");
+      navigate("/");
     } else {
       setError("Email ou senha incorretos");
     }
@@ -70,7 +73,9 @@ export function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="btn btn-secondary">Enviar</button>
+        <button type="submit" className="btn btn-secondary">
+          Enviar
+        </button>
       </form>
     </FormPage>
   );

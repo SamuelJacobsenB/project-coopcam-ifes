@@ -10,10 +10,14 @@ export function Private({ children }: { children: React.ReactNode }) {
   const { isCoordinator, isLoading, error } = useVerifyCoordinator();
 
   useEffect(() => {
-    if ((error || !isCoordinator) && !isLoading) navigate("/login");
+    if ((error || !isCoordinator) && !isLoading) {
+      navigate("/login");
+    }
   }, [error, isCoordinator, isLoading, navigate]);
 
-  if (isLoading || !isCoordinator) return <LoadPage />;
+  if (isLoading) return <LoadPage />;
+
+  if (error || !isCoordinator) return null;
 
   return <>{children}</>;
 }

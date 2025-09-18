@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import { Calendar, Card, I, Input, Navbar } from "../../components";
+import { Calendar, Card, I, Input, Navbar, Private } from "../../components";
 
 import styles from "./styles.module.css";
-import { is } from "date-fns/locale";
 
 export function CalendarPage() {
   const [date, setDate] = useState(new Date());
@@ -29,7 +28,7 @@ export function CalendarPage() {
   ];
 
   return (
-    <>
+    <Private>
       <Navbar />
       <div className={styles.container}>
         <section className={styles.calendarSection}>
@@ -123,6 +122,6 @@ export function CalendarPage() {
           </ul>
         </Card>
       </div>
-    </>
+    </Private>
   );
 }

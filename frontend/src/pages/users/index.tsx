@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Card, DualPage, I, Navbar, Search } from "../../components";
+import { Card, DualPage, I, Navbar, Private, Search } from "../../components";
 import type { User } from "../../types";
 
 import { SelectedUserCard } from "./components";
@@ -88,7 +88,7 @@ export function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   return (
-    <>
+    <Private>
       <Navbar />
       <DualPage
         leftSide={
@@ -147,6 +147,6 @@ export function UsersPage() {
         }
         leftClassName={styles.left}
       />
-    </>
+    </Private>
   );
 }

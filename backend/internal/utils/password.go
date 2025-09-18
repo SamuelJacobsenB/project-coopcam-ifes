@@ -41,5 +41,9 @@ func ValidatePassword(password string) error {
 		return errors.New("senha deve conter pelo menos um número")
 	}
 
+	if strings.Contains(password, " ") {
+		return errors.New("senha não pode conter espaços em branco")
+	}
+
 	return nil
 }
