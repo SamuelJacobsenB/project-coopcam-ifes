@@ -42,4 +42,3 @@ func (service *BusTripService) Update(busTrip *entities.BusTrip) error {
 func (service *BusTripService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

@@ -36,7 +36,7 @@ export function CreateUserPage() {
       phone,
       adress,
       cep,
-      birth: new Date(birth),
+      birth,
     };
 
     const error = validateUserRequestDTO(user);

@@ -7,6 +7,8 @@ import { logo } from "../../../assets";
 import styles from "./styles.module.css";
 
 export function Navbar() {
+  const activedRoute = window.location.pathname;
+
   return (
     <nav className={styles.navbar}>
       <Link to="/">
@@ -17,7 +19,12 @@ export function Navbar() {
           {navRoutes.map((route) => {
             return (
               <li key={route.path}>
-                <Link className={styles.link} to={route.path}>
+                <Link
+                  className={`${styles.link} ${
+                    activedRoute === route.path ? styles.actived : ""
+                  }`}
+                  to={route.path}
+                >
                   {route.label}
                 </Link>
               </li>

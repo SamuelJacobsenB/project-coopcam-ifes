@@ -36,13 +36,13 @@ export function LoginPage() {
 
     setError("");
 
-    const res = await login(loginDTO);
-    if (res) {
-      await findUser();
+    try {
+      await login(loginDTO);
 
+      await findUser();
       showMessage("Login realizado com sucesso", "success");
       navigate("/");
-    } else {
+    } catch {
       setError("Email ou senha incorretos");
     }
   }

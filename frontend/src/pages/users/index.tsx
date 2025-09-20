@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Card, DualPage, I, Navbar, Private, Search } from "../../components";
+import { useManyUsers } from "../../hooks";
+import {
+  Card,
+  DualPage,
+  I,
+  Loader,
+  Navbar,
+  Private,
+  Search,
+} from "../../components";
 import type { User } from "../../types";
 
 import { SelectedUserCard } from "./components";
@@ -10,82 +19,9 @@ import styles from "./styles.module.css";
 
 export function UsersPage() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "user-001",
-      template_id: "template-001",
-      weekly_preference_id: "pref-001",
-      name: "Ana Beatriz Silva",
-      email: "ana.silva@example.com",
-      roles: ["user"],
-      cpf: "123.456.789-00",
-      phone: "+55 11 91234-5678",
-      adress: "Rua das Flores, 123",
-      cep: "01001-000",
-      birth: new Date("1990-01-01T00:00:00Z"),
-      avatar_url: null,
-      template: null,
-      weekly_preference: null,
-      created_at: new Date("2025-09-01T10:00:00Z"),
-      updated_at: new Date("2025-09-10T15:30:00Z"),
-    },
-    {
-      id: "user-002",
-      template_id: "template-002",
-      weekly_preference_id: "pref-002",
-      name: "Carlos Eduardo Ramos",
-      email: "carlos.ramos@example.com",
-      roles: ["user"],
-      cpf: "987.654.321-00",
-      phone: "+55 21 99876-5432",
-      adress: "Av. Atlântica, 456",
-      cep: "22041-001",
-      birth: new Date("1990-01-01T00:00:00Z"),
-      avatar_url: null,
-      template: null,
-      weekly_preference: null,
-      created_at: new Date("2025-08-25T08:45:00Z"),
-      updated_at: new Date("2025-09-12T12:00:00Z"),
-    },
-    {
-      id: "user-003",
-      template_id: "template-003",
-      weekly_preference_id: "pref-003",
-      name: "Juliana Costa",
-      email: "juliana.costa@example.com",
-      roles: ["user"],
-      cpf: "321.654.987-00",
-      phone: "+55 31 91111-2222",
-      adress: "Rua do Sol, 789",
-      cep: "30140-110",
-      birth: new Date("1990-01-01T00:00:00Z"),
-      avatar_url: null,
-      template: null,
-      weekly_preference: null,
-      created_at: new Date("2025-09-05T14:20:00Z"),
-      updated_at: new Date("2025-09-13T09:10:00Z"),
-    },
-    {
-      id: "user-004",
-      template_id: "template-004",
-      weekly_preference_id: "pref-004",
-      name: "Fernando Oliveira",
-      email: "fernando.oliveira@example.com",
-      roles: ["user"],
-      cpf: "456.789.123-00",
-      phone: "+55 41 93456-7890",
-      adress: "Travessa das Palmeiras, 321",
-      cep: "80010-000",
-      birth: new Date("1990-01-01T00:00:00Z"),
-      avatar_url: null,
-      template: null,
-      weekly_preference: null,
-      created_at: new Date("2025-09-03T11:15:00Z"),
-      updated_at: new Date("2025-09-13T18:45:00Z"),
-    },
-  ]);
-
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const { users, isLoading, error } = useManyUsers(1, search);
 
   return (
     <Private>
@@ -108,14 +44,14 @@ export function UsersPage() {
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
+              onSubmit={(e) => e.preventDefault()}
               placeholder="Buscar usuários..."
             />
             <ul className={styles.userList}>
-              {users
-                .filter((user) =>
-                  user.name.toLowerCase().startsWith(search.toLowerCase())
-                )
-                .map((user) => (
+              {isLoading && <Loader />}
+              {error && <p>Erro ao carregar usuários</p>}
+              {users &&
+                users.map((user) => (
                   <li key={user.id}>
                     <Card
                       className={`${styles.userItem} ${
@@ -124,7 +60,7 @@ export function UsersPage() {
                       onClick={() => setSelectedUser(user)}
                     >
                       <I.user />
-                      <h5>{user.name}</h5>
+                      <h5 className={styles.userName}>{user.name}</h5>
                     </Card>
                   </li>
                 ))}

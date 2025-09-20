@@ -27,7 +27,7 @@ func (handler *BusTripHandler) FindAll(ctx *gin.Context) {
 }
 
 func (handler *BusTripHandler) FindByDate(ctx *gin.Context) {
-	date, err := time.Parse("02-01-2006", ctx.Param("date"))
+	date, err := time.Parse("2006-01-02", ctx.Param("date"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "data inválida"})
 		return
@@ -44,7 +44,7 @@ func (handler *BusTripHandler) FindByDate(ctx *gin.Context) {
 }
 
 func (handler *BusTripHandler) FindByNextDate(ctx *gin.Context) {
-	date, err := time.Parse("02-01-2006", ctx.Param("date"))
+	date, err := time.Parse("2006-01-02", ctx.Param("date"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "data inválida"})
 		return
@@ -138,4 +138,3 @@ func (handler *BusTripHandler) Delete(ctx *gin.Context) {
 
 	ctx.JSON(204, nil)
 }
-

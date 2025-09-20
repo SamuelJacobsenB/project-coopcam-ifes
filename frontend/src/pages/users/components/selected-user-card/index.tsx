@@ -22,17 +22,13 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
   const [birth, setBirth] = useState("");
 
   useEffect(() => {
-    setName(selectedUser?.name || "");
-    setEmail(selectedUser?.email || "");
-    setCpf(selectedUser?.cpf || "");
-    setPhone(selectedUser?.phone || "");
-    setAdress(selectedUser?.adress || "");
-    setCep(selectedUser?.cep || "");
-
-    const birthDate = selectedUser?.birth
-      ? new Date(selectedUser.birth).toISOString().split("T")[0]
-      : "";
-    setBirth(birthDate);
+    setName(selectedUser.name);
+    setEmail(selectedUser.email);
+    setCpf(selectedUser.cpf);
+    setPhone(selectedUser.phone);
+    setAdress(selectedUser.adress);
+    setCep(selectedUser.cep);
+    setBirth(selectedUser.birth);
   }, [selectedUser]);
 
   function handleDelete() {
@@ -151,7 +147,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
                   type="date"
                   placeholder="Digite a data de nascimento"
                   required
-                  value={birth}
+                  value={birth.split("/").reverse().join("-")}
                   onChange={(e) => setBirth(e.target.value)}
                 />
               </>
@@ -160,7 +156,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
                 <p>Endereço: {selectedUser.adress}</p>
                 <p>CEP: {selectedUser.cep}</p>
                 <p>
-                  Data de nascimento: {selectedUser.birth.toLocaleDateString()}
+                  Data de nascimento: {selectedUser.birth as unknown as string}
                 </p>
               </>
             )}

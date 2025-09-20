@@ -25,13 +25,13 @@ func (repo *BusTripRepository) FindAll() ([]entities.BusTrip, error) {
 
 func (repo *BusTripRepository) FindByDate(date time.Time) ([]entities.BusTrip, error) {
 	var busTrips []entities.BusTrip
-	err := repo.db.Where("date = ?", date).Find(&busTrips).Error
+	err := repo.db.Where("DATE(date) = ?", date).Find(&busTrips).Error
 	return busTrips, err
 }
 
 func (repo *BusTripRepository) FindByNextDate(date time.Time) ([]entities.BusTrip, error) {
 	var busTrips []entities.BusTrip
-	err := repo.db.Where("date >= ?", date).Find(&busTrips).Error
+	err := repo.db.Where("DATE(date) >= ?", date).Find(&busTrips).Error
 	return busTrips, err
 }
 

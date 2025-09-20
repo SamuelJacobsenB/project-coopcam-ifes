@@ -25,13 +25,18 @@
 }
 
 .link {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: white;
   text-decoration: none;
+  text-transform: uppercase;
   transition: all 0.2s ease-in-out;
 }
 
 .link:hover {
+  color: var(--color-secondary);
+}
+
+.actived {
   color: var(--color-secondary);
 }
 

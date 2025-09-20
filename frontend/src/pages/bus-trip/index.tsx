@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { useBusTripById, useManyBusTripsByDate } from "../../hooks";
 import {
   Card,
   DateInput,
@@ -17,53 +18,21 @@ import styles from "./styles.module.css";
 export function BusTripPage() {
   const { id } = useParams();
 
+  const { getBusTripById } = useBusTripById();
+  const { getManyBusTripsByDate } = useManyBusTripsByDate();
+
   const [date, setDate] = useState(new Date());
-  const [trips, setTrips] = useState<BusTrip[]>([
-    {
-      id: "trip-001",
-      date: new Date("2025-09-12T08:00:00"),
-      period: "morning",
-      direction: "go",
-      status: "finished",
-      created_at: new Date("2025-09-10T10:15:00"),
-      updated_at: new Date("2025-09-12T09:30:00"),
-    },
-    {
-      id: "trip-002",
-      date: new Date("2025-09-12T18:30:00"),
-      period: "morning",
-      direction: "return",
-      status: "finished",
-      created_at: new Date("2025-09-11T14:45:00"),
-      updated_at: new Date("2025-09-13T17:00:00"),
-    },
-    {
-      id: "trip-003",
-      date: new Date("2025-09-12T13:00:00"),
-      period: "afternoon",
-      direction: "go",
-      status: "started",
-      created_at: new Date("2025-09-12T08:20:00"),
-      updated_at: new Date("2025-09-14T16:10:00"),
-    },
-    {
-      id: "trip-004",
-      date: new Date("2025-09-12T22:00:00"),
-      period: "afternoon",
-      direction: "return",
-      status: "unstarted",
-      created_at: new Date("2025-09-13T11:00:00"),
-      updated_at: new Date("2025-09-16T23:30:00"),
-    },
-  ]);
+  const [trips, setTrips] = useState<BusTrip[]>([]);
 
   const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
 
   useEffect(() => {
-    if (id) {
-      setSelectedTrip(trips.find((trip) => trip.id === id) || null);
-    }
-  }, [id, trips]);
+    if (id) getBusTripById(id).then((trip) => setSelectedTrip(trip));
+  }, [id, trips, getBusTripById]);
+
+  useEffect(() => {
+    getManyBusTripsByDate(date.toISOString().split("T")[0]).then(setTrips);
+  }, [date, getManyBusTripsByDate]);
 
   return (
     <Private>
@@ -84,7 +53,7 @@ export function BusTripPage() {
             />
             <ul className={styles.tripList}>
               {trips
-                .filter((trip) => isSameDate(trip.date, date))
+                .filter((trip) => isSameDate(new Date(trip.date), date))
                 .map((trip) => (
                   <li key={trip.id}>
                     <Card
@@ -94,7 +63,7 @@ export function BusTripPage() {
                       onClick={() => setSelectedTrip(trip)}
                     >
                       <I.calendar />
-                      <h5>{trip.date.toLocaleDateString()}</h5>
+                      <h5>{new Date(trip.date).toLocaleDateString()}</h5>
                     </Card>
                   </li>
                 ))}
@@ -114,7 +83,7 @@ export function BusTripPage() {
                       {selectedTrip.period == "morning" ? "Manhã" : "Tarde"}
                     </small>
                     <small>
-                      <I.calendar /> {selectedTrip.date.toLocaleDateString()}
+                      <I.calendar /> {new Date(selectedTrip.date).toLocaleDateString()}
                     </small>
                     <small>
                       Status:{" "}

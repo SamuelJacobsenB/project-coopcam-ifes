@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 
 export const fetchOwnUser = async () => {
-  const res = await api.get("/v1/user/own");
+  const res = await api.get("/v1/user/own/");
 
   if (res.status !== 200) throw new Error("Faça seu login");
 

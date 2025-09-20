@@ -7,7 +7,7 @@ export interface UserRequestDTO {
   phone: string;
   adress: string;
   cep: string;
-  birth: Date;
+  birth: string;
 }
 
 export interface UserUpdateDTO {

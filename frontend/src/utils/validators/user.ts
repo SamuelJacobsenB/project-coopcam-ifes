@@ -25,12 +25,12 @@ export function validateUserRequestDTO(user: UserRequestDTO): string {
     return "A senha deve ter no máximo 15 caracteres";
   }
 
-  if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(user.password)) {
-    return "A senha deve conter no mínimo um número e uma letra";
-  }
-
   if (user.password.includes(" ")) {
     return "A senha não pode conter espaços em branco";
+  }
+
+  if (!/^(?=.*[A-Za-z])(?=.*\d)[^\s]{8,15}$/.test(user.password)) {
+    return "A senha deve conter no mínimo um número e uma letra";
   }
 
   if (!user.cpf) {

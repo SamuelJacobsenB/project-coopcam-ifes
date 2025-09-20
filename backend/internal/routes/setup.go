@@ -2,6 +2,7 @@ package routes
 
 import (
 	"time"
+	"os"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/gin-contrib/cors"

@@ -1,6 +1,5 @@
 import {
   BusTripPage,
-  CalendarMonthPage,
   CalendarPage,
   CreateUserPage,
   DashboardPage,
@@ -16,7 +15,6 @@ export const routes = [
   { path: "/viagens", element: BusTripPage },
   { path: "/viagens/:id", element: BusTripPage },
   { path: "/calendario", element: CalendarPage },
-  { path: "/calendario/:month", element: CalendarMonthPage },
 ];
 
 export const navRoutes = [

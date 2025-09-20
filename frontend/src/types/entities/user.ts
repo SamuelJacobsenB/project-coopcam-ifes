@@ -13,7 +13,7 @@ export interface User {
   phone: string;
   adress: string;
   cep: string;
-  birth: Date;
+  birth: string;
   avatar_url: string | null;
 
   template: Template | null;

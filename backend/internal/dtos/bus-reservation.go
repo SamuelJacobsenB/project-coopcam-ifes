@@ -13,7 +13,7 @@ type BusReservationRequestDTO struct {
 	UserID uuid.UUID `json:"user_id"`
 
 	Date     time.Time `json:"date"`
-	Period   string    `json:"period"`
+	Period   types.Period    `json:"period"`
 	Attended *bool     `json:"attended"`
 }
 
