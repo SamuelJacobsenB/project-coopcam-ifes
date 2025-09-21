@@ -71,7 +71,7 @@ func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripRepor
 }
 
 func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripReport) error {
-	return repo.db.Where("id = ? AND user_id = ?", busTripReport.ID, busTripReport.UserID).Save(busTripReport).Error
+	return repo.db.Model(&entities.BusTripReport{}).Where("id = ? AND user_id = ?", busTripReport.ID, busTripReport.UserID).Updates(busTripReport).Error
 }
 
 func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {

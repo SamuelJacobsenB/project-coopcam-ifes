@@ -26,7 +26,7 @@ func (repo *WeeklyPreferenceRepository) Create(weeklyPreference *entities.Weekly
 }
 
 func (repo *WeeklyPreferenceRepository) Update(weeklyPreference *entities.WeeklyPreference) error {
-	return repo.db.Where("id = ?", weeklyPreference.ID).Save(weeklyPreference).Error
+	return repo.db.Model(&entities.WeeklyPreference{}).Where("id = ?", weeklyPreference.ID).Updates(weeklyPreference).Error
 }
 
 func (repo *WeeklyPreferenceRepository) Delete(id uuid.UUID) error {

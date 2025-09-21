@@ -53,7 +53,7 @@ func (repo *BusReservationRepository) Create(busReservation *entities.BusReserva
 }
 
 func (repo *BusReservationRepository) Update(busReservation *entities.BusReservation) error {
-	return repo.db.Where("id = ? AND user_id = ?", busReservation.ID, busReservation.UserID).Save(busReservation).Error
+	return repo.db.Model(&entities.BusReservation{}).Where("id = ? AND user_id = ?", busReservation.ID, busReservation.UserID).Updates(busReservation).Error
 }
 
 func (repo *BusReservationRepository) DeleteUntilNow() error {

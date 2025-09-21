@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 
 export const fetchVerifyCoordinator = async () => {
-  const res = await api.get("/v1/auth/verify/coordinator");
+  const res = await api.get("/v1/auth/verify/coordinator/");
 
   if (res.status != 200) throw new Error("Usuário não autorizado");
 

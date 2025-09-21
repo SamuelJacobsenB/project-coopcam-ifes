@@ -3,11 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 
 export const fetchDeleteUnavailableDay = async (id: string) => {
-  const res = await api.delete(`/v1/unavailable-day/${id}`);
+  const res = await api.delete(`/v1/unavailable-day/${id}/`);
 
-  if (res.status !== 200) throw new Error("Erro ao deletar dia indisponível");
+  if (res.status !== 204) throw new Error("Erro ao deletar dia indisponível");
 
-  return res.data;
+  return res.data || [];
 };
 
 export const useDeleteUnavailableDay = () => {

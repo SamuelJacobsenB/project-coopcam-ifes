@@ -16,10 +16,11 @@ export const useAllUnavailableDays = () => {
     data: unavailableDays,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["unavailable-days"],
     queryFn: fetchAllUnavailableDays,
   });
 
-  return { unavailableDays, isLoading, error };
+  return { unavailableDays, isLoading, error, refetch };
 };

@@ -54,7 +54,7 @@ func (repo *UserRepository) Create(user *entities.User) error {
 }
 
 func (repo *UserRepository) Update(user *entities.User) error {
-	return repo.db.Where("id = ?", user.ID).Save(user).Error
+	return repo.db.Model(&entities.User{}).Where("id = ?", user.ID).Updates(user).Error
 }
 
 func (repo *UserRepository) UpdateAvatarURL(avatarURL string, id uuid.UUID) error {

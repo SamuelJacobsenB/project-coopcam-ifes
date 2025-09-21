@@ -13,26 +13,26 @@ import {
 import { isSameDate, parseDateInput } from "../../utils";
 import type { BusTrip } from "../../types";
 
+import { TripStatusControl } from "./components";
+
 import styles from "./styles.module.css";
 
 export function BusTripPage() {
   const { id } = useParams();
-
   const { getBusTripById } = useBusTripById();
   const { getManyBusTripsByDate } = useManyBusTripsByDate();
 
   const [date, setDate] = useState(new Date());
   const [trips, setTrips] = useState<BusTrip[]>([]);
-
   const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
-
-  useEffect(() => {
-    if (id) getBusTripById(id).then((trip) => setSelectedTrip(trip));
-  }, [id, trips, getBusTripById]);
 
   useEffect(() => {
     getManyBusTripsByDate(date.toISOString().split("T")[0]).then(setTrips);
   }, [date, getManyBusTripsByDate]);
+
+  useEffect(() => {
+    if (id) getBusTripById(id).then(setSelectedTrip);
+  }, [id, getBusTripById]);
 
   return (
     <Private>
@@ -44,13 +44,13 @@ export function BusTripPage() {
               <h1>Viagens</h1>
               <p>Pesquise por viagens</p>
             </section>
+
             <DateInput
               value={date.toISOString().split("T")[0]}
-              onChange={(e) => {
-                setDate(parseDateInput(e.target.value));
-              }}
+              onChange={(e) => setDate(parseDateInput(e.target.value))}
               placeholder="Buscar viagens..."
             />
+
             <ul className={styles.tripList}>
               {trips
                 .filter((trip) => isSameDate(new Date(trip.date), date))
@@ -58,12 +58,22 @@ export function BusTripPage() {
                   <li key={trip.id}>
                     <Card
                       className={`${styles.tripItem} ${
-                        selectedTrip?.id === trip.id && styles.selectedTrip
+                        selectedTrip?.id === trip.id ? styles.selectedTrip : ""
                       }`}
                       onClick={() => setSelectedTrip(trip)}
                     >
-                      <I.calendar />
-                      <h5>{new Date(trip.date).toLocaleDateString()}</h5>
+                      <span className={styles.tripItemDate}>
+                        <I.calendar />
+                        <h5>{new Date(trip.date).toLocaleDateString()}</h5>
+                      </span>
+                      <span className={styles.tripItemInfo}>
+                        <small>
+                          {trip.period === "morning" ? "Manhã" : "Tarde"}
+                        </small>
+                        <small>
+                          {trip.direction === "go" ? "Ida" : "Volta"}
+                        </small>
+                      </span>
                     </Card>
                   </li>
                 ))}
@@ -73,29 +83,28 @@ export function BusTripPage() {
         rightSide={
           <>
             {selectedTrip ? (
-              <>
-                <Card className={styles.selectedTripBox}>
-                  <div className={styles.tripGraph}></div>
-                  <div className={styles.tripInfo}>
-                    <h1>{selectedTrip.direction == "go" ? "Ida" : "Volta"}</h1>
-                    <hr />
-                    <small>
-                      {selectedTrip.period == "morning" ? "Manhã" : "Tarde"}
-                    </small>
-                    <small>
-                      <I.calendar /> {new Date(selectedTrip.date).toLocaleDateString()}
-                    </small>
-                    <small>
-                      Status:{" "}
-                      {selectedTrip.status == "unstarted"
-                        ? "Não iniciado"
-                        : selectedTrip.status == "started"
-                        ? "Iniciado"
-                        : "Terminado"}
-                    </small>
-                  </div>
-                </Card>
-              </>
+              <Card className={styles.selectedTripBox}>
+                <div className={styles.tripGraph}></div>
+
+                <div className={styles.tripInfo}>
+                  <h1>{selectedTrip.direction === "go" ? "Ida" : "Volta"}</h1>
+                  <hr />
+                  <small>
+                    {selectedTrip.period === "morning" ? "Manhã" : "Tarde"}
+                  </small>
+                  <small>
+                    <I.calendar />{" "}
+                    {new Date(selectedTrip.date).toLocaleDateString()}
+                  </small>
+
+                  <TripStatusControl
+                    trip={selectedTrip}
+                    onStatusUpdated={(status) =>
+                      setSelectedTrip((trip) => ({ ...trip!, status }))
+                    }
+                  />
+                </div>
+              </Card>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
                 <h1>Selecione uma viagem</h1>

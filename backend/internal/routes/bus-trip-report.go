@@ -9,14 +9,14 @@ import (
 
 func SetupBusTripReportRoutes(rg *gin.RouterGroup, handler *bus_trip_report.BusTripReportHandler) {
 	rg.GET("/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.FindAll)
-	rg.GET("/:id", middlewares.AuthMiddleware(types.RoleUser), handler.FindByID)
-	rg.GET("/user-id/:id", middlewares.AuthMiddleware(types.RoleUser), handler.FindByUserID)
-	rg.GET("/date/:date", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.FindByDate)
-	rg.GET("/next-date/:date", middlewares.AuthMiddleware(types.RoleUser), handler.FindByNextDate)
-	rg.GET("/user-id/:id/date/:date", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.FindByUserIDAndDate)
-	rg.GET("/user-id/:id/next-date/:date", middlewares.AuthMiddleware(types.RoleUser), handler.FindByUserIDAndNextDate)
+	rg.GET("/:id/", middlewares.AuthMiddleware(types.RoleUser), handler.FindByID)
+	rg.GET("/user-id/:id/", middlewares.AuthMiddleware(types.RoleUser), handler.FindByUserID)
+	rg.GET("/date/:date/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.FindByDate)
+	rg.GET("/next-date/:date/", middlewares.AuthMiddleware(types.RoleUser), handler.FindByNextDate)
+	rg.GET("/user-id/:id/date/:date/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.FindByUserIDAndDate)
+	rg.GET("/user-id/:id/next-date/:date/", middlewares.AuthMiddleware(types.RoleUser), handler.FindByUserIDAndNextDate)
 	rg.POST("/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Create)
-	rg.PUT("/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Update)
-	rg.DELETE("/:id", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Delete)
+	rg.PUT("/:id/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Update)
+	rg.DELETE("/:id/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator), handler.Delete)
 }
 

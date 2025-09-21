@@ -1,6 +1,7 @@
 package available_override
 
 import (
+	"errors"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
@@ -28,13 +29,30 @@ func (repo *AvailableOverrideRepository) FindByID(id uuid.UUID) (*entities.Avail
 	return &availableOverride, err
 }
 
+func (repo *AvailableOverrideRepository) OtherEventExists(date time.Time) (bool, error) {
+	var availableOverride entities.AvailableOverride
+	err1 := repo.db.Where("DATE(date) = ?", date.Format("2006-01-02")).First(&availableOverride).Error
+
+	var unavailableDay entities.UnavailableDay
+	err2 := repo.db.Where("DATE(date) = ?", date.Format("2006-01-02")).First(&unavailableDay).Error
+
+	if err1 != nil && !errors.Is(err1, gorm.ErrRecordNotFound) {
+		return false, err1
+	}
+	if err2 != nil && !errors.Is(err2, gorm.ErrRecordNotFound) {
+		return false, err2
+	}
+
+	return unavailableDay.ID != uuid.Nil || availableOverride.ID != uuid.Nil, nil
+}
+
 func (repo *AvailableOverrideRepository) Create(availableOverride *entities.AvailableOverride) error {
 	availableOverride.ID = uuid.New()
 	return repo.db.Create(availableOverride).Error
 }
 
 func (repo *AvailableOverrideRepository) Update(availableOverride *entities.AvailableOverride) error {
-	return repo.db.Where("id = ?", availableOverride.ID).Save(availableOverride).Error
+	return repo.db.Model(&entities.AvailableOverride{}).Where("id = ?", availableOverride.ID).Updates(availableOverride).Error
 }
 
 func (repo *AvailableOverrideRepository) DeleteUntilNow() error {

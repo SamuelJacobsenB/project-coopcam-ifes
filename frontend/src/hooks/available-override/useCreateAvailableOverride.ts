@@ -10,7 +10,7 @@ export const fetchCreateAvailableOverride = async (
   availableOverride: AvailableOverrideRequestDTO
 ) => {
   const res = await api.post<AvailableOverride>(
-    "/v1/available-override",
+    "/v1/available-override/",
     availableOverride
   );
 

@@ -26,7 +26,7 @@ func (repo *TemplateRepository) Create(template *entities.Template) error {
 }
 
 func (repo *TemplateRepository) Update(template *entities.Template) error {
-	return repo.db.Save(template).Error
+	return repo.db.Model(&entities.Template{}).Where("id = ?", template.ID).Updates(template).Error
 }
 
 func (repo *TemplateRepository) Delete(id uuid.UUID) error {

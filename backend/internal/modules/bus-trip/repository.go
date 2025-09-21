@@ -48,7 +48,7 @@ func (repo *BusTripRepository) Create(busTrip *entities.BusTrip) error {
 }
 
 func (repo *BusTripRepository) Update(busTrip *entities.BusTrip) error {
-	return repo.db.Where("id = ?", busTrip.ID).Save(busTrip).Error
+	return repo.db.Model(&entities.BusTrip{}).Where("id = ?", busTrip.ID).Updates(busTrip).Error
 }
 
 func (repo *BusTripRepository) Delete(id uuid.UUID) error {

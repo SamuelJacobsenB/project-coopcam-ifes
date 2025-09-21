@@ -1,6 +1,9 @@
 package available_override
 
 import (
+	"errors"
+	"time"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
@@ -22,6 +25,16 @@ func (service *AvailableOverrideService) FindByID(id uuid.UUID) (*entities.Avail
 }
 
 func (service *AvailableOverrideService) Create(availableOverride *entities.AvailableOverride) error {
+	ifExists, err := service.repo.OtherEventExists(availableOverride.Date)
+	if err != nil {
+		return err
+	}
+	if ifExists {
+		return errors.New("já existe um evento agendado para essa data")
+	}
+
+	availableOverride.Date = time.Date(availableOverride.Date.Year(), availableOverride.Date.Month(), availableOverride.Date.Day(), 12, 0, 0, 0, time.Local)
+
 	return service.repo.Create(availableOverride)
 }
 
@@ -36,4 +49,3 @@ func (service *AvailableOverrideService) DeleteUntilNow() error {
 func (service *AvailableOverrideService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

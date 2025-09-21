@@ -8,7 +8,7 @@ export const fetchAllAvailableOverrides = async () => {
 
   if (res.status !== 200) throw new Error("Erro ao buscar dias disponíveis");
 
-  return res.data;
+  return res.data || [];
 };
 
 export const useAllAvailableOverrides = () => {
@@ -16,10 +16,11 @@ export const useAllAvailableOverrides = () => {
     data: availableOverrides,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["available-overrides"],
     queryFn: fetchAllAvailableOverrides,
   });
 
-  return { availableOverrides, isLoading, error };
+  return { availableOverrides, isLoading, error, refetch };
 };

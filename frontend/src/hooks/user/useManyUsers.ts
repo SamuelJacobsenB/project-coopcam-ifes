@@ -4,13 +4,17 @@ import { api } from "../../services";
 import type { User } from "../../types";
 
 export const fetchManyUsers = async (page: number, name: string) => {
-  const res = await api.get<User[]>(
-    `/v1/user/?page=${page}${name && `&name=${name}`}`
-  );
+  try {
+    const res = await api.get<User[]>(
+      `/v1/user/?page=${page}${name && `&name=${name}`}`
+    );
 
-  if (res.status !== 200) throw new Error("Erro ao buscar usuários");
+    if (res.status !== 200) throw new Error("Erro ao buscar usuários");
 
-  return res.data;
+    return res.data;
+  } catch {
+    throw new Error("Erro ao buscar usuários");
+  }
 };
 
 export const useManyUsers = (page: number, name: string) => {

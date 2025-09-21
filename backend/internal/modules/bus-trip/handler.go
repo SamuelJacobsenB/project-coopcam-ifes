@@ -103,7 +103,7 @@ func (handler *BusTripHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var busTripRequest dtos.BusTripRequestDTO
+	var busTripRequest dtos.BusTripUpdateDTO
 	if err := ctx.ShouldBindJSON(&busTripRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

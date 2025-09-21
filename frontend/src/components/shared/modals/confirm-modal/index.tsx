@@ -28,8 +28,11 @@ export const ConfirmModal = ({
           type="button"
           className="btn btn-success"
           onClick={async () => {
-            await onConfirm();
-            onClose();
+            try {
+              await onConfirm();
+            } finally {
+              onClose();
+            }
           }}
         >
           Confirmar

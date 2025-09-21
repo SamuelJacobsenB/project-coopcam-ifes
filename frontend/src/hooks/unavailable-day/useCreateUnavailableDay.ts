@@ -7,7 +7,7 @@ export const fetchCreateUnavailableDay = async (
   unavailableDay: UnavailableDayRequestDTO
 ) => {
   const res = await api.post<UnavailableDay>(
-    "/v1/unavailable-day",
+    "/v1/unavailable-day/",
     unavailableDay
   );
 

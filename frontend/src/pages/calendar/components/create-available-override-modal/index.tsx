@@ -12,18 +12,20 @@ interface CreateAvailableOverrideModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: Date;
+  onCreated: () => Promise<void>;
 }
 
 export function CreateAvailableOverrideModal({
   isOpen,
   onClose,
   selectedDate,
+  onCreated,
 }: CreateAvailableOverrideModalProps) {
   const { showMessage } = useMessage();
 
   const { createAvailableOverride } = useCreateAvailableOverride();
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
 
@@ -35,7 +37,7 @@ export function CreateAvailableOverrideModal({
     setError("");
 
     const availableOverride: AvailableOverrideRequestDTO = {
-      date: new Date(date),
+      date,
       reason,
     };
 
@@ -47,6 +49,8 @@ export function CreateAvailableOverrideModal({
 
     try {
       await createAvailableOverride(availableOverride);
+      await onCreated();
+      onClose();
 
       showMessage("Disponibilidade criada com sucesso", "success");
     } catch {
@@ -55,10 +59,7 @@ export function CreateAvailableOverrideModal({
   }
 
   useEffect(() => {
-    if (selectedDate) {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
-      setDate(formattedDate);
-    }
+    if (selectedDate) setDate(selectedDate);
   }, [selectedDate]);
 
   return (
@@ -70,8 +71,8 @@ export function CreateAvailableOverrideModal({
         <Input
           label="Data"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={date.toISOString().split("T")[0]}
+          onChange={(e) => setDate(new Date(e.target.value))}
           required
         />
         <Input
