@@ -1,15 +1,15 @@
 import type { Period } from "../";
 
 export interface BusReservation {
-    id: string;
-    user_id: string;
+  id: string;
+  bus_trip_id: string;
 
-    date: Date;
-    period: Period;
-    attended: boolean | null;
+  user_id: string;
+  user_name: string;
 
-    weekly_preference_id: string | null;
+  date: Date;
+  period: Period;
 
-    created_at: Date;
-    updated_at: Date;
+  created_at: Date;
+  updated_at: Date;
 }

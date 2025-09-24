@@ -37,7 +37,7 @@ func (repo *BusTripReportRepository) FindByUserID(userID uuid.UUID) ([]entities.
 
 func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
 	var busTripReports []entities.BusTripReport
-	err := repo.db.Where("date = ?", date).Find(&busTripReports).Error
+	err := repo.db.Where("DATE(date) = ?", date).Find(&busTripReports).Error
 	return busTripReports, err
 }
 

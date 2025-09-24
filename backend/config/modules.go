@@ -39,7 +39,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	userService := user.NewUserService(userRepo)
 	weeklyPreferenceService := weekly_preference.NewWeeklyPreferenceService(weeklyPreferenceRepo, userRepo)
 	templateService := template.NewTemplateService(templateRepo, userRepo)
-	busReservationService := bus_reservation.NewBusReservationService(busReservationRepo, userRepo)
+	busReservationService := bus_reservation.NewBusReservationService(busReservationRepo, userRepo, busTripRepo)
 	busTripReportService := bus_trip_report.NewBusTripReportService(busTripReportRepo, userRepo)
 	busTripService := bus_trip.NewBusTripService(busTripRepo)
 	availableOverrideService := available_override.NewAvailableOverrideService(availableOverrideRepo)

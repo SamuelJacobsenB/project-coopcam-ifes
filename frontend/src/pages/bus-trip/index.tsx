@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { useBusTripById, useManyBusTripsByDate } from "../../hooks";
+import {
+  useBusTripById,
+  useManyBusReservationsByDate,
+  useManyBusTripReportsByDate,
+  useManyBusTripsByDate,
+} from "../../hooks";
 import {
   Card,
   DateInput,
@@ -11,24 +16,38 @@ import {
   Private,
 } from "../../components";
 import { isSameDate, parseDateInput } from "../../utils";
-import type { BusTrip } from "../../types";
+import type { BusReservation, BusTrip, BusTripReport } from "../../types";
 
-import { TripStatusControl } from "./components";
+import { BusReservationsCard, BusTripCard } from "./components";
 
 import styles from "./styles.module.css";
 
 export function BusTripPage() {
   const { id } = useParams();
+
   const { getBusTripById } = useBusTripById();
   const { getManyBusTripsByDate } = useManyBusTripsByDate();
+  const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
+  const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
 
   const [date, setDate] = useState(new Date());
   const [trips, setTrips] = useState<BusTrip[]>([]);
   const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
+  const [reservations, setReservations] = useState<BusReservation[]>([]);
+  const [reports, setReports] = useState<BusTripReport[]>([]);
 
   useEffect(() => {
-    getManyBusTripsByDate(date.toISOString().split("T")[0]).then(setTrips);
-  }, [date, getManyBusTripsByDate]);
+    const strDate = date.toISOString().split("T")[0];
+
+    getManyBusTripsByDate(strDate).then(setTrips);
+    getManyBusTripReportsByDate(strDate).then(setReports);
+    getManyBusReservationsByDate(strDate).then(setReservations);
+  }, [
+    date,
+    getManyBusTripsByDate,
+    getManyBusTripReportsByDate,
+    getManyBusReservationsByDate,
+  ]);
 
   useEffect(() => {
     if (id) getBusTripById(id).then(setSelectedTrip);
@@ -83,28 +102,22 @@ export function BusTripPage() {
         rightSide={
           <>
             {selectedTrip ? (
-              <Card className={styles.selectedTripBox}>
-                <div className={styles.tripGraph}></div>
-
-                <div className={styles.tripInfo}>
-                  <h1>{selectedTrip.direction === "go" ? "Ida" : "Volta"}</h1>
-                  <hr />
-                  <small>
-                    {selectedTrip.period === "morning" ? "Manhã" : "Tarde"}
-                  </small>
-                  <small>
-                    <I.calendar />{" "}
-                    {new Date(selectedTrip.date).toLocaleDateString()}
-                  </small>
-
-                  <TripStatusControl
-                    trip={selectedTrip}
-                    onStatusUpdated={(status) =>
-                      setSelectedTrip((trip) => ({ ...trip!, status }))
-                    }
-                  />
-                </div>
-              </Card>
+              <div className={styles.busTripArea}>
+                <BusTripCard
+                  selectedTrip={selectedTrip}
+                  reports={reports.filter(
+                    (report) => report.bus_trip_id === selectedTrip.id
+                  )}
+                  onStatusUpdated={(status) =>
+                    setSelectedTrip({ ...selectedTrip, status })
+                  }
+                />
+                <BusReservationsCard
+                  reservations={reservations.filter(
+                    (reservation) => reservation.bus_trip_id === selectedTrip.id
+                  )}
+                />
+              </div>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
                 <h1>Selecione uma viagem</h1>

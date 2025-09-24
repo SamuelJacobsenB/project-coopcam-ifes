@@ -5,6 +5,8 @@ export interface BusTripReport {
     user_id: string;
     bus_trip_id: string;
 
+    user_name: string;
+
     date: Date;
     period: Period;
     direction: Direction;

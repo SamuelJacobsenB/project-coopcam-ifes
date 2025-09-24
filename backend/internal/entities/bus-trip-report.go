@@ -12,6 +12,8 @@ type BusTripReport struct {
 	UserID    uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
 	BusTripID uuid.UUID `gorm:"type:uuid;index" json:"bus_trip_id"`
 
+	UserName string `json:"user_name"`
+
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `gorm:"type:text" json:"period"`
 	Direction types.Direction `gorm:"type:text" json:"direction"`
@@ -28,4 +30,3 @@ type BusTripReport struct {
 func (BusTripReport) TableName() string {
 	return "bus_trip_reports"
 }
-

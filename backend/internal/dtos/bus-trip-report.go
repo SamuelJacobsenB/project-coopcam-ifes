@@ -10,7 +10,8 @@ import (
 )
 
 type BusTripReportRequestDTO struct {
-	UserID uuid.UUID `json:"user_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	BusTripID uuid.UUID `json:"bus_trip_id"`
 
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `json:"period"`
@@ -22,6 +23,10 @@ type BusTripReportRequestDTO struct {
 func (dto *BusTripReportRequestDTO) Validate() error {
 	if dto.UserID == uuid.Nil {
 		return errors.New("id do usuário é obrigatório")
+	}
+
+	if dto.BusTripID == uuid.Nil {
+		return errors.New("id da viagem é obrigatório")
 	}
 
 	if dto.Date.IsZero() {
@@ -113,8 +118,11 @@ func (dto *BusTripReportUpdateDTO) ToEntity() *entities.BusTripReport {
 }
 
 type BusTripReportResponseDTO struct {
-	ID     uuid.UUID `json:"id"`
-	UserID uuid.UUID `json:"user_id"`
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"user_id"`
+	BusTripID uuid.UUID `json:"bus_trip_id"`
+
+	UserName string `json:"user_name"`
 
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `json:"period"`
@@ -128,8 +136,11 @@ type BusTripReportResponseDTO struct {
 
 func ToBusTripReportResponseDTO(entity *entities.BusTripReport) *BusTripReportResponseDTO {
 	return &BusTripReportResponseDTO{
-		ID:     entity.ID,
-		UserID: entity.UserID,
+		ID:        entity.ID,
+		UserID:    entity.UserID,
+		BusTripID: entity.BusTripID,
+
+		UserName: entity.UserName,
 
 		Date:      entity.Date,
 		Period:    entity.Period,
@@ -141,4 +152,3 @@ func ToBusTripReportResponseDTO(entity *entities.BusTripReport) *BusTripReportRe
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
-

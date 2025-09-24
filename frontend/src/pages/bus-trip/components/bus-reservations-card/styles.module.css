@@ -1,0 +1,29 @@
+.reservationsBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 80%;
+  padding: 1.6rem !important;
+}
+
+.reservationsBoxButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1rem;
+}
+
+.reservationsBoxHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.reservationsList {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}

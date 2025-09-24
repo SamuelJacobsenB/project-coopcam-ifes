@@ -8,14 +8,14 @@ import (
 )
 
 type BusReservation struct {
-	ID     uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	UserID uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	BusTripID uuid.UUID `gorm:"type:uuid;index" json:"bus_trip_id"`
 
-	Date     time.Time    `json:"date"`
-	Period   types.Period `gorm:"type:text" json:"period"`
-	Attended *bool        `json:"attended"`
+	UserID   uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
+	UserName string    `json:"user_name"`
 
-	WeeklyPreferenceID *uuid.UUID `gorm:"type:uuid" json:"weekly_preference_id"`
+	Date   time.Time    `json:"date"`
+	Period types.Period `gorm:"type:text" json:"period"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -24,4 +24,3 @@ type BusReservation struct {
 func (BusReservation) TableName() string {
 	return "bus_reservations"
 }
-

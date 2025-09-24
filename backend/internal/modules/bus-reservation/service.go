@@ -5,17 +5,19 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
 )
 
 type BusReservationService struct {
-	repo     *BusReservationRepository
-	userRepo *user.UserRepository
+	repo        *BusReservationRepository
+	userRepo    *user.UserRepository
+	busTripRepo *bus_trip.BusTripRepository
 }
 
-func NewBusReservationService(repo *BusReservationRepository, userRepo *user.UserRepository) *BusReservationService {
-	return &BusReservationService{repo, userRepo}
+func NewBusReservationService(repo *BusReservationRepository, userRepo *user.UserRepository, busTripRepo *bus_trip.BusTripRepository) *BusReservationService {
+	return &BusReservationService{repo, userRepo, busTripRepo}
 }
 
 func (service *BusReservationService) FindAll() ([]entities.BusReservation, error) {
@@ -51,6 +53,14 @@ func (service *BusReservationService) Create(busReservation *entities.BusReserva
 		return errors.New("bus reservation already exists")
 	}
 
+	busTripExists, err := service.busTripRepo.FindByID(busReservation.BusTripID)
+	if err != nil {
+		return err
+	}
+	if busTripExists == nil {
+		return errors.New("bus trip not found")
+	}
+
 	return service.repo.Create(busReservation)
 }
 
@@ -68,14 +78,9 @@ func (service *BusReservationService) Update(busReservation *entities.BusReserva
 		busRes.Period = busReservation.Period
 	}
 
-	if busReservation.Attended != busRes.Attended {
-		busRes.Attended = busReservation.Attended
-	}
-
 	return service.repo.Update(busReservation)
 }
 
 func (service *BusReservationService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

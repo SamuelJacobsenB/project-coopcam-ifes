@@ -55,6 +55,8 @@ func (service *BusTripReportService) Create(busTripReport *entities.BusTripRepor
 		return errors.New("user not found")
 	}
 
+	busTripReport.UserName = userExists.Name
+
 	busTripReportExists, err := service.repo.FindByUserIDAndDateAndPeriod(busTripReport.UserID, busTripReport.Date, busTripReport.Period)
 	if err != nil {
 		return err
@@ -73,4 +75,3 @@ func (service *BusTripReportService) Update(busTripReport *entities.BusTripRepor
 func (service *BusTripReportService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

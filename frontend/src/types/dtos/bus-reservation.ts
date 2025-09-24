@@ -1,13 +1,14 @@
 export interface BusReservationRequestDTO {
-    user_id: string;
+  bus_trip_id: string;
 
-    date: Date;
-    period: string;
-    attended: boolean | null;
+  user_id: string;
+  user_name: string;
+
+  date: Date;
+  period: string;
 }
 
 export interface BusReservationUpdateDTO {
-    date: Date | null;
-    period: string | null;
-    attended: boolean | null;
+  date: Date | null;
+  period: string | null;
 }
