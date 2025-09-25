@@ -1,11 +1,5 @@
-import { useState } from "react";
 import { Card, I } from "../../../../components";
-import type {
-  BusReservation,
-  BusTrip,
-  BusTripReport,
-  Status,
-} from "../../../../types";
+import type { BusTrip, Status } from "../../../../types";
 
 import { TripStatusControl } from "../trip-status-control";
 
@@ -18,7 +12,6 @@ interface BusTripCardProps {
 
 export function BusTripCard({
   selectedTrip,
-  reports,
   onStatusUpdated,
 }: BusTripCardProps) {
   return (

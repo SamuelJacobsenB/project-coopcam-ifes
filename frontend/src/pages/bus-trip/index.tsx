@@ -18,7 +18,7 @@ import {
 import { isSameDate, parseDateInput } from "../../utils";
 import type { BusReservation, BusTrip, BusTripReport } from "../../types";
 
-import { BusReservationsCard, BusTripCard } from "./components";
+import { BusReportsCard, BusReservationsCard, BusTripCard } from "./components";
 
 import styles from "./styles.module.css";
 
@@ -105,18 +105,25 @@ export function BusTripPage() {
               <div className={styles.busTripArea}>
                 <BusTripCard
                   selectedTrip={selectedTrip}
-                  reports={reports.filter(
-                    (report) => report.bus_trip_id === selectedTrip.id
-                  )}
                   onStatusUpdated={(status) =>
                     setSelectedTrip({ ...selectedTrip, status })
                   }
                 />
-                <BusReservationsCard
-                  reservations={reservations.filter(
-                    (reservation) => reservation.bus_trip_id === selectedTrip.id
-                  )}
-                />
+                {reservations.length > 0 && (
+                  <BusReservationsCard
+                    reservations={reservations.filter(
+                      (reservation) =>
+                        reservation.bus_trip_id === selectedTrip.id
+                    )}
+                  />
+                )}
+                {reports.length > 0 && (
+                  <BusReportsCard
+                    reports={reports.filter(
+                      (report) => report.bus_trip_id === selectedTrip.id
+                    )}
+                  />
+                )}
               </div>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
@@ -127,6 +134,7 @@ export function BusTripPage() {
           </>
         }
         leftClassName={styles.left}
+        rightClassName={styles.right}
       />
     </Private>
   );

@@ -97,8 +97,9 @@ func (dto *BusReservationUpdateDTO) ToEntity() *entities.BusReservation {
 }
 
 type BusReservationResponseDTO struct {
-	ID               uuid.UUID `json:"id"`
-	BusReservationID uuid.UUID `json:"bus_reservation_id"`
+	ID                 uuid.UUID `json:"id"`
+	WeeklyPreferenceID uuid.UUID `json:"weekly_preference_id"`
+	BusReservationID   uuid.UUID `json:"bus_reservation_id"`
 
 	UserID   uuid.UUID `json:"user_id"`
 	UserName string    `json:"user_name"`
@@ -106,13 +107,18 @@ type BusReservationResponseDTO struct {
 	Date   time.Time    `json:"date"`
 	Period types.Period `json:"period"`
 
+	WeeklyPreference *WeeklyPreferenceResponseDTO `json:"weekly_preference"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func ToBusReservationResponseDTO(entity *entities.BusReservation) *BusReservationResponseDTO {
 	return &BusReservationResponseDTO{
-		ID:       entity.ID,
+		ID:                 entity.ID,
+		WeeklyPreferenceID: entity.WeeklyPreferenceID,
+		BusReservationID:   entity.ID,
+
 		UserID:   entity.UserID,
 		UserName: entity.UserName,
 

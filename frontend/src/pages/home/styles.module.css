@@ -42,8 +42,11 @@
 }
 
 .tripGraph {
-  flex: 1;
-  background-color: aqua;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  padding: 1rem;
 }
 
 .tripInfo {

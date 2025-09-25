@@ -8,8 +8,9 @@ import (
 )
 
 type BusReservation struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	BusTripID uuid.UUID `gorm:"type:uuid;index" json:"bus_trip_id"`
+	ID                 uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	WeeklyPreferenceID uuid.UUID `gorm:"type:uuid;index" json:"weekly_preference_id"`
+	BusTripID          uuid.UUID `gorm:"type:uuid;index" json:"bus_trip_id"`
 
 	UserID   uuid.UUID `gorm:"type:uuid;index" json:"user_id"`
 	UserName string    `json:"user_name"`
