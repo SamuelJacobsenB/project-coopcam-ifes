@@ -1,26 +1,7 @@
 export const routes = [
-  {
-    path: "/",
-    name: "index",
-    title: "Home",
-    icon: "home",
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    title: "Perfil",
-    icon: "person-circle",
-  },
-  {
-    path: "/calendar",
-    name: "calendar",
-    title: "Calendário",
-    icon: "calendar",
-  },
-  {
-    path: "/template",
-    name: "template",
-    title: "Predefinição",
-    icon: "ticket",
-  },
-];
+  { name: "profile/index", icon: "person-circle" },
+  { name: "template/index", icon: "ticket" },
+  { name: "(home)/index", icon: "home" },
+  { name: "calendar/index", icon: "calendar" },
+  { name: "info/index", icon: "information-circle" },
+] as const;

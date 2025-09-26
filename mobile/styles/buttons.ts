@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 import { colors } from "./";
 
-export const styles = StyleSheet.create({
+export const btnStyles = StyleSheet.create({
   button: {
     fontSize: 16,
     backgroundColor: "transparent",

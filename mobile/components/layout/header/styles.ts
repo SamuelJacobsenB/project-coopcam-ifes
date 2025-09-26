@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 import { colors } from "@/styles";
 
-export const styles = StyleSheet.create({
+export default StyleSheet.create({
   header: {
     display: "flex",
     justifyContent: "flex-start",
@@ -13,7 +13,6 @@ export const styles = StyleSheet.create({
     padding: 12,
   },
   logo: {
-    width: "auto",
-    height: 30,
+    resizeMode: "contain",
   },
 });
