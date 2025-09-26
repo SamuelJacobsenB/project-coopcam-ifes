@@ -1,0 +1,1 @@
+export type Status = "unstarted" | "started" | "finished";
