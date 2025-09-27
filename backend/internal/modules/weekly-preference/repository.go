@@ -16,7 +16,7 @@ func NewWeeklyPreferenceRepository(db *gorm.DB) *WeeklyPreferenceRepository {
 
 func (repo *WeeklyPreferenceRepository) FindByUserID(userID uuid.UUID) (*entities.WeeklyPreference, error) {
 	var weeklyPreference entities.WeeklyPreference
-	err := repo.db.Where("user_id = ?", userID).First(&weeklyPreference).Error
+	err := repo.db.Where("user_id = ?", userID).Preload("Overrides").First(&weeklyPreference).Error
 	return &weeklyPreference, err
 }
 

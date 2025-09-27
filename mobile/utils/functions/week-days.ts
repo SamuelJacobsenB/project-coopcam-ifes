@@ -1,20 +1,34 @@
-export function translateWeekDay(day: string): string {
+export function getWeekDay(day: number): string {
   switch (day) {
-    case "Sunday":
+    case 0:
       return "Domingo";
-    case "Monday":
+    case 1:
       return "Segunda";
-    case "Tuesday":
+    case 2:
       return "Terça";
-    case "Wednesday":
+    case 3:
       return "Quarta";
-    case "Thursday":
+    case 4:
       return "Quinta";
-    case "Friday":
+    case 5:
       return "Sexta";
-    case "Saturday":
+    case 6:
       return "Sábado";
     default:
       return "Domingo";
   }
+}
+
+export function getDateOfWeekDay(targetDayIndex: number): Date {
+  const today = new Date();
+  const currentDayIndex = today.getDay();
+
+  const diff = targetDayIndex - currentDayIndex;
+
+  const targetDate = new Date(today);
+  targetDate.setDate(today.getDate() + diff);
+
+  targetDate.setHours(0, 0, 0, 0);
+
+  return targetDate;
 }

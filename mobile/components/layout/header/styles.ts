@@ -4,6 +4,8 @@ import { colors } from "@/styles";
 
 export default StyleSheet.create({
   header: {
+    position: "sticky",
+    top: 0,
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",

@@ -15,9 +15,9 @@ type BusReservationRequestDTO struct {
 	UserID   uuid.UUID `json:"user_id"`
 	UserName string    `json:"user_name"`
 
-	Date     time.Time    `json:"date"`
-	Period   types.Period `json:"period"`
-	Attended *bool        `json:"attended"`
+	Date      time.Time       `json:"date"`
+	Period    types.Period    `json:"period"`
+	Direction types.Direction `json:"direction"`
 }
 
 func (dto *BusReservationRequestDTO) Validate() error {
@@ -42,6 +42,14 @@ func (dto *BusReservationRequestDTO) Validate() error {
 	}
 
 	if err := types.ValidatePeriod(types.Period(dto.Period)); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if dto.Direction == "" {
+		return errors.New("direção é obrigatória")
+	}
+
+	if err := types.ValidateDirection(dto.Direction); err != nil {
 		return errors.New(err.Error())
 	}
 
@@ -104,8 +112,9 @@ type BusReservationResponseDTO struct {
 	UserID   uuid.UUID `json:"user_id"`
 	UserName string    `json:"user_name"`
 
-	Date   time.Time    `json:"date"`
-	Period types.Period `json:"period"`
+	Date      time.Time       `json:"date"`
+	Period    types.Period    `json:"period"`
+	Direction types.Direction `json:"direction"`
 
 	WeeklyPreference *WeeklyPreferenceResponseDTO `json:"weekly_preference"`
 
@@ -122,8 +131,9 @@ func ToBusReservationResponseDTO(entity *entities.BusReservation) *BusReservatio
 		UserID:   entity.UserID,
 		UserName: entity.UserName,
 
-		Date:   entity.Date,
-		Period: entity.Period,
+		Date:      entity.Date,
+		Period:    entity.Period,
+		Direction: entity.Direction,
 
 		CreatedAt: entity.CreatedAt,
 		UpdatedAt: entity.UpdatedAt,
