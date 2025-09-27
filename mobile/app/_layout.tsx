@@ -1,19 +1,16 @@
 import { useEffect } from "react";
-
-import { StatusBar, View } from "react-native";
+import { StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useFonts } from "expo-font";
-import { Slot } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import * as NavigationBar from "expo-navigation-bar";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { Header } from "@/components";
+import { Provider } from "@/contexts";
+import { Header, Message, LoadPage, AuthGuard } from "@/components";
 import { colors } from "@/styles";
-
-import styles from "./styles";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,27 +31,41 @@ export default function RootLayout() {
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.primary);
-
     NavigationBar.setVisibilityAsync("hidden");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
 
   if (!fontsLoaded) {
-    return null;
+    return <LoadPage />;
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={styles.main}>
-        <StatusBar
-          backgroundColor={colors.primary}
-          barStyle={"light-content"}
-        />
-        <Header />
-        <View style={styles.container}>
-          <Slot />
-        </View>
-      </SafeAreaView>
+      <Provider>
+        <SafeAreaView style={styles.main}>
+          <StatusBar
+            backgroundColor={colors.primary}
+            barStyle={"light-content"}
+          />
+          <Header />
+          <View style={styles.container}>
+            <AuthGuard />
+          </View>
+        </SafeAreaView>
+
+        <Message />
+      </Provider>
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    backgroundColor: colors.primary,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: colors.lightGray,
+  },
+});

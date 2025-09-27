@@ -1,10 +1,9 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors } from "@/styles";
 import { routes } from "@/routes";
-
-import styles from "../styles";
+import { colors } from "@/styles";
+import { StyleSheet } from "react-native";
 
 export default function TabsLayout() {
   return (
@@ -40,3 +39,18 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  navbar: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: colors.primary,
+    color: "white",
+    height: 60,
+    paddingTop: 12,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+});

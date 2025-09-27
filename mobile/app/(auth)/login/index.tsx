@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 
 import { router } from "expo-router";
 
-import { useLogin } from "@/hooks";
+import { useLogin, useVerifyUser } from "@/hooks";
 import { Error, Input, Line } from "@/components";
 import { validateLoginDTO } from "@/utils";
 import { LoginDTO } from "@/types";
@@ -12,6 +12,8 @@ import { btnStyles } from "@/styles";
 import styles from "./styles";
 
 export default function LoginPage() {
+  const { isVerified, isLoading, error: userError } = useVerifyUser();
+
   const { login, isPending } = useLogin();
 
   const [email, setEmail] = useState("");
@@ -42,10 +44,16 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    if (isVerified) {
+      router.replace("/");
+    }
+  }, [isVerified]);
+
   return (
     <View style={styles.loginContainer}>
       <Text style={styles.title}>Login</Text>
-      <Line styles={styles.line} />
+      <Line style={styles.line} />
       <Error error={error} onClose={() => setError("")} />
       <Input
         label="Email"
