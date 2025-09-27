@@ -3,16 +3,10 @@ import { StyleSheet } from "react-native";
 import { colors } from "./";
 
 export const btnStyles = StyleSheet.create({
-  button: {
-    fontSize: 16,
-    backgroundColor: "transparent",
-    borderWidth: 0,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-
   btn: {
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
+    width: "100%",
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 8,
@@ -23,7 +17,6 @@ export const btnStyles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRadius: 6,
   },
-
   btnRounded: {
     borderRadius: 999,
     padding: 6,

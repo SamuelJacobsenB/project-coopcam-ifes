@@ -1,5 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { api } from "../../services";
 
 export const fetchLogout = async () => {
@@ -7,6 +9,8 @@ export const fetchLogout = async () => {
     const res = await api.post("/v1/auth/logout/");
 
     if (res.status !== 200) throw new Error("Erro ao deslogar");
+
+    await AsyncStorage.removeItem("auth_token");
 
     return "Deslogado com sucesso";
   } catch {

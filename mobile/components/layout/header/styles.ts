@@ -10,7 +10,7 @@ export default StyleSheet.create({
     backgroundColor: colors.primary,
     width: "100%",
     height: 60,
-    padding: 12,
+    paddingVertical: 12,
   },
   logo: {
     resizeMode: "contain",

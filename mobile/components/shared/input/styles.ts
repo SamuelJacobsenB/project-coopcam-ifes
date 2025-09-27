@@ -9,10 +9,12 @@ export default StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    fontFamily: "Poppins-Regular",
     color: "#333",
   },
   input: {
     fontSize: 16,
+    fontFamily: "Poppins-Regular",
     backgroundColor: colors.gray,
     paddingVertical: 12,
     paddingHorizontal: 16,
