@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 import { useMessage } from "../../../../contexts";
 import { useCreateAvailableOverride } from "../../../../hooks";
@@ -15,6 +15,29 @@ interface CreateAvailableOverrideModalProps {
   onCreated: () => Promise<void>;
 }
 
+type State = {
+  date: Date;
+  reason: string;
+  error: string;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState = {
+  date: new Date(),
+  reason: "",
+  error: "",
+};
+
 export function CreateAvailableOverrideModal({
   isOpen,
   onClose,
@@ -25,16 +48,15 @@ export function CreateAvailableOverrideModal({
 
   const { createAvailableOverride } = useCreateAvailableOverride();
 
-  const [date, setDate] = useState(new Date());
-  const [reason, setReason] = useState("");
-  const [error, setError] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { date, reason, error } = state;
 
   async function handleCreateAvailableOverride(
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
 
-    setError("");
+    dispatch({ type: "field", payload: { field: "error", value: "" } });
 
     const availableOverride: AvailableOverrideRequestDTO = {
       date,
@@ -43,7 +65,7 @@ export function CreateAvailableOverrideModal({
 
     const error = validateAvailableOverrideRequestDTO(availableOverride);
     if (error) {
-      setError(error);
+      dispatch({ type: "field", payload: { field: "error", value: error } });
       return;
     }
 
@@ -59,7 +81,11 @@ export function CreateAvailableOverrideModal({
   }
 
   useEffect(() => {
-    if (selectedDate) setDate(selectedDate);
+    if (selectedDate)
+      dispatch({
+        type: "field",
+        payload: { field: "date", value: selectedDate },
+      });
   }, [selectedDate]);
 
   return (
@@ -67,19 +93,34 @@ export function CreateAvailableOverrideModal({
       <h1>Criar disponibilidade</h1>
       <hr />
       <form onSubmit={handleCreateAvailableOverride} className={styles.form}>
-        <Error error={error} onClose={() => setError("")} />
+        <Error
+          error={error}
+          onClose={() =>
+            dispatch({ type: "field", payload: { field: "error", value: "" } })
+          }
+        />
         <Input
           label="Data"
           type="date"
           value={date.toISOString().split("T")[0]}
-          onChange={(e) => setDate(new Date(e.target.value))}
+          onChange={(e) =>
+            dispatch({
+              type: "field",
+              payload: { field: "date", value: new Date(e.target.value) },
+            })
+          }
           required
         />
         <Input
           label="Motivo"
           type="text"
           value={reason}
-          onChange={(e) => setReason(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: "field",
+              payload: { field: "reason", value: e.target.value },
+            })
+          }
           placeholder="Motivo da disponibilidade"
           required
         />

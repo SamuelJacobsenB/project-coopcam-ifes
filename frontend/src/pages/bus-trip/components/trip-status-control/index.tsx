@@ -18,6 +18,7 @@ export function TripStatusControl({
 }: TripStatusControlProps) {
   const { updateBusTrip } = useUpdateBusTrip();
   const { showMessage } = useMessage();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const nextStatus = getNextStatus(trip.status);
@@ -75,9 +76,7 @@ export function TripStatusControl({
             onClick={() => handleStatusChange(nextStatus)}
             disabled={isLoading}
           >
-            {trip.status === "unstarted"
-              ? "Iniciar"
-              : "Finalizar"}
+            {trip.status === "unstarted" ? "Iniciar" : "Finalizar"}
           </button>
         )}
       </div>

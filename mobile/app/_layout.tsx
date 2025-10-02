@@ -32,7 +32,6 @@ export default function RootLayout() {
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.primary);
     NavigationBar.setVisibilityAsync("hidden");
-    NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
 
   if (!fontsLoaded) {

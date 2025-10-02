@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -11,6 +11,29 @@ import type { BusReservation, BusTrip, BusTripReport } from "../../types";
 
 import styles from "./styles.module.css";
 
+interface State {
+  busTrips: BusTrip[];
+  busTripReports: BusTripReport[];
+  busReservations: BusReservation[];
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState: State = {
+  busTrips: [],
+  busTripReports: [],
+  busReservations: [],
+};
+
 export function DashboardPage() {
   const navigate = useNavigate();
 
@@ -18,16 +41,27 @@ export function DashboardPage() {
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
   const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
 
-  const [busTrips, setBusTrips] = useState<BusTrip[]>([]);
-  const [busTripReports, setBusTripReports] = useState<BusTripReport[]>([]);
-  const [busReservations, setBusReservations] = useState<BusReservation[]>([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { busTrips, busTripReports, busReservations } = state;
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
 
-    getManyBusTripsByDate(today).then(setBusTrips);
-    getManyBusTripReportsByDate(today).then(setBusTripReports);
-    getManyBusReservationsByDate(today).then(setBusReservations);
+    getManyBusTripsByDate(today).then((trips) =>
+      dispatch({ type: "field", payload: { field: "busTrips", value: trips } })
+    );
+    getManyBusTripReportsByDate(today).then((reports) =>
+      dispatch({
+        type: "field",
+        payload: { field: "busTripReports", value: reports },
+      })
+    );
+    getManyBusReservationsByDate(today).then((reservations) =>
+      dispatch({
+        type: "field",
+        payload: { field: "busReservations", value: reservations },
+      })
+    );
   }, [
     getManyBusTripsByDate,
     getManyBusTripReportsByDate,

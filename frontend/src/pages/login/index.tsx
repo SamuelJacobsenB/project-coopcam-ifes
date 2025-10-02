@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useMessage, useUser } from "../../contexts";
@@ -9,6 +9,29 @@ import type { LoginDTO } from "../../types";
 
 import styles from "./styles.module.css";
 
+interface State {
+  email: string;
+  password: string;
+  error: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState: State = {
+  email: "",
+  password: "",
+  error: "",
+};
+
 export function LoginPage() {
   const navigate = useNavigate();
 
@@ -16,9 +39,8 @@ export function LoginPage() {
   const { showMessage } = useMessage();
   const { login } = useLogin();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { email, password, error } = state;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,11 +52,11 @@ export function LoginPage() {
 
     const error = validateLoginDTO(loginDTO);
     if (error) {
-      setError(error);
+      dispatch({ type: "field", payload: { field: "error", value: error } });
       return;
     }
 
-    setError("");
+    dispatch({ type: "field", payload: { field: "error", value: "" } });
 
     try {
       await login(loginDTO);
@@ -43,7 +65,10 @@ export function LoginPage() {
       showMessage("Login realizado com sucesso", "success");
       navigate("/");
     } catch {
-      setError("Email ou senha incorretos");
+      dispatch({
+        type: "field",
+        payload: { field: "error", value: "Email ou senha incorretos" },
+      });
     }
   }
 
@@ -54,7 +79,12 @@ export function LoginPage() {
         <hr />
       </section>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <Error error={error} onClose={() => setError("")} />
+        <Error
+          error={error}
+          onClose={() =>
+            dispatch({ type: "field", payload: { field: "error", value: "" } })
+          }
+        />
         <Input
           label="Email"
           name="email"
@@ -62,7 +92,12 @@ export function LoginPage() {
           placeholder="Digite seu email"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: "field",
+              payload: { field: "email", value: e.target.value },
+            })
+          }
         />
         <Input
           label="Senha"
@@ -71,7 +106,12 @@ export function LoginPage() {
           placeholder="Digite sua senha"
           required
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: "field",
+              payload: { field: "password", value: e.target.value },
+            })
+          }
         />
         <button type="submit" className="btn btn-secondary">
           Enviar

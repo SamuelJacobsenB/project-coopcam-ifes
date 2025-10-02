@@ -17,13 +17,13 @@ func NewTemplateHandler(service *TemplateService) *TemplateHandler {
 func (handler *TemplateHandler) FindByUserID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
+		ctx.JSON(400, gin.H{"error": "Id inválido"})
 		return
 	}
 
 	template, err := handler.service.FindByUserID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(404, gin.H{"error": "Template não encontrado"})
 		return
 	}
 

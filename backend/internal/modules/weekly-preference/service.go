@@ -18,7 +18,12 @@ func NewWeeklyPreferenceService(repo *WeeklyPreferenceRepository, userRepo *user
 }
 
 func (service *WeeklyPreferenceService) FindByUserID(userID uuid.UUID) (*entities.WeeklyPreference, error) {
-	return service.repo.FindByUserID(userID)
+	weeklyPreference, err := service.repo.FindByUserID(userID)
+	if err != nil {
+		return nil, errors.New("weekly preference not found")
+	}
+
+	return weeklyPreference, nil
 }
 
 func (service *WeeklyPreferenceService) Create(weeklyPreference *entities.WeeklyPreference) error {

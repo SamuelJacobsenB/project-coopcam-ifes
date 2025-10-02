@@ -11,6 +11,9 @@ export const btnStyles = StyleSheet.create({
     paddingHorizontal: 18,
     borderRadius: 8,
   },
+  btnDisabled: {
+    opacity: 0.5,
+  },
   btnSm: {
     fontSize: 12,
     paddingVertical: 3,

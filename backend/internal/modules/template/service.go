@@ -2,6 +2,7 @@ package template
 
 import (
 	"errors"
+	"gorm.io/gorm"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
@@ -18,23 +19,32 @@ func NewTemplateService(repo *TemplateRepository, userRepo *user.UserRepository)
 }
 
 func (service *TemplateService) FindByUserID(userID uuid.UUID) (*entities.Template, error) {
-	return service.repo.FindByUserID(userID)
+	template, err := service.repo.FindByUserID(userID)
+	if err != nil {
+		return nil, errors.New("template not found")
+	}
+
+	return template, nil
 }
 
 func (service *TemplateService) Create(template *entities.Template) error {
-	userExists, err := service.userRepo.FindByID(template.UserID)
+	user, err := service.userRepo.FindByID(template.UserID)
 	if err != nil {
 		return err
 	}
-	if userExists == nil {
+	if user == nil {
 		return errors.New("user not found")
 	}
 
-	templateExists, err := service.repo.FindByUserID(template.UserID)
+	existing, err := service.repo.FindByUserID(template.UserID)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			existing = nil
+		} else {
+			return err
+		}
 	}
-	if templateExists != nil {
+	if existing != nil {
 		return errors.New("template already exists")
 	}
 

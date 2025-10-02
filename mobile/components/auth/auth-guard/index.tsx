@@ -1,25 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Slot, useSegments, router } from "expo-router";
 
-import { useSegments, router, Slot } from "expo-router";
-
-import { useVerifyUser } from "@/hooks";
-import { LoadPage } from "@/components";
+import { useOwnUser } from "@/hooks";
+import { LoadPage } from "../../layout/load-page";
 
 export function AuthGuard() {
   const segments = useSegments();
-  const { isVerified, isLoading, error } = useVerifyUser();
-  const [redirecting, setRedirecting] = useState(false);
+  const { user, isLoading } = useOwnUser();
 
   const isAuthRoute = segments[0] === "(auth)";
+  const isLoggedIn = !!user;
 
   useEffect(() => {
-    if (!isLoading && !isAuthRoute && (error || !isVerified) && !redirecting) {
-      setRedirecting(true);
+    if (!isLoading && !isAuthRoute && !isLoggedIn) {
       router.replace("/(auth)/login");
     }
-  }, [isLoading, isVerified, error, isAuthRoute, redirecting]);
+  }, [isLoading, isAuthRoute, isLoggedIn]);
 
-  if (isLoading || (!isAuthRoute && !isVerified)) {
+  if (isLoading || (!isAuthRoute && !isLoggedIn)) {
     return <LoadPage />;
   }
 

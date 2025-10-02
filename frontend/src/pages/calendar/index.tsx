@@ -11,14 +11,15 @@ import {
   Navbar,
   Private,
 } from "../../components";
+import { isSameDate } from "../../utils";
 
 import { DayCard } from "./components";
 
 import styles from "./styles.module.css";
-import { isSameDate } from "../../utils";
 
 export function CalendarPage() {
   const navigate = useNavigate();
+
   const { showMessage } = useMessage();
 
   const [date, setDate] = useState(new Date());

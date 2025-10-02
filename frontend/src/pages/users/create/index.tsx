@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useMessage } from "../../../contexts";
@@ -9,21 +9,50 @@ import type { UserRequestDTO } from "../../../types";
 
 import styles from "./styles.module.css";
 
+interface State {
+  name: string;
+  email: string;
+  password: string;
+  cpf: string;
+  phone: string;
+  adress: string;
+  cep: string;
+  birth: string;
+  error: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState: State = {
+  name: "",
+  email: "",
+  password: "",
+  cpf: "",
+  phone: "",
+  adress: "",
+  cep: "",
+  birth: "",
+  error: "",
+};
+
 export function CreateUserPage() {
   const navigate = useNavigate();
 
   const { createUser } = useCreateUser();
   const { showMessage } = useMessage();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [phone, setPhone] = useState("");
-  const [adress, setAdress] = useState("");
-  const [cep, setCep] = useState("");
-  const [birth, setBirth] = useState("");
-  const [error, setError] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { name, email, password, cpf, phone, adress, cep, birth, error } =
+    state;
 
   async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,7 +70,7 @@ export function CreateUserPage() {
 
     const error = validateUserRequestDTO(user);
     if (error) {
-      setError(error);
+      dispatch({ type: "field", payload: { field: "error", value: error } });
       return;
     }
 
@@ -66,7 +95,15 @@ export function CreateUserPage() {
           <hr />
         </section>
         <form onSubmit={handleCreateUser} className={styles.form}>
-          <Error error={error} onClose={() => setError("")} />
+          <Error
+            error={error}
+            onClose={() =>
+              dispatch({
+                type: "field",
+                payload: { field: "error", value: "" },
+              })
+            }
+          />
           <Input
             label="Nome"
             name="name"
@@ -74,7 +111,12 @@ export function CreateUserPage() {
             placeholder="Digite o nome"
             required
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "name", value: e.target.value },
+              })
+            }
           />
           <Input
             label="Email"
@@ -83,7 +125,12 @@ export function CreateUserPage() {
             placeholder="Digite o email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "email", value: e.target.value },
+              })
+            }
           />
           <Input
             label="Senha"
@@ -92,7 +139,12 @@ export function CreateUserPage() {
             placeholder="Digite a senha"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "password", value: e.target.value },
+              })
+            }
           />
           <Input
             label="CPF"
@@ -101,7 +153,12 @@ export function CreateUserPage() {
             placeholder="Digite o CPF"
             required
             value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "cpf", value: e.target.value },
+              })
+            }
           />
           <Input
             label="Telefone"
@@ -110,7 +167,12 @@ export function CreateUserPage() {
             placeholder="Digite o telefone"
             required
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "phone", value: e.target.value },
+              })
+            }
           />
           <Input
             label="Endereço"
@@ -119,7 +181,12 @@ export function CreateUserPage() {
             placeholder="Digite o endereço"
             required
             value={adress}
-            onChange={(e) => setAdress(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "adress", value: e.target.value },
+              })
+            }
           />
           <Input
             label="CEP"
@@ -128,7 +195,12 @@ export function CreateUserPage() {
             placeholder="Digite o CEP"
             required
             value={cep}
-            onChange={(e) => setCep(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "cep", value: e.target.value },
+              })
+            }
           />
           <Input
             label="Data de Nascimento"
@@ -137,7 +209,12 @@ export function CreateUserPage() {
             placeholder="Digite a data de nascimento"
             required
             value={birth}
-            onChange={(e) => setBirth(e.target.value)}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: { field: "birth", value: e.target.value },
+              })
+            }
           />
           <button className="btn btn-secondary">Enviar</button>
         </form>

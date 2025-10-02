@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { UserContext } from "./context";
 
-import { useOwnUser } from "@/hooks";
+import { useOwnUser } from "@/hooks/user/useOwnUser";
 import type { User } from "@/types";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {

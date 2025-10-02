@@ -1,4 +1,4 @@
 export interface DaySchedule {
-    MorningDays: number[];
-    AfternoonDays: number[];
+  morning_days: number[];
+  afternoon_days: number[];
 }

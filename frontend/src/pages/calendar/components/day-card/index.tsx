@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 import { useMessage } from "../../../../contexts";
 import {
@@ -20,6 +20,35 @@ interface DayCardProps {
   onUnavailableDayCreated: () => Promise<void>;
 }
 
+interface State {
+  isPast: boolean;
+  isWeekend: boolean;
+  isDeleteAvailableOverrideModalOpen: boolean;
+  isDeleteUnavailableDayModalOpen: boolean;
+  isCreateAvailableOverrideModalOpen: boolean;
+  isCreateUnavailableDayModalOpen: boolean;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState: State = {
+  isPast: false,
+  isWeekend: false,
+  isDeleteAvailableOverrideModalOpen: false,
+  isDeleteUnavailableDayModalOpen: false,
+  isCreateAvailableOverrideModalOpen: false,
+  isCreateUnavailableDayModalOpen: false,
+};
+
 export function DayCard({
   date,
   unavailable,
@@ -32,28 +61,28 @@ export function DayCard({
   const { deleteAvailableOverride } = useDeleteAvailableOverride();
   const { deleteUnavailableDay } = useDeleteUnavailableDay();
 
-  const [isPast, setIsPast] = useState(false);
-  const [isWeekend, setIsWeekend] = useState(false);
-
-  const [
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    isPast,
+    isWeekend,
     isDeleteAvailableOverrideModalOpen,
-    setIsDeleteAvailableOverrideModalOpen,
-  ] = useState(false);
-
-  const [isDeleteUnavailableDayModalOpen, setIsDeleteUnavailableDayModalOpen] =
-    useState(false);
-
-  const [
+    isDeleteUnavailableDayModalOpen,
     isCreateAvailableOverrideModalOpen,
-    setIsCreateAvailableOverrideModalOpen,
-  ] = useState(false);
-
-  const [isCreateUnavailableDayModalOpen, setIsCreateUnavailableDayModalOpen] =
-    useState(false);
+    isCreateUnavailableDayModalOpen,
+  } = state;
 
   useEffect(() => {
-    setIsPast(date.getTime() < new Date().getTime());
-    setIsWeekend(date.getDay() === 0 || date.getDay() === 6);
+    dispatch({
+      type: "field",
+      payload: { field: "isPast", value: date < new Date() },
+    });
+    dispatch({
+      type: "field",
+      payload: {
+        field: "isWeekend",
+        value: date.getDay() === 0 || date.getDay() === 6,
+      },
+    });
   }, [date]);
 
   return (
@@ -61,7 +90,15 @@ export function DayCard({
       {override && (
         <ConfirmModal
           isOpen={isDeleteAvailableOverrideModalOpen}
-          onClose={() => setIsDeleteAvailableOverrideModalOpen(false)}
+          onClose={() =>
+            dispatch({
+              type: "field",
+              payload: {
+                field: "isDeleteAvailableOverrideModalOpen",
+                value: false,
+              },
+            })
+          }
           onConfirm={async () => {
             try {
               await deleteAvailableOverride(override.id);
@@ -75,7 +112,15 @@ export function DayCard({
       {unavailable && (
         <ConfirmModal
           isOpen={isDeleteUnavailableDayModalOpen}
-          onClose={() => setIsDeleteUnavailableDayModalOpen(false)}
+          onClose={() => {
+            dispatch({
+              type: "field",
+              payload: {
+                field: "isDeleteUnavailableDayModalOpen",
+                value: false,
+              },
+            });
+          }}
           onConfirm={async () => {
             try {
               await deleteUnavailableDay(unavailable.id);
@@ -90,13 +135,29 @@ export function DayCard({
         <>
           <CreateAvailableOverrideModal
             isOpen={isCreateAvailableOverrideModalOpen}
-            onClose={() => setIsCreateAvailableOverrideModalOpen(false)}
+            onClose={() =>
+              dispatch({
+                type: "field",
+                payload: {
+                  field: "isCreateAvailableOverrideModalOpen",
+                  value: false,
+                },
+              })
+            }
             selectedDate={date}
             onCreated={onAvailableOverrideCreated}
           />
           <CreateUnavailableDayModal
             isOpen={isCreateUnavailableDayModalOpen}
-            onClose={() => setIsCreateUnavailableDayModalOpen(false)}
+            onClose={() =>
+              dispatch({
+                type: "field",
+                payload: {
+                  field: "isCreateUnavailableDayModalOpen",
+                  value: false,
+                },
+              })
+            }
             selectedDate={date}
             onCreated={onUnavailableDayCreated}
           />
@@ -139,7 +200,15 @@ export function DayCard({
           {override && !isPast && (
             <button
               className={"btn-sm btn-danger"}
-              onClick={() => setIsDeleteAvailableOverrideModalOpen(true)}
+              onClick={() =>
+                dispatch({
+                  type: "field",
+                  payload: {
+                    field: "isDeleteAvailableOverrideModalOpen",
+                    value: true,
+                  },
+                })
+              }
             >
               Indisponibilizar dia
             </button>
@@ -147,7 +216,15 @@ export function DayCard({
           {unavailable && !isPast && (
             <button
               className={"btn-sm btn-info"}
-              onClick={() => setIsDeleteUnavailableDayModalOpen(true)}
+              onClick={() =>
+                dispatch({
+                  type: "field",
+                  payload: {
+                    field: "isDeleteUnavailableDayModalOpen",
+                    value: true,
+                  },
+                })
+              }
             >
               Disponibilizar dia
             </button>
@@ -156,7 +233,15 @@ export function DayCard({
           {!unavailable && !override && !isWeekend && !isPast && (
             <button
               className={"btn-sm btn-danger"}
-              onClick={() => setIsCreateUnavailableDayModalOpen(true)}
+              onClick={() =>
+                dispatch({
+                  type: "field",
+                  payload: {
+                    field: "isCreateUnavailableDayModalOpen",
+                    value: true,
+                  },
+                })
+              }
             >
               Inviabilizar dia
             </button>
@@ -164,7 +249,15 @@ export function DayCard({
           {!unavailable && !override && !isPast && isWeekend && (
             <button
               className={"btn-sm btn-info"}
-              onClick={() => setIsCreateAvailableOverrideModalOpen(true)}
+              onClick={() =>
+                dispatch({
+                  type: "field",
+                  payload: {
+                    field: "isCreateAvailableOverrideModalOpen",
+                    value: true,
+                  },
+                })
+              }
             >
               Viabilizar dia
             </button>

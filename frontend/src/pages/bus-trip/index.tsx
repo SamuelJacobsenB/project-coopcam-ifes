@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -22,6 +22,33 @@ import { BusReportsCard, BusReservationsCard, BusTripCard } from "./components";
 
 import styles from "./styles.module.css";
 
+interface State {
+  date: Date;
+  trips: BusTrip[];
+  reservations: BusReservation[];
+  reports: BusTripReport[];
+  selectedTrip: BusTrip | null;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.payload.field as string]: action.payload.value,
+      };
+    default:
+      return state;
+  }
+};
+const initialState: State = {
+  date: new Date(),
+  trips: [],
+  reservations: [],
+  reports: [],
+  selectedTrip: null,
+};
+
 export function BusTripPage() {
   const { id } = useParams();
 
@@ -30,18 +57,24 @@ export function BusTripPage() {
   const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
 
-  const [date, setDate] = useState(new Date());
-  const [trips, setTrips] = useState<BusTrip[]>([]);
-  const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
-  const [reservations, setReservations] = useState<BusReservation[]>([]);
-  const [reports, setReports] = useState<BusTripReport[]>([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { date, trips, selectedTrip, reservations, reports } = state;
 
   useEffect(() => {
     const strDate = date.toISOString().split("T")[0];
 
-    getManyBusTripsByDate(strDate).then(setTrips);
-    getManyBusTripReportsByDate(strDate).then(setReports);
-    getManyBusReservationsByDate(strDate).then(setReservations);
+    getManyBusTripsByDate(strDate).then((trips) =>
+      dispatch({ type: "field", payload: { field: "trips", value: trips } })
+    );
+    getManyBusTripReportsByDate(strDate).then((reports) =>
+      dispatch({ type: "field", payload: { field: "reports", value: reports } })
+    );
+    getManyBusReservationsByDate(strDate).then((reservations) =>
+      dispatch({
+        type: "field",
+        payload: { field: "reservations", value: reservations },
+      })
+    );
   }, [
     date,
     getManyBusTripsByDate,
@@ -50,7 +83,13 @@ export function BusTripPage() {
   ]);
 
   useEffect(() => {
-    if (id) getBusTripById(id).then(setSelectedTrip);
+    if (id)
+      getBusTripById(id).then((trip) =>
+        dispatch({
+          type: "field",
+          payload: { field: "selectedTrip", value: trip },
+        })
+      );
   }, [id, getBusTripById]);
 
   return (
@@ -66,7 +105,7 @@ export function BusTripPage() {
 
             <DateInput
               value={date.toISOString().split("T")[0]}
-              onChange={(e) => setDate(parseDateInput(e.target.value))}
+              onChange={(e) => dispatch(parseDateInput(e.target.value))}
               placeholder="Buscar viagens..."
             />
 
@@ -79,7 +118,12 @@ export function BusTripPage() {
                       className={`${styles.tripItem} ${
                         selectedTrip?.id === trip.id ? styles.selectedTrip : ""
                       }`}
-                      onClick={() => setSelectedTrip(trip)}
+                      onClick={() =>
+                        dispatch({
+                          type: "field",
+                          payload: { field: "selectedTrip", value: trip },
+                        })
+                      }
                     >
                       <span className={styles.tripItemDate}>
                         <I.calendar />
@@ -106,7 +150,13 @@ export function BusTripPage() {
                 <BusTripCard
                   selectedTrip={selectedTrip}
                   onStatusUpdated={(status) =>
-                    setSelectedTrip({ ...selectedTrip, status })
+                    dispatch({
+                      type: "field",
+                      payload: {
+                        field: "selectedTrip",
+                        value: { ...selectedTrip, status },
+                      },
+                    })
                   }
                 />
                 {reservations.length > 0 && (
