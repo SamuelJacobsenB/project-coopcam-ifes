@@ -1,5 +1,11 @@
-import { useEffect, useReducer, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useEffect, useReducer } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 
 import { router } from "expo-router";
 
@@ -9,9 +15,12 @@ import { validateLoginDTO } from "@/utils";
 import { LoginDTO } from "@/types";
 import { btnStyles } from "@/styles";
 
-import styles from "./styles";
-
-const reducer = (state: any, action: any) => {
+interface State {
+  email: string;
+  password: string;
+  error: string;
+}
+const reducer = (state: State, action: any) => {
   switch (action.type) {
     case "field":
       return {
@@ -24,7 +33,7 @@ const reducer = (state: any, action: any) => {
       return state;
   }
 };
-const initialState = {
+const initialState: State = {
   email: "",
   password: "",
   error: "",
@@ -112,3 +121,26 @@ export default function LoginPage() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  loginContainer: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    gap: 16,
+    padding: 32,
+  },
+  title: {
+    fontSize: 48,
+    fontFamily: "Poppins-Bold",
+    width: "100%",
+  },
+  line: {
+    marginBottom: 24,
+  },
+  btn: {
+    width: "100%",
+  },
+});

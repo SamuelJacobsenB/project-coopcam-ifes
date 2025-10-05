@@ -26,9 +26,14 @@ func (repo *TemplateRepository) Create(template *entities.Template) error {
 }
 
 func (repo *TemplateRepository) Update(template *entities.Template) error {
-	return repo.db.Model(&entities.Template{}).Where("id = ?", template.ID).Updates(template).Error
+	return repo.db.Model(template).Where("user_id = ?", template.UserID).Updates(map[string]interface{}{
+			"go_morning_days":     template.GoSchedule.MorningDays,
+			"go_afternoon_days":   template.GoSchedule.AfternoonDays,
+			"return_morning_days": template.ReturnSchedule.MorningDays,
+			"return_afternoon_days": template.ReturnSchedule.AfternoonDays,
+		}).Error
 }
 
-func (repo *TemplateRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&entities.Template{}).Error
+func (repo *TemplateRepository) DeleteByUserID(id uuid.UUID) error {
+	return repo.db.Where("user_id = ?", id).Delete(&entities.Template{}).Error
 }

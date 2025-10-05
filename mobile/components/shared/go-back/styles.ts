@@ -3,10 +3,9 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   backContainer: {
     display: "flex",
-    flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    padding: 10,
+    marginBottom: 16,
   },
   backText: {
     fontFamily: "Poppins-Regular",

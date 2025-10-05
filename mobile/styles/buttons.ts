@@ -7,7 +7,7 @@ export const btnStyles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     textAlign: "center",
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 8,
   },
@@ -15,9 +15,12 @@ export const btnStyles = StyleSheet.create({
     opacity: 0.5,
   },
   btnSm: {
+    fontFamily: "Poppins-Regular",
     fontSize: 12,
-    paddingVertical: 3,
-    paddingHorizontal: 6,
+    textAlign: "center",
+    width: "100%",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 6,
   },
   btnRounded: {

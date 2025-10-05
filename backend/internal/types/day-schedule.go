@@ -8,8 +8,8 @@ import (
 )
 
 type DaySchedule struct {
-	MorningDays   pq.Int64Array `gorm:"type:integer[];default:'{}'"`
-	AfternoonDays pq.Int64Array `gorm:"type:integer[];default:'{}'"`
+	MorningDays   pq.Int64Array `gorm:"type:integer[];default:'{}'" json:"morning_days"`
+	AfternoonDays pq.Int64Array `gorm:"type:integer[];default:'{}'" json:"afternoon_days"`
 }
 
 func ValidateDaySchedule(schedule *DaySchedule) error {

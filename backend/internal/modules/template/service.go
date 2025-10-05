@@ -2,7 +2,9 @@ package template
 
 import (
 	"errors"
+
 	"gorm.io/gorm"
+	"github.com/lib/pq"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
@@ -52,10 +54,22 @@ func (service *TemplateService) Create(template *entities.Template) error {
 }
 
 func (service *TemplateService) Update(template *entities.Template) error {
+	if template.GoSchedule.MorningDays == nil {
+		template.GoSchedule.MorningDays = pq.Int64Array{}
+	}
+	if template.GoSchedule.AfternoonDays == nil {
+		template.GoSchedule.AfternoonDays = pq.Int64Array{}
+	}
+	if template.ReturnSchedule.MorningDays == nil {
+		template.ReturnSchedule.MorningDays = pq.Int64Array{}
+	}
+	if template.ReturnSchedule.AfternoonDays == nil {
+		template.ReturnSchedule.AfternoonDays = pq.Int64Array{}
+	}
+
 	return service.repo.Update(template)
 }
 
-func (service *TemplateService) Delete(id uuid.UUID) error {
-	return service.repo.Delete(id)
+func (service *TemplateService) DeleteByUserID(id uuid.UUID) error {
+	return service.repo.DeleteByUserID(id)
 }
-

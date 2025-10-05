@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,8 +11,12 @@ import {
 import { router } from "expo-router";
 
 import { useMessage } from "@/contexts";
-import { DayCard, ReservationSection, Title } from "@/components";
-import { useCreateTemplate, useTemplateByUserId } from "@/hooks";
+import {
+  useCreateTemplate,
+  useDeleteTemplate,
+  useTemplateByUserId,
+} from "@/hooks";
+import { ConfirmModal, DayCard, ReservationSection, Title } from "@/components";
 import { weekDays } from "@/constants";
 import { TemplateRequestDTO } from "@/types";
 import { btnStyles, colors } from "@/styles";
@@ -21,6 +26,9 @@ export default function TemplatePage() {
 
   const { template, isLoading, error, refetch } = useTemplateByUserId();
   const { createTemplate, isPending } = useCreateTemplate();
+  const { deleteTemplate } = useDeleteTemplate();
+
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   async function handleCreateTemplate() {
     if (isPending) return;
@@ -43,6 +51,19 @@ export default function TemplatePage() {
       showMessage("Predefinição criada com sucesso!", "success");
     } catch {
       showMessage("Erro ao criar predefinição", "error");
+    }
+  }
+
+  async function handleDeleteTemplate() {
+    try {
+      await deleteTemplate();
+      await refetch();
+
+      setIsDeleteModalVisible(false);
+
+      showMessage("Predefinição excluida com sucesso!", "success");
+    } catch {
+      showMessage("Erro ao excluir predefinição", "error");
     }
   }
 
@@ -76,37 +97,53 @@ export default function TemplatePage() {
         </>
       )}
 
-      {template && (
+      {template && !error && (
+        <>
+          <TouchableOpacity
+            style={styles.fixedBtnContainer}
+            onPress={() => setIsDeleteModalVisible(true)}
+          >
+            <Text style={[btnStyles.btnSm, btnStyles.btnDanger]}>Deletar</Text>
+          </TouchableOpacity>
+          <ConfirmModal
+            isOpen={isDeleteModalVisible}
+            onClose={() => setIsDeleteModalVisible(false)}
+            onConfirm={handleDeleteTemplate}
+          />
+        </>
+      )}
+
+      {template && !error && (
         <FlatList
           contentContainerStyle={styles.list}
           data={weekDays}
           renderItem={({ item: day }) => {
             const dayIndex = weekDays.indexOf(day);
 
-            // const morningGoReserved =
-            //   template.go_schedule.morning_days.includes(dayIndex);
-            // const morningReturnReserved =
-            //   template.return_schedule.morning_days.includes(dayIndex);
-            // const afternoonGoReserved =
-            //   template.go_schedule.afternoon_days.includes(dayIndex);
-            // const afternoonReturnReserved =
-            //   template.return_schedule.afternoon_days.includes(dayIndex);
+            const morningGoReserved =
+              template.go_schedule.morning_days.includes(dayIndex);
+            const morningReturnReserved =
+              template.return_schedule.morning_days.includes(dayIndex);
+            const afternoonGoReserved =
+              template.go_schedule.afternoon_days.includes(dayIndex);
+            const afternoonReturnReserved =
+              template.return_schedule.afternoon_days.includes(dayIndex);
 
             return (
               <DayCard
                 key={day}
                 weekDay={day}
-                onPress={() => router.push(`/(tabs)/template/[dayIndex]`)}
+                onPress={() => router.push(`/(tabs)/template/${dayIndex}`)}
               >
                 <ReservationSection
                   title="Manhã"
-                  goReserved={true}
-                  returnReserved={true}
+                  goReserved={morningGoReserved}
+                  returnReserved={morningReturnReserved}
                 />
                 <ReservationSection
                   title="Tarde"
-                  goReserved={true}
-                  returnReserved={true}
+                  goReserved={afternoonGoReserved}
+                  returnReserved={afternoonReturnReserved}
                 />
               </DayCard>
             );
@@ -135,6 +172,11 @@ const styles = StyleSheet.create({
     width: "50%",
     marginTop: 24,
   },
+  fixedBtnContainer: {
+    position: "absolute",
+    top: 24,
+    right: 24,
+  },
   list: {
     display: "flex",
     justifyContent: "space-around",
@@ -143,6 +185,5 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     rowGap: 18,
     columnGap: 12,
-    overflowY: "auto",
   },
 });

@@ -32,3 +32,15 @@ export function getDateOfWeekDay(targetDayIndex: number): Date {
 
   return targetDate;
 }
+
+export function updateDays(
+  days: number[],
+  index: number,
+  isReserved: boolean
+): number[] {
+  if (isReserved) {
+    return Array.from(new Set([...days, index]));
+  } else {
+    return days.filter((day) => day !== index);
+  }
+}

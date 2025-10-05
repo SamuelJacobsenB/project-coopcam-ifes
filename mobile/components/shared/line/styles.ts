@@ -4,7 +4,7 @@ import { colors } from "@/styles";
 
 export default StyleSheet.create({
   line: {
-    width: "100%",
+    minWidth: "100%",
     height: 2,
     backgroundColor: colors.gray,
   },
