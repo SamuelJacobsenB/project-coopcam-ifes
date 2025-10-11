@@ -5,7 +5,7 @@ export interface UserRequestDTO {
 
   cpf: string;
   phone: string;
-  adress: string;
+  address: string;
   cep: string;
   birth: string;
 }
@@ -17,7 +17,7 @@ export interface UserUpdateDTO {
 
   cpf: string | null;
   phone: string | null;
-  adress: string | null;
+  address: string | null;
   cep: string | null;
   birth: Date | null;
 }

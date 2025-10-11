@@ -11,5 +11,7 @@ export * from "./day-card";
 export * from "./reservation-section";
 export * from "./reservation-check-group";
 
+export * from "./profile-info-card";
+
 export * from "./message";
 export * from "./modals";

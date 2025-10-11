@@ -11,7 +11,7 @@ export interface User {
 
   cpf: string;
   phone: string;
-  adress: string;
+  address: string;
   cep: string;
   birth: string;
   avatar_url: string | null;

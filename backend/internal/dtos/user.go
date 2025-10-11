@@ -17,7 +17,7 @@ type UserRequestDTO struct {
 
 	CPF    string    `json:"cpf"`
 	Phone  string    `json:"phone"`
-	Adress string    `json:"adress"`
+	Address string    `json:"address"`
 	CEP    string    `json:"cep"`
 	Birth  time.Time `json:"birth"`
 }
@@ -54,7 +54,7 @@ func (dto *UserRequestDTO) Validate() error {
 		return errors.New("telefone é obrigatório")
 	}
 
-	if dto.Adress == "" {
+	if dto.Address == "" {
 		return errors.New("endereço é obrigatório")
 	}
 
@@ -80,7 +80,7 @@ func (dto *UserRequestDTO) ToEntity() *entities.User {
 		Password: dto.Password,
 		CPF:      dto.CPF,
 		Phone:    dto.Phone,
-		Adress:   dto.Adress,
+		Address:   dto.Address,
 		CEP:      dto.CEP,
 		Birth:    dto.Birth,
 	}
@@ -93,7 +93,7 @@ type UserUpdateDTO struct {
 
 	CPF    *string    `json:"cpf"`
 	Phone  *string    `json:"phone"`
-	Adress *string    `json:"adress"`
+	Address *string    `json:"adress"`
 	CEP    *string    `json:"cep"`
 	Birth  *time.Time `json:"birth"`
 }
@@ -131,7 +131,7 @@ func (dto *UserUpdateDTO) Validate() error {
 		return errors.New("telefone é obrigatório")
 	}
 
-	if dto.Adress != nil && *dto.Adress == "" {
+	if dto.Address != nil && *dto.Address == "" {
 		return errors.New("endereço é obrigatório")
 	}
 
@@ -173,8 +173,8 @@ func (dto *UserUpdateDTO) ToEntity() *entities.User {
 		user.Phone = *dto.Phone
 	}
 
-	if dto.Adress != nil {
-		user.Adress = *dto.Adress
+	if dto.Address != nil {
+		user.Address = *dto.Address
 	}
 
 	if dto.CEP != nil {
@@ -197,7 +197,7 @@ type UserResponseDTO struct {
 
 	CPF       string  `json:"cpf"`
 	Phone     string  `json:"phone"`
-	Adress    string  `json:"adress"`
+	Address    string  `json:"adress"`
 	CEP       string  `json:"cep"`
 	Birth     string  `json:"birth"`
 	AvatarURL *string `json:"avatar_url"`
@@ -214,7 +214,7 @@ func ToUserResponseDTO(entity *entities.User) *UserResponseDTO {
 		Roles:     entity.Roles,
 		CPF:       entity.CPF,
 		Phone:     entity.Phone,
-		Adress:    entity.Adress,
+		Address:    entity.Address,
 		CEP:       entity.CEP,
 		Birth:     entity.Birth.Format("02/01/2006"),
 		AvatarURL: entity.AvatarURL,

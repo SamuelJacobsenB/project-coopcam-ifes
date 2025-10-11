@@ -16,7 +16,7 @@ interface State {
   password: string;
   cpf: string;
   phone: string;
-  adress: string;
+  address: string;
   cep: string;
   birth: string;
   error: string;
@@ -45,7 +45,7 @@ const initialState: State = {
   password: "",
   cpf: "",
   phone: "",
-  adress: "",
+  address: "",
   cep: "",
   birth: "",
   error: "",
@@ -60,7 +60,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
     password,
     cpf,
     phone,
-    adress,
+    address,
     cep,
     birth,
     error,
@@ -196,11 +196,11 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
                   type="text"
                   placeholder="Digite o endereço"
                   required
-                  value={adress}
+                  value={address}
                   onChange={(e) =>
                     dispatch({
                       type: "field",
-                      payload: { field: "adress", value: e.target.value },
+                      payload: { field: "address", value: e.target.value },
                     })
                   }
                 />
@@ -235,7 +235,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
               </>
             ) : (
               <>
-                <p>Endereço: {selectedUser.adress}</p>
+                <p>Endereço: {selectedUser.address}</p>
                 <p>CEP: {selectedUser.cep}</p>
                 <p>
                   Data de nascimento: {selectedUser.birth as unknown as string}

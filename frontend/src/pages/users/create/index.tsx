@@ -15,7 +15,7 @@ interface State {
   password: string;
   cpf: string;
   phone: string;
-  adress: string;
+  address: string;
   cep: string;
   birth: string;
   error: string;
@@ -38,7 +38,7 @@ const initialState: State = {
   password: "",
   cpf: "",
   phone: "",
-  adress: "",
+  address: "",
   cep: "",
   birth: "",
   error: "",
@@ -51,7 +51,7 @@ export function CreateUserPage() {
   const { showMessage } = useMessage();
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { name, email, password, cpf, phone, adress, cep, birth, error } =
+  const { name, email, password, cpf, phone, address, cep, birth, error } =
     state;
 
   async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
@@ -63,7 +63,7 @@ export function CreateUserPage() {
       password,
       cpf,
       phone,
-      adress,
+      address,
       cep,
       birth,
     };
@@ -180,11 +180,11 @@ export function CreateUserPage() {
             type="text"
             placeholder="Digite o endereço"
             required
-            value={adress}
+            value={address}
             onChange={(e) =>
               dispatch({
                 type: "field",
-                payload: { field: "adress", value: e.target.value },
+                payload: { field: "address", value: e.target.value },
               })
             }
           />

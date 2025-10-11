@@ -19,7 +19,7 @@ type User struct {
 
 	CPF       string    `json:"cpf"`
 	Phone     string    `json:"phone"`
-	Adress    string    `json:"adress"`
+	Address    string    `json:"address"`
 	CEP       string    `json:"cep"`
 	Birth     time.Time `json:"birth"`
 	AvatarURL *string   `json:"avatar_url"`

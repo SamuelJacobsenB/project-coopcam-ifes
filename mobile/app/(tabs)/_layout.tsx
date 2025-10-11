@@ -1,9 +1,11 @@
+import React from "react";
+import { StyleSheet } from "react-native";
+
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { routes } from "@/routes";
 import { colors } from "@/styles";
-import { StyleSheet } from "react-native";
 
 export default function TabsLayout() {
   return (
@@ -48,8 +50,9 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: colors.primary,
     color: "white",
+    width: "100%",
     height: 60,
-    paddingTop: 12,
+    paddingTop: 8,
     shadowOpacity: 0,
     elevation: 0,
   },

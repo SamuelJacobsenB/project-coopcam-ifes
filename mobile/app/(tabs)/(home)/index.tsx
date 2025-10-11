@@ -1,3 +1,4 @@
+import React from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -6,7 +7,7 @@ import {
   View,
 } from "react-native";
 
-import { DayCard, Line, ReservationSection, Title } from "@/components";
+import { DayCard, ReservationSection, Title } from "@/components";
 import { useWeeklyPreferenceByUserId } from "@/hooks";
 import { filterReservations, getDateOfWeekDay, getWeekDay } from "@/utils";
 import { weekDays } from "@/constants";
