@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api } from "../../services";
-import type { UnavailableDay } from "../../types";
+import { api } from "@/services";
+import type { UnavailableDay } from "@/types";
 
 export const fetchAllUnavailableDays = async () => {
   try {

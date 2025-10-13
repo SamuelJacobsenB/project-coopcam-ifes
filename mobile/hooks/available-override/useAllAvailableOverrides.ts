@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { api } from "../../services";
-import type { AvailableOverride } from "../../types";
+import { api } from "@/services";
+import type { AvailableOverride } from "@/types";
 
 export const fetchAllAvailableOverrides = async () => {
   try {

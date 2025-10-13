@@ -75,7 +75,7 @@ export default function ProfilePage() {
         </Text>
         <View style={styles.qrCodeContainer}>
           <QRCode
-            value={user.id}
+            value={user.id + ":" + user.email}
             size={160}
             color="black"
             backgroundColor="white"
