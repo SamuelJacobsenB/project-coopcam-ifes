@@ -1,6 +1,7 @@
+import React from "react";
 import { View, Text } from "react-native";
 
-import { Line } from "../line";
+import { Line } from "../../line";
 
 import styles from "./styles";
 

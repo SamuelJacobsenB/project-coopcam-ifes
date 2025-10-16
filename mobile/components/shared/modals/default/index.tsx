@@ -10,8 +10,9 @@ import {
 import * as SystemUI from "expo-system-ui";
 import { Ionicons } from "@expo/vector-icons";
 
-import styles from "./styles";
 import { colors } from "@/styles";
+
+import styles from "./styles";
 
 interface ModalProps {
   children: React.ReactNode;

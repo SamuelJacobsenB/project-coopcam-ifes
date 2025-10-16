@@ -1,3 +1,4 @@
+import React from "react";
 import { View, ViewStyle } from "react-native";
 
 import styles from "./styles";

@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, TouchableOpacity } from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
-import { useMessage } from "../../../contexts";
+
+import { useMessage } from "@/contexts";
 
 import styles from "./styles";
 

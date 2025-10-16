@@ -3,14 +3,18 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
 
-import { GoBack, Line, ReservationCheckGroup } from "@/components";
-import { weekDays } from "@/constants";
-import { updateDays, validateWeekDay } from "@/utils";
-import { colors } from "@/styles";
-import { useTemplateByUserId, useUpdateTemplate } from "@/hooks";
-import { ReservationChangeContainer } from "@/components/shared/reservation-change-container";
-import { TemplateUpdateDTO } from "@/types";
 import { useMessage } from "@/contexts";
+import { useTemplateByUserId, useUpdateTemplate } from "@/hooks";
+import {
+  GoBack,
+  Line,
+  ReservationCheckGroup,
+  ReservationChangeContainer,
+} from "@/components";
+import { updateDays, validateWeekDay } from "@/utils";
+import { weekDays } from "@/constants";
+import { TemplateUpdateDTO } from "@/types";
+import { colors } from "@/styles";
 
 interface State {
   isMorningGoReserved: boolean;

@@ -2,9 +2,9 @@ import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 
 import { Modal } from "../default";
+import { Line } from "../../line";
 
 import styles from "./styles";
-import { Line } from "../../line";
 
 interface ConfirmModalProps {
   isOpen: boolean;

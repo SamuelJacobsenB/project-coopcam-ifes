@@ -2,7 +2,6 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   card: {
-    position: "relative",
     display: "flex",
     flexDirection: "column",
     gap: 12,

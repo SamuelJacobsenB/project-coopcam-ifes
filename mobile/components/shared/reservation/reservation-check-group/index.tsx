@@ -1,7 +1,8 @@
+import React from "react";
 import { Text, View } from "react-native";
 
-import { Line } from "../line";
-import { CheckBox } from "../check-box";
+import { Line } from "../../line";
+import { CheckBox } from "../../form/check-box";
 
 import styles from "./styles";
 

@@ -47,24 +47,25 @@ export default function CalendarPage() {
         </Text>
       )}
 
-      {/* 1) Faz o calendário crescer */}
-      <View style={styles.calendarWrapper}>
-        <Calendar
-          date={date}
-          setDate={setDate}
-          availableOverrides={availableOverrides || []}
-          unavailableDays={unavailableDays || []}
-        />
-      </View>
+      {!overridesError &&
+        !unavailableError &&
+        !loadingOverrides &&
+        !loadingUnavailable && (
+          <>
+            <Calendar
+              date={date}
+              setDate={setDate}
+              availableOverrides={availableOverrides || []}
+              unavailableDays={unavailableDays || []}
+            />
 
-      {/* 2) Card sempre vem depois, sem overlap */}
-      <View style={styles.cardWrapper}>
-        <CalendarDayCard
-          date={date}
-          override={selectedOverride}
-          unavailable={selectedUnavailable}
-        />
-      </View>
+            <CalendarDayCard
+              date={date}
+              override={selectedOverride}
+              unavailable={selectedUnavailable}
+            />
+          </>
+        )}
     </View>
   );
 }
@@ -76,12 +77,6 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     backgroundColor: colors.lightGray,
-  },
-  calendarWrapper: {
-    flex: 1, // ocupa todo o espaço entre Title e card
-  },
-  cardWrapper: {
-    marginTop: 12, // distância do card para o calendário
   },
   errorText: {
     color: colors.error,

@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Line } from "../line";
+
+import { Ionicons } from "@expo/vector-icons";
+
+import { Line } from "../../line";
 
 import styles from "./styles";
-import { Ionicons } from "@expo/vector-icons";
 
 interface AvailableOverride {
   date: Date;
