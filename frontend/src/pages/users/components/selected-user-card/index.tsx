@@ -1,7 +1,10 @@
 import { useEffect, useReducer } from "react";
 
-import { Card, I, Input } from "../../../../components";
+import { useDeleteUserById, useUpdateUserById } from "../../../../hooks";
+import { Card, ConfirmModal, Error, I, Input } from "../../../../components";
 import type { User } from "../../../../types";
+
+import { EditableField, UserActions } from "./components";
 
 import styles from "./styles.module.css";
 
@@ -11,6 +14,7 @@ interface SelectedUserCardProps {
 
 interface State {
   editMode: boolean;
+  isDeleteModalOpen: boolean;
   name: string;
   email: string;
   password: string;
@@ -21,25 +25,14 @@ interface State {
   birth: string;
   error: string;
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field as string]: action.payload.value,
-      };
-    case "fillUser":
-      return {
-        ...action.payload,
-        error: "",
-      };
-    default:
-      return state;
-  }
-};
+
+type Action =
+  | { type: "field"; payload: { field: keyof State; value: string | boolean } }
+  | { type: "fillUser"; payload: User };
+
 const initialState: State = {
   editMode: false,
+  isDeleteModalOpen: false,
   name: "",
   email: "",
   password: "",
@@ -51,10 +44,30 @@ const initialState: State = {
   error: "",
 };
 
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "field":
+      return { ...state, [action.payload.field]: action.payload.value };
+    case "fillUser":
+      return {
+        ...state,
+        ...action.payload,
+        password: "",
+        error: "",
+      };
+    default:
+      return state;
+  }
+};
+
 export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
+  const { updateUserById } = useUpdateUserById();
+  const { deleteUserById } = useDeleteUserById();
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const {
     editMode,
+    isDeleteModalOpen,
     name,
     email,
     password,
@@ -72,46 +85,59 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
     }
   }, [selectedUser]);
 
-  function handleDelete() {
-    if (error) return;
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja deletar este usuário?"
-    );
-    if (confirmDelete) {
-      // Aqui você pode chamar sua função de exclusão, por exemplo:
-      console.log("Usuário deletado:", selectedUser.id);
-      // deleteUser(selectedUser.id);
+  const handleFieldChange = (field: keyof State, value: string | boolean) => {
+    dispatch({ type: "field", payload: { field, value } });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await updateUserById({
+        id: selectedUser.id,
+        user: {
+          name,
+          email,
+          password: password || null,
+          cpf,
+          phone,
+          address,
+          cep,
+          birth: new Date(birth),
+        },
+      });
+      handleFieldChange("editMode", false);
+    } catch {
+      handleFieldChange("error", "Erro ao atualizar usuário.");
     }
-  }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUserById(selectedUser.id);
+      handleFieldChange("isDeleteModalOpen", false);
+    } catch {
+      handleFieldChange("error", "Erro ao deletar usuário.");
+    }
+  };
 
   return (
     <Card className={styles.selectedUserBox}>
-      <div className={styles.buttons}>
-        {editMode && (
-          <>
-            <button className="btn-sm btn-success" onClick={() => {}}>
-              Concluir
-            </button>
-          </>
-        )}
-        <button
-          className="btn-sm btn-info"
-          onClick={() => {
-            dispatch({
-              type: "field",
-              payload: { field: "editMode", value: !editMode },
-            });
-          }}
-        >
-          {editMode ? "Cancelar" : "Editar"}
-        </button>
-        <button className="btn-sm btn-danger" onClick={handleDelete}>
-          Deletar
-        </button>
-      </div>
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => handleFieldChange("isDeleteModalOpen", false)}
+        onConfirm={handleDelete}
+      />
+
+      <UserActions
+        editMode={editMode}
+        onToggleEdit={() => handleFieldChange("editMode", !editMode)}
+        onConfirmEdit={handleUpdate}
+        onOpenDeleteModal={() => handleFieldChange("isDeleteModalOpen", true)}
+      />
+
       <div className={styles.userPicture}>
         <I.user size={128} />
       </div>
+
       <div className={styles.userInfo}>
         {editMode ? (
           <Input
@@ -121,129 +147,73 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
             placeholder="Digite o nome"
             required
             value={name}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "name", value: e.target.value },
-              })
-            }
+            onChange={(e) => handleFieldChange("name", e.target.value)}
           />
         ) : (
-          <h1>{selectedUser.name}</h1>
+          <h1>{name}</h1>
         )}
         <hr />
         <div className={styles.userDetails}>
           <section>
-            {editMode ? (
-              <>
-                <Input
-                  label="Email"
-                  name="email"
-                  type="email"
-                  placeholder="Digite o email"
-                  required
-                  value={email}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "email", value: e.target.value },
-                    })
-                  }
-                />
-                <Input
-                  label="CPF"
-                  name="cpf"
-                  type="text"
-                  placeholder="Digite o CPF"
-                  required
-                  value={cpf}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "cpf", value: e.target.value },
-                    })
-                  }
-                />
-                <Input
-                  label="Telefone"
-                  name="phone"
-                  type="text"
-                  placeholder="Digite o telefone"
-                  required
-                  value={phone}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "phone", value: e.target.value },
-                    })
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <p>Email: {selectedUser.email}</p>
-                <p>CPF: {selectedUser.cpf}</p>
-                <p>Telefone: {selectedUser.phone}</p>
-              </>
-            )}
+            <EditableField
+              label="Email"
+              name="email"
+              type="email"
+              value={email}
+              editMode={editMode}
+              placeholder="Digite o email"
+              onChange={(val) => handleFieldChange("email", val)}
+            />
+            <EditableField
+              label="CPF"
+              name="cpf"
+              type="text"
+              value={cpf}
+              editMode={editMode}
+              placeholder="Digite o CPF"
+              onChange={(val) => handleFieldChange("cpf", val)}
+            />
+            <EditableField
+              label="Telefone"
+              name="phone"
+              type="text"
+              value={phone}
+              editMode={editMode}
+              placeholder="Digite o telefone"
+              onChange={(val) => handleFieldChange("phone", val)}
+            />
           </section>
           <section>
-            {editMode ? (
-              <>
-                <Input
-                  label="Endereço"
-                  name="adress"
-                  type="text"
-                  placeholder="Digite o endereço"
-                  required
-                  value={address}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "address", value: e.target.value },
-                    })
-                  }
-                />
-                <Input
-                  label="CEP"
-                  name="cep"
-                  type="text"
-                  placeholder="Digite o CEP"
-                  required
-                  value={cep}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "cep", value: e.target.value },
-                    })
-                  }
-                />
-                <Input
-                  label="Data de nascimento"
-                  name="birth"
-                  type="date"
-                  placeholder="Digite a data de nascimento"
-                  required
-                  value={birth.split("/").reverse().join("-")}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "field",
-                      payload: { field: "birth", value: e.target.value },
-                    })
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <p>Endereço: {selectedUser.address}</p>
-                <p>CEP: {selectedUser.cep}</p>
-                <p>
-                  Data de nascimento: {selectedUser.birth as unknown as string}
-                </p>
-              </>
-            )}
+            <EditableField
+              label="Endereço"
+              name="address"
+              type="text"
+              value={address}
+              editMode={editMode}
+              placeholder="Digite o endereço"
+              onChange={(val) => handleFieldChange("address", val)}
+            />
+            <EditableField
+              label="CEP"
+              name="cep"
+              type="text"
+              value={cep}
+              editMode={editMode}
+              placeholder="Digite o CEP"
+              onChange={(val) => handleFieldChange("cep", val)}
+            />
+            <EditableField
+              label="Data de nascimento"
+              name="birth"
+              type="date"
+              value={birth.split("/").reverse().join("-")}
+              editMode={editMode}
+              placeholder="Digite a data de nascimento"
+              onChange={(val) => handleFieldChange("birth", val)}
+            />
           </section>
         </div>
+
         {editMode && (
           <Input
             label="Nova Senha"
@@ -252,13 +222,12 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
             placeholder="Digite nova senha"
             required
             value={password}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "password", value: e.target.value },
-              })
-            }
+            onChange={(e) => handleFieldChange("password", e.target.value)}
           />
+        )}
+
+        {error && (
+          <Error error={error} onClose={() => handleFieldChange("error", "")} />
         )}
       </div>
     </Card>
