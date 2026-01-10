@@ -1,26 +1,74 @@
 .dualPage {
   display: flex;
   width: 100%;
-  height: calc(100vh - 88px);
+
+  --sidebar-width: 280px;
+  --header-offset: 88px;
 }
 
-.left,
-.right {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 100%;
-  padding: 1rem;
+/* Opção 1: Altura fixa na tela (estilo Dashboard) */
+.fixedHeight {
+  height: calc(100vh - var(--header-offset));
+  overflow: hidden; /* Evita scroll na janela principal */
 }
 
+/* Opção 2: Altura automática (estilo Landing Page) */
+.autoHeight {
+  min-height: calc(100vh - var(--header-offset));
+}
+
+/* --- Lado Esquerdo (Sidebar) --- */
 .left {
-  background-color: white;
-  width: 20%;
-  border-right: 2px solid rgba(0, 0, 0, 0.5);
-  box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.25);
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  background-color: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+
+  /* Se for layout fixo, permite scroll interno */
+  overflow-y: auto;
 }
 
+/* --- Lado Direito (Conteúdo) --- */
 .right {
-  width: 80%;
+  flex: 1; /* Ocupa todo o espaço restante */
+
+  display: flex;
+  flex-direction: column;
+  /* Removemos o 'center' forçado para permitir layouts normais de texto/form */
+  align-items: stretch;
+
+  padding: 2rem;
+
+  /* Se for layout fixo, o scroll acontece AQUI e não na página */
+  overflow-y: auto;
+}
+
+/* --- Responsividade (Mobile) --- */
+@media (max-width: 768px) {
+  .dualPage {
+    flex-direction: column;
+    height: auto; /* Remove a altura fixa no mobile */
+  }
+
+  .left {
+    width: 100%; /* Sidebar vira topo ou rodapé */
+    min-width: 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    height: auto;
+  }
+
+  .right {
+    width: 100%;
+    height: auto;
+    overflow-y: visible;
+  }
 }

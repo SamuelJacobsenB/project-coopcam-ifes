@@ -1,7 +1,34 @@
 .actions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
-  gap: 0.2rem;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s active, background-color 0.2s;
+}
+
+.actions button {
+  transform: scale(0.95);
+}
+
+.btnDelete {
+  background-color: transparent !important;
+  color: #ef4444 !important;
+  border: 1px solid transparent;
+}
+
+.btnDelete:hover {
+  background-color: #fef2f2 !important;
+  border-color: #fee2e2;
 }

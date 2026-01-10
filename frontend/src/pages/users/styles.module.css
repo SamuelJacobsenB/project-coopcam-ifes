@@ -1,71 +1,121 @@
-.left {
-  position: relative;
-  gap: 1rem;
+.leftContainer {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+  gap: 1rem;
   box-sizing: border-box;
-  padding: 1rem;
 }
 
-.createUserButton {
-  position: absolute;
-  top: 10px;
-  left: 10px;
+/* Cabeçalho com Título e Botão lado a lado */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.headerText h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary, #333);
+}
+
+.headerText p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Botão agora é parte do fluxo, não absolute */
+.createBtn {
+  white-space: nowrap;
+  font-size: 0.8rem;
   text-decoration: none;
 }
 
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-}
-
+/* Lista com Scroll Independente */
 .userList {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  width: 100%;
-  padding: 4px;
-  max-height: max-content;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
+  gap: 0.5rem;
+
+  /* O PULO DO GATO: */
+  flex: 1; /* Ocupa todo o espaço vertical restante */
+  overflow-y: auto; /* Scroll apenas aqui dentro */
+
+  padding: 2px; /* Espaço para o focus ring/border não cortar */
 }
 
+/* Item da Lista */
 .userItem {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  width: 100%;
-  max-width: 100%;
-  padding: 0.5rem;
+  padding: 0.4rem 0.6rem !important;
   cursor: pointer;
-  overflow: hidden;
-  box-sizing: border-box;
+  border: 1px solid transparent;
+  transition: all 0.15s ease-in-out;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.userItem:hover,
+.userItem:hover {
+  background-color: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Estado Selecionado */
 .selectedUser {
-  border: 2px solid var(--color-primary);
+  border-color: var(--color-primary, #007bff);
+  background-color: var(--color-primary-light, rgba(0, 123, 255, 0.05));
+  font-weight: 600;
 }
 
 .userName {
-  flex: 1;
-  overflow: hidden;
+  margin: 0;
+  font-size: 1rem; /* Fonte reduzida de 0.95rem para 0.85rem */
+  font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1rem;
+  color: #475569; /* Cor levemente mais suave para o texto padrão */
 }
 
-.nonSelectedUserBox {
+/* Garante que o ícone não estique ou encolha */
+.userIconWrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
   flex-direction: column;
-  padding: 2rem !important;
-  gap: 0 !important;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Centraliza verticalmente se a lista estiver vazia */
   text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+/* Lado Direito (Placeholder) */
+.rightPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.01);
 }

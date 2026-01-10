@@ -1,58 +1,86 @@
 .container {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
-  height: calc(100vh - 88px);
-  padding: 1rem;
+  min-height: calc(100vh - 88px);
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.container > h1 {
-  top: 1rem;
-  font-size: 2.5rem;
-  width: 60%;
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  color: var(--color-text-main);
 }
 
 .noTrips {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  gap: 0 !important;
-  padding: 1rem 2rem !important;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-light, #999);
+  gap: 1rem;
 }
 
-.tripList {
-  flex: 1;
+/* Grid Responsivo */
+.tripGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  flex-wrap: wrap;
-  gap: 4rem 6rem;
+  /* Cria colunas automáticas de no mínimo 350px */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .tripCard {
-  width: 380px;
-  height: 200px;
-  cursor: pointer;
-}
-.tripCard:hover {
-  scale: 1.025;
+  display: flex;
+  flex-direction: row; /* Gráfico lado a lado com info */
+  align-items: center;
+  padding: 1rem;
+  height: 180px; /* Altura fixa para uniformidade */
+  transition: transform 0.2s;
 }
 
 .tripGraph {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  padding: 1rem;
+  width: 120px; /* Tamanho fixo para o gráfico não estourar */
+  height: 120px;
+  flex-shrink: 0;
 }
 
 .tripInfo {
   flex: 1;
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  gap: 0.2rem;
+  justify-content: center;
+  padding-left: 1.5rem;
+  border-left: 1px solid #eee;
+  margin-left: 1rem;
+  height: 100%;
+}
+
+.tripBadge {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.tripDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.tripDetails span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }

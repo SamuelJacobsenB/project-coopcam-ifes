@@ -1,5 +1,4 @@
-import { useEffect, useReducer } from "react";
-
+import { useEffect, useReducer, useCallback } from "react";
 import { useMessage } from "../../../../contexts";
 import {
   useDeleteAvailableOverride,
@@ -7,9 +6,7 @@ import {
 } from "../../../../hooks";
 import { Card, ConfirmModal, I } from "../../../../components";
 import type { AvailableOverride, UnavailableDay } from "../../../../types";
-
 import { CreateAvailableOverrideModal, CreateUnavailableDayModal } from "../";
-
 import styles from "./styles.module.css";
 
 interface DayCardProps {
@@ -28,18 +25,19 @@ interface State {
   isCreateAvailableOverrideModalOpen: boolean;
   isCreateUnavailableDayModalOpen: boolean;
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field as string]: action.payload.value,
-      };
-    default:
-      return state;
-  }
+
+type Action = {
+  type: "field";
+  payload: { field: keyof State; value: boolean };
 };
+
+const reducer = (state: State, action: Action): State => {
+  if (action.type === "field") {
+    return { ...state, [action.payload.field]: action.payload.value };
+  }
+  return state;
+};
+
 const initialState: State = {
   isPast: false,
   isWeekend: false,
@@ -56,214 +54,157 @@ export function DayCard({
   onAvailableOverrideCreated,
   onUnavailableDayCreated,
 }: DayCardProps) {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const { showMessage } = useMessage();
-
   const { deleteAvailableOverride } = useDeleteAvailableOverride();
   const { deleteUnavailableDay } = useDeleteUnavailableDay();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    isPast,
-    isWeekend,
-    isDeleteAvailableOverrideModalOpen,
-    isDeleteUnavailableDayModalOpen,
-    isCreateAvailableOverrideModalOpen,
-    isCreateUnavailableDayModalOpen,
-  } = state;
+  const setModal = useCallback((field: keyof State, value: boolean) => {
+    dispatch({ type: "field", payload: { field, value } });
+  }, []);
 
   useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+
+    const day = date.getDay();
     dispatch({
       type: "field",
-      payload: { field: "isPast", value: date < new Date() },
+      payload: { field: "isPast", value: compareDate < today },
     });
     dispatch({
       type: "field",
-      payload: {
-        field: "isWeekend",
-        value: date.getDay() === 0 || date.getDay() === 6,
-      },
+      payload: { field: "isWeekend", value: day === 0 || day === 6 },
     });
   }, [date]);
 
+  const handleDeleteOverride = async () => {
+    if (!override) return;
+    try {
+      await deleteAvailableOverride(override.id);
+      await onAvailableOverrideCreated();
+      showMessage("Exceção removida com sucesso", "success");
+    } catch {
+      showMessage("Erro ao remover exceção", "error");
+    }
+  };
+
+  const handleDeleteUnavailable = async () => {
+    if (!unavailable) return;
+    try {
+      await deleteUnavailableDay(unavailable.id);
+      await onUnavailableDayCreated();
+      showMessage("Dia liberado com sucesso", "success");
+    } catch {
+      showMessage("Erro ao liberar dia", "error");
+    }
+  };
+
+  const statusClass = override
+    ? styles.statusAvailable
+    : unavailable || state.isWeekend
+    ? styles.statusUnavailable
+    : styles.statusAvailable;
+
+  const statusText = override
+    ? "Disponível (Exceção)"
+    : unavailable || state.isWeekend
+    ? "Indisponível"
+    : "Disponível";
+
   return (
     <>
-      {override && (
-        <ConfirmModal
-          isOpen={isDeleteAvailableOverrideModalOpen}
-          onClose={() =>
-            dispatch({
-              type: "field",
-              payload: {
-                field: "isDeleteAvailableOverrideModalOpen",
-                value: false,
-              },
-            })
-          }
-          onConfirm={async () => {
-            try {
-              await deleteAvailableOverride(override.id);
-              showMessage("Dia disponível excluído com sucesso", "success");
-            } catch {
-              showMessage("Erro ao excluir dia disponível", "error");
-            }
-          }}
-        />
-      )}
-      {unavailable && (
-        <ConfirmModal
-          isOpen={isDeleteUnavailableDayModalOpen}
-          onClose={() => {
-            dispatch({
-              type: "field",
-              payload: {
-                field: "isDeleteUnavailableDayModalOpen",
-                value: false,
-              },
-            });
-          }}
-          onConfirm={async () => {
-            try {
-              await deleteUnavailableDay(unavailable.id);
-              showMessage("Dia indisponível excluído com sucesso", "success");
-            } catch {
-              showMessage("Erro ao excluir dia indisponível", "error");
-            }
-          }}
-        />
-      )}
-      {!override && !unavailable && (
-        <>
-          <CreateAvailableOverrideModal
-            isOpen={isCreateAvailableOverrideModalOpen}
-            onClose={() =>
-              dispatch({
-                type: "field",
-                payload: {
-                  field: "isCreateAvailableOverrideModalOpen",
-                  value: false,
-                },
-              })
-            }
-            selectedDate={date}
-            onCreated={onAvailableOverrideCreated}
-          />
-          <CreateUnavailableDayModal
-            isOpen={isCreateUnavailableDayModalOpen}
-            onClose={() =>
-              dispatch({
-                type: "field",
-                payload: {
-                  field: "isCreateUnavailableDayModalOpen",
-                  value: false,
-                },
-              })
-            }
-            selectedDate={date}
-            onCreated={onUnavailableDayCreated}
-          />
-        </>
-      )}
       <Card className={styles.infoCard}>
-        <h1 className={styles.cardTitle}>
-          <I.calendar />
-          <span>{date.toLocaleDateString("pt-BR")}</span>
-        </h1>
-        <hr />
-
-        <ul className={styles.dateInfo}>
-          <li>
-            <strong>Status: </strong>
-            {unavailable && "Indisponível por exceção"}
-            {!unavailable &&
-              !override &&
-              (isWeekend || isPast) &&
-              "Indisponível"}
-            {override && "Disponível por exceção"}
-            {!unavailable && !override && !isWeekend && !isPast && "Disponível"}
-          </li>
-
-          <li>
-            <strong>Motivo: </strong>
-            {isPast ? (
-              "Data passada"
-            ) : (
-              <>
-                {unavailable && unavailable.reason}
-                {override && override.reason}
-                {!unavailable && !override && isWeekend && "Fim de semana"}
-                {!unavailable && !override && !isWeekend && "Aula normal"}
-              </>
-            )}
-          </li>
-        </ul>
-        <div className={styles.buttonGroup}>
-          {override && !isPast && (
-            <button
-              className={"btn-sm btn-danger"}
-              onClick={() =>
-                dispatch({
-                  type: "field",
-                  payload: {
-                    field: "isDeleteAvailableOverrideModalOpen",
-                    value: true,
-                  },
-                })
-              }
-            >
-              Indisponibilizar dia
-            </button>
-          )}
-          {unavailable && !isPast && (
-            <button
-              className={"btn-sm btn-info"}
-              onClick={() =>
-                dispatch({
-                  type: "field",
-                  payload: {
-                    field: "isDeleteUnavailableDayModalOpen",
-                    value: true,
-                  },
-                })
-              }
-            >
-              Disponibilizar dia
-            </button>
-          )}
-
-          {!unavailable && !override && !isWeekend && !isPast && (
-            <button
-              className={"btn-sm btn-danger"}
-              onClick={() =>
-                dispatch({
-                  type: "field",
-                  payload: {
-                    field: "isCreateUnavailableDayModalOpen",
-                    value: true,
-                  },
-                })
-              }
-            >
-              Inviabilizar dia
-            </button>
-          )}
-          {!unavailable && !override && !isPast && isWeekend && (
-            <button
-              className={"btn-sm btn-info"}
-              onClick={() =>
-                dispatch({
-                  type: "field",
-                  payload: {
-                    field: "isCreateAvailableOverrideModalOpen",
-                    value: true,
-                  },
-                })
-              }
-            >
-              Viabilizar dia
-            </button>
+        <div className={styles.headerContainer}>
+          <div className={styles.cardTitle}>
+            <I.calendar size={20} />
+            <h2>
+              {date.toLocaleDateString("pt-BR", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+              })}
+            </h2>
+          </div>
+          <span className={`${styles.statusBadge} ${statusClass}`}>
+            {statusText}
+          </span>
+        </div>
+        <div className={styles.buttonContainer}>
+          {!state.isPast ? (
+            <>
+              {override && (
+                <button
+                  className={styles.btnActionOutline}
+                  onClick={() =>
+                    setModal("isDeleteAvailableOverrideModalOpen", true)
+                  }
+                >
+                  Remover Exceção
+                </button>
+              )}
+              {unavailable && (
+                <button
+                  className={styles.btnActionPrimary}
+                  onClick={() =>
+                    setModal("isDeleteUnavailableDayModalOpen", true)
+                  }
+                >
+                  Liberar Dia
+                </button>
+              )}
+              {!unavailable && !override && !state.isWeekend && (
+                <button
+                  className={styles.btnActionOutline}
+                  onClick={() =>
+                    setModal("isCreateUnavailableDayModalOpen", true)
+                  }
+                >
+                  Bloquear Dia
+                </button>
+              )}
+              {!unavailable && !override && state.isWeekend && (
+                <button
+                  className={styles.btnActionPrimary}
+                  onClick={() =>
+                    setModal("isCreateAvailableOverrideModalOpen", true)
+                  }
+                >
+                  Abrir Exceção
+                </button>
+              )}
+            </>
+          ) : (
+            <span className={styles.pastDateWarning}>Encerrado</span>
           )}
         </div>
       </Card>
+
+      <ConfirmModal
+        isOpen={state.isDeleteAvailableOverrideModalOpen}
+        onClose={() => setModal("isDeleteAvailableOverrideModalOpen", false)}
+        onConfirm={handleDeleteOverride}
+      />
+      <ConfirmModal
+        isOpen={state.isDeleteUnavailableDayModalOpen}
+        onClose={() => setModal("isDeleteUnavailableDayModalOpen", false)}
+        onConfirm={handleDeleteUnavailable}
+      />
+      <CreateAvailableOverrideModal
+        selectedDate={date}
+        isOpen={state.isCreateAvailableOverrideModalOpen}
+        onClose={() => setModal("isCreateAvailableOverrideModalOpen", false)}
+        onCreated={onAvailableOverrideCreated}
+      />
+      <CreateUnavailableDayModal
+        selectedDate={date}
+        isOpen={state.isCreateUnavailableDayModalOpen}
+        onClose={() => setModal("isCreateUnavailableDayModalOpen", false)}
+        onCreated={onUnavailableDayCreated}
+      />
     </>
   );
 }

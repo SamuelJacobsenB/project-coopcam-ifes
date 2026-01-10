@@ -19,4 +19,8 @@ func SetupUserRoutes(rg *gin.RouterGroup, handler *user.UserHandler) {
 	rg.POST("/demote-from-coordinator/:id/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.DemoteFromCoordinator)
 	rg.POST("/promote-to-admin/:id/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.PromoteToAdmin)
 	rg.POST("/demote-from-admin/:id/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.DemoteFromAdmin)
+
+	// Test Routes for Developers
+	rg.POST("/dev", handler.Create)
+	rg.POST("/dev/promote-to-admin/:id/", handler.PromoteToAdmin)
 }

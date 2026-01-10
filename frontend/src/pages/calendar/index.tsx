@@ -53,58 +53,69 @@ export function CalendarPage() {
   return (
     <Private>
       <Navbar />
-      <div className={styles.container}>
-        <section className={styles.calendarSection}>
-          <Card>
-            <h2>Selecione uma data</h2>
+
+      <main className={styles.container}>
+        {/* Ações do Dia Selecionado */}
+        <aside className={styles.detailsSection}>
+          <Card className={styles.titleCard}>
+            <h2>Agenda de Operação</h2>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: "var(--color-text-light)",
+                margin: "4px 0 0",
+              }}
+            >
+              Gerencie a disponibilidade da sua frota ou serviço
+            </p>
           </Card>
-          <Calendar
-            date={date}
-            setDate={setDate}
-            availableOverrides={availableOverrides || []}
-            unavailableDays={unavailableDays || []}
-          />
-          <Card>
+
+          <Card className={styles.dateSelector}>
             <Input
-              label="Data"
+              label="Ir para uma data específica"
               type="date"
               value={date.toISOString().split("T")[0]}
               onChange={(e) => {
                 const [year, month, day] = e.target.value
                   .split("-")
                   .map(Number);
-
                 const localDate = new Date(year, month - 1, day, 12);
                 setDate(localDate);
               }}
             />
           </Card>
-        </section>
 
-        <DayCard
-          date={date}
-          unavailable={
-            unavailableDays
-              ? unavailableDays.find((unavailable) =>
-                  isSameDate(new Date(unavailable.date), date)
-                ) || null
-              : null
-          }
-          override={
-            availableOverrides
-              ? availableOverrides.find((override) =>
-                  isSameDate(new Date(override.date), date)
-                ) || null
-              : null
-          }
-          onAvailableOverrideCreated={async () => {
-            await refetchAvailableOverrides();
-          }}
-          onUnavailableDayCreated={async () => {
-            await refetchUnavailableDays();
-          }}
-        />
-      </div>
+          <DayCard
+            date={date}
+            unavailable={
+              unavailableDays?.find((u) =>
+                isSameDate(new Date(u.date), date)
+              ) || null
+            }
+            override={
+              availableOverrides?.find((o) =>
+                isSameDate(new Date(o.date), date)
+              ) || null
+            }
+            onAvailableOverrideCreated={async () => {
+              await refetchAvailableOverrides();
+            }}
+            onUnavailableDayCreated={async () => {
+              await refetchUnavailableDays();
+            }}
+          />
+        </aside>
+
+        {/* Seleção e Controle */}
+        <section className={styles.calendarSection}>
+          <Calendar
+            date={date}
+            setDate={setDate}
+            availableOverrides={availableOverrides || []}
+            unavailableDays={unavailableDays || []}
+          />
+        </section>
+      </main>
     </Private>
   );
 }

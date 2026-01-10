@@ -1,51 +1,78 @@
+/* Container Principal */
+.react-calendar {
+  width: 100% !important;
+  border: none !important;
+  font-family: "Poppins", sans-serif !important;
+  background: transparent !important;
+}
+
+/* Navegação (Mês/Ano) */
 .react-calendar__navigation {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
+  margin-bottom: 1rem;
+  height: 44px;
 }
 
-.react-calendar__navigation__label {
-  flex-grow: 1;
-  text-transform: capitalize;
-  font-size: 1.25rem;
-  font-weight: bold;
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 1.1rem;
   color: var(--color-primary);
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f1f5f9;
+}
+
+/* Dias da Semana */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  padding-bottom: 0.5rem;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+/* Tiles (Dias Individuais) */
 .react-calendar__tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem !important;
-  height: 2.5rem !important;
-  padding: 0;
-  font-weight: 500;
-  transition: background 0.3s ease;
+  padding: 12px 8px !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  aspect-ratio: 1 / 1;
 }
 
-.react-calendar__tile--active {
-  background-color: var(--color-primary);
-  color: white;
-}
-
+/* Dia Atual */
 .react-calendar__tile--now {
-  background-color: var(--color-warning);
-  color: black;
+  background: #fef3c7 !important; /* Cor de alerta suave */
+  color: var(--color-warning) !important;
   font-weight: bold;
 }
 
-.react-calendar__tile:hover {
-  background-color: var(--color-primary);
-  color: white;
+/* Dia Selecionado */
+.react-calendar__tile--active {
+  background: var(--color-primary) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(28, 104, 92, 0.3);
 }
 
+/* Dias Indisponíveis */
 .react-calendar__tile.unavailable {
-  background-color: var(--color-gray);
-  color: #6b7280;
-  opacity: 0.6;
+  background-color: #f8fafc !important;
+  color: #cbd5e1 !important;
+  text-decoration: line-through;
+  cursor: not-allowed;
 }
 
-.react-calendar__tile.override {
-  background-color: var(--color-success);
-  color: white;
+/* Hover nos dias válidos */
+.react-calendar__tile:enabled:hover {
+  background-color: #e2e8f0 !important;
+  transform: translateY(-2px);
 }

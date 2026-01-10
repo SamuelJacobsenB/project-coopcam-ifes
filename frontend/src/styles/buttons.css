@@ -17,12 +17,18 @@ button:disabled {
   border-radius: 0.5rem;
   cursor: pointer;
 }
+.btn:active {
+  transform: scale(0.98);
+}
 
 .btn-sm {
   font-size: 0.8rem;
   padding: 0.2rem 0.4rem;
   border-radius: 0.4rem;
   cursor: pointer;
+}
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-rounded {
@@ -50,18 +56,30 @@ button:disabled {
   background-color: var(--color-success);
   color: white;
 }
+.btn-success:hover {
+  filter: brightness(0.9);
+}
 
 .btn-danger {
   background-color: var(--color-error);
   color: white;
+}
+.btn-danger:hover {
+  filter: brightness(0.9);
 }
 
 .btn-warning {
   background-color: var(--color-warning);
   color: white;
 }
+.btn-warning:hover {
+  filter: brightness(0.9);
+}
 
 .btn-info {
   background-color: var(--color-info);
   color: white;
+}
+.btn-info:hover {
+  filter: brightness(0.9);
 }

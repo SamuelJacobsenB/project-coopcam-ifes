@@ -97,16 +97,15 @@ export function BusTripPage() {
       <Navbar />
       <DualPage
         leftSide={
-          <>
-            <section className={styles.header}>
+          <div className={styles.left}>
+            <header className={styles.header}>
               <h1>Viagens</h1>
-              <p>Pesquise por viagens</p>
-            </section>
+              <p>Gerencie as rotas diárias</p>
+            </header>
 
             <DateInput
               value={date.toISOString().split("T")[0]}
               onChange={(e) => dispatch(parseDateInput(e.target.value))}
-              placeholder="Buscar viagens..."
             />
 
             <ul className={styles.tripList}>
@@ -125,28 +124,42 @@ export function BusTripPage() {
                         })
                       }
                     >
-                      <span className={styles.tripItemDate}>
-                        <I.calendar />
-                        <h5>{new Date(trip.date).toLocaleDateString()}</h5>
-                      </span>
-                      <span className={styles.tripItemInfo}>
-                        <small>
+                      <div className={styles.tripItemDate}>
+                        <I.calendar size={18} color="var(--color-primary)" />
+                        <h5>
+                          {new Date(trip.date).toLocaleDateString("pt-BR")}
+                        </h5>
+                      </div>
+
+                      <div className={styles.tripItemInfo}>
+                        <span className={styles.badge}>
                           {trip.period === "morning" ? "Manhã" : "Tarde"}
-                        </small>
-                        <small>
+                        </span>
+                        <span className={styles.badge}>
                           {trip.direction === "go" ? "Ida" : "Volta"}
-                        </small>
-                      </span>
+                        </span>
+                      </div>
                     </Card>
                   </li>
                 ))}
+              {trips.length === 0 && (
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "#94a3b8",
+                    marginTop: "1rem",
+                  }}
+                >
+                  Nenhuma viagem encontrada.
+                </p>
+              )}
             </ul>
-          </>
+          </div>
         }
         rightSide={
-          <>
+          <div className={styles.busTripArea}>
             {selectedTrip ? (
-              <div className={styles.busTripArea}>
+              <>
                 <BusTripCard
                   selectedTrip={selectedTrip}
                   onStatusUpdated={(status) =>
@@ -159,29 +172,36 @@ export function BusTripPage() {
                     })
                   }
                 />
-                {reservations.length > 0 && (
-                  <BusReservationsCard
-                    reservations={reservations.filter(
-                      (reservation) =>
-                        reservation.bus_trip_id === selectedTrip.id
-                    )}
-                  />
-                )}
-                {reports.length > 0 && (
-                  <BusReportsCard
-                    reports={reports.filter(
-                      (report) => report.bus_trip_id === selectedTrip.id
-                    )}
-                  />
-                )}
-              </div>
+
+                {/* Agrupamento visual das informações complementares */}
+                <div className={styles.detailsGrid}>
+                  {reservations.length > 0 && (
+                    <BusReservationsCard
+                      reservations={reservations.filter(
+                        (res) => res.bus_trip_id === selectedTrip.id
+                      )}
+                    />
+                  )}
+                  {reports.length > 0 && (
+                    <BusReportsCard
+                      reports={reports.filter(
+                        (rep) => rep.bus_trip_id === selectedTrip.id
+                      )}
+                    />
+                  )}
+                </div>
+              </>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
-                <h1>Selecione uma viagem</h1>
-                <p>Selecione uma viagem para ver mais detalhes sobre esta.</p>
+                <I.calendar size={48} />
+                <h1 style={{ marginTop: "1rem" }}>Selecione uma viagem</h1>
+                <p>
+                  Escolha uma rota na lista à esquerda para gerenciar reservas e
+                  relatórios.
+                </p>
               </Card>
             )}
-          </>
+          </div>
         }
         leftClassName={styles.left}
         rightClassName={styles.right}

@@ -1,69 +1,106 @@
+/* Container principal do lado esquerdo */
 .left {
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
 }
 
 .header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  text-align: left; /* Alinhamento à esquerda é mais natural para listas */
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
 }
 
+.header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Lista com Scroll Independente */
 .tripList {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.75rem;
   width: 100%;
   padding: 4px;
-  max-height: max-content;
+  flex: 1; /* Ocupa o espaço restante */
   overflow-y: auto;
 }
 
+/* Melhoria no Item da Viagem (Card) */
 .tripItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0.8rem 1rem !important;
   cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px;
 }
 
-.tripItem:hover,
+.tripItem:hover {
+  background-color: #f8fafc;
+  transform: translateX(4px);
+}
+
 .selectedTrip {
-  border: 2px solid var(--color-primary);
+  border-color: var(--color-primary) !important;
+  background-color: rgba(
+    28,
+    104,
+    92,
+    0.05
+  ); /* Usando sua cor primária com transparência */
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .tripItemDate {
   display: flex;
-  justify-content: center;
-  gap: 0.4rem;
+  align-items: center;
+  gap: 0.6rem;
+  color: #475569;
+}
+
+.tripItemDate h5 {
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .tripItemInfo {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  font-size: 0.6rem;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* Badges para Período e Direção */
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+/* Estilo para a área da direita */
+.busTripArea {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1rem;
+  overflow-y: auto;
 }
 
 .nonSelectedTripBox {
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 2rem !important;
-  gap: 0 !important;
-}
-
-.right {
-  display: flex;
-}
-
-.busTripArea {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 0.4rem;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
+  text-align: center;
+  color: #94a3b8;
 }

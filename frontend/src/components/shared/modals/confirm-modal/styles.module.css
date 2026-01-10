@@ -1,9 +1,52 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 0.5rem;
+}
+
+.modalContent h1 {
+  font-size: 1.4rem;
+  color: var(--color-text-main);
+  margin: 0;
+  font-weight: 600;
+}
+
+.modalContent hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+}
+
+.modalContent p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0;
+}
+
 .buttons {
   display: flex;
-  gap: 0.2rem;
+  gap: 0.75rem;
   width: 100%;
+  margin-top: 0.5rem;
 }
 
 .buttons > button {
   flex: 1;
+  padding: 0.75rem !important; /* Botões um pouco maiores para facilitar o toque */
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo para o botão de cancelar ser menos chamativo que o de sucesso */
+.btnSecondary {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+.btnSecondary:hover {
+  background-color: #e2e8f0 !important;
 }

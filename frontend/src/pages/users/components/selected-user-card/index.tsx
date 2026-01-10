@@ -127,6 +127,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
         onConfirm={handleDelete}
       />
 
+      {/* Ações posicionadas de forma fixa ou relativa ao card */}
       <UserActions
         editMode={editMode}
         onToggleEdit={() => handleFieldChange("editMode", !editMode)}
@@ -134,34 +135,36 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
         onOpenDeleteModal={() => handleFieldChange("isDeleteModalOpen", true)}
       />
 
-      <div className={styles.userPicture}>
-        <I.user size={128} />
-      </div>
+      <header className={styles.userHeader}>
+        <div className={styles.userPicture}>
+          <I.user size={80} color="#64748b" /> {/* Tamanho mais equilibrado */}
+        </div>
+
+        <div className={styles.userTitleInfo}>
+          {editMode ? (
+            <Input
+              label="Nome Completo"
+              name="name"
+              type="text"
+              value={name}
+              onChange={(e) => handleFieldChange("name", e.target.value)}
+              required
+            />
+          ) : (
+            <h1>{name}</h1>
+          )}
+        </div>
+      </header>
 
       <div className={styles.userInfo}>
-        {editMode ? (
-          <Input
-            label="Nome"
-            name="name"
-            type="text"
-            placeholder="Digite o nome"
-            required
-            value={name}
-            onChange={(e) => handleFieldChange("name", e.target.value)}
-          />
-        ) : (
-          <h1>{name}</h1>
-        )}
-        <hr />
         <div className={styles.userDetails}>
           <section>
             <EditableField
-              label="Email"
+              label="Endereço de Email"
               name="email"
               type="email"
               value={email}
               editMode={editMode}
-              placeholder="Digite o email"
               onChange={(val) => handleFieldChange("email", val)}
             />
             <EditableField
@@ -170,64 +173,66 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
               type="text"
               value={cpf}
               editMode={editMode}
-              placeholder="Digite o CPF"
               onChange={(val) => handleFieldChange("cpf", val)}
             />
             <EditableField
-              label="Telefone"
+              label="Telefone de Contacto"
               name="phone"
               type="text"
               value={phone}
               editMode={editMode}
-              placeholder="Digite o telefone"
               onChange={(val) => handleFieldChange("phone", val)}
             />
           </section>
+
           <section>
             <EditableField
-              label="Endereço"
+              label="Endereço Residencial"
               name="address"
               type="text"
               value={address}
               editMode={editMode}
-              placeholder="Digite o endereço"
               onChange={(val) => handleFieldChange("address", val)}
             />
             <EditableField
-              label="CEP"
+              label="Código Postal (CEP)"
               name="cep"
               type="text"
               value={cep}
               editMode={editMode}
-              placeholder="Digite o CEP"
               onChange={(val) => handleFieldChange("cep", val)}
             />
             <EditableField
-              label="Data de nascimento"
+              label="Data de Nascimento"
               name="birth"
               type="date"
               value={birth.split("/").reverse().join("-")}
               editMode={editMode}
-              placeholder="Digite a data de nascimento"
               onChange={(val) => handleFieldChange("birth", val)}
             />
           </section>
         </div>
 
         {editMode && (
-          <Input
-            label="Nova Senha"
-            name="password"
-            type="password"
-            placeholder="Digite nova senha"
-            required
-            value={password}
-            onChange={(e) => handleFieldChange("password", e.target.value)}
-          />
+          <div style={{ marginTop: "1rem" }}>
+            <Input
+              label="Redefinir Senha"
+              name="password"
+              type="password"
+              placeholder="Deixe em branco para manter a atual"
+              value={password}
+              onChange={(e) => handleFieldChange("password", e.target.value)}
+            />
+          </div>
         )}
 
         {error && (
-          <Error error={error} onClose={() => handleFieldChange("error", "")} />
+          <div className={styles.errorContainer}>
+            <Error
+              error={error}
+              onClose={() => handleFieldChange("error", "")}
+            />
+          </div>
         )}
       </div>
     </Card>

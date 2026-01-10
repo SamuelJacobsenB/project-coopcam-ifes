@@ -1,14 +1,47 @@
 .container {
-  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 2rem;
-  padding: 3rem;
+  flex-direction: row; /* Coloca os blocos lado a lado */
+  align-items: flex-start; /* Alinha o topo dos cards */
+  gap: 2.5rem; /* Espaço generoso entre as colunas */
+  padding: 2.5rem;
+  max-width: 1400px; /* Evita que o layout estique demais em telas ultra-wide */
+  margin: 0 auto;
 }
 
 .calendarSection {
-  flex: 1;
+  flex: 1.2; /* O calendário ganha um pouco mais de espaço */
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
+}
+
+/* Estilo para a coluna da direita (Detalhes) */
+.detailsSection {
+  flex: 0.8; /* A coluna de detalhes é levemente mais estreita */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: sticky; /* Faz os detalhes acompanharem o scroll se a lista for longa */
+  top: 2.5rem;
+}
+
+/* Card de título para dar contexto */
+.titleCard {
+  padding: 1.5rem !important;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+}
+
+.titleCard h2 {
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Card de busca rápida mais compacto */
+.dateSelector {
+  padding: 1.25rem !important;
+  border-radius: 16px;
+  background: #ffffff;
 }

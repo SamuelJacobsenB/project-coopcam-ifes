@@ -1,21 +1,40 @@
+@import url("../../../styles/colors.css");
+
+.header {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+  background-color: rgba(28, 104, 92, 0.95);
+  width: 100%;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--color-primary);
-  width: 100%;
-  height: 88px;
+  max-width: 1200px;
+  height: 80px;
+  margin: 0 auto;
   padding: 0 2rem;
 }
 
-.logo {
-  width: auto;
-  height: 30px;
+.logoContainer {
+  display: flex;
+  align-items: center;
 }
 
-.menu {
+.logo {
+  height: 36px;
+  width: auto;
+}
+
+.menuRight {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 2.5rem;
 }
 
 .links {
@@ -25,22 +44,119 @@
 }
 
 .link {
-  font-size: 1rem;
-  color: white;
+  position: relative;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   text-transform: uppercase;
-  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
 }
 
 .link:hover {
-  color: var(--color-secondary);
+  color: #fff;
 }
 
-.actived {
-  color: var(--color-secondary);
+.active {
+  color: #fff;
+  font-weight: 600;
 }
 
-.profile {
-  font-size: 2rem;
+/* Animação de sublinhado elegante */
+.link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--color-secondary);
+  transition: width 0.2s ease-in-out;
+}
+
+.link:hover::after {
+  width: 100%;
+}
+
+.active::after {
+  width: 100%;
+}
+
+/* Botão de Perfil */
+.profileBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.profileBtn:hover {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.profileIcon {
+  font-size: 1.6rem;
   color: white;
+}
+
+/* Menu Hamburguer */
+.menuBurguer {
+  display: none;
+}
+
+/* Responsividade básica */
+@media screen and (max-width: 768px) {
+  .links {
+    display: none; /* Idealmente, aqui entraria um menu hambúrguer */
+  }
+
+  .menuBurguer {
+    position: relative;
+    display: flex;
+  }
+
+  .menuBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    color: white;
+    cursor: pointer;
+  }
+
+  .menu {
+    z-index: 10;
+    position: absolute;
+    top: 54px;
+    right: 0;
+    width: 300px;
+    background-color: rgba(28, 104, 92, 0.95);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(0, 90, 9, 0.4);
+  }
+
+  .menuList {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menuList > li {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    a {
+      font-size: 0.8rem;
+    }
+  }
 }

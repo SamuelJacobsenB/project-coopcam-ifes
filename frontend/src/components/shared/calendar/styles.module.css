@@ -1,7 +1,8 @@
 .calendarContainer {
   flex: 1;
-  background-color: white;
-  padding: 1rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
+  border: 1px solid #f1f5f9;
 }

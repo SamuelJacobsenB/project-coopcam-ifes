@@ -12,6 +12,8 @@ interface CalendarProps {
   unavailableDays: UnavailableDay[];
 }
 
+// ... (imports)
+
 export function Calendar({
   date,
   setDate,
@@ -22,13 +24,13 @@ export function Calendar({
     <div className={styles.calendarContainer}>
       <ReactCalendar.Calendar
         value={date}
+        minDetail="month" // Impede que o utilizador navegue até à vista de anos/décadas
+        next2Label={null} // Remove botões de "saltar" anos para simplificar
+        prev2Label={null}
         onChange={(val) => {
+          // Lógica de correção de horas mantida para evitar bugs de fuso horário
           if (val instanceof Date) {
             const corrected = new Date(val);
-            corrected.setHours(12);
-            setDate(corrected);
-          } else if (Array.isArray(val) && val[0] instanceof Date) {
-            const corrected = new Date(val[0]);
             corrected.setHours(12);
             setDate(corrected);
           }
@@ -42,15 +44,16 @@ export function Calendar({
           const isPast = date < today;
           const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
+          // Verifica se há exceção de disponibilidade
           const isOverride = availableOverrides.some((o) => {
             const overrideDate = new Date(o.date);
-            overrideDate.setHours(0, 0, 0, 0);
             return (
               overrideDate.toDateString() === date.toDateString() &&
               overrideDate >= today
             );
           });
 
+          // Verifica se foi marcado manualmente como indisponível
           const isUnavailable = unavailableDays.some(
             (d) => new Date(d.date).toDateString() === date.toDateString()
           );
@@ -59,12 +62,8 @@ export function Calendar({
             return "unavailable";
           }
 
-          if (isOverride) return "override";
-
           return "";
         }}
-        prev2Label={null}
-        next2Label={null}
       />
     </div>
   );
