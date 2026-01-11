@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -15,7 +15,7 @@ import {
   Navbar,
   Private,
 } from "../../components";
-import { isSameDate, parseDateInput } from "../../utils";
+import { isSameDate } from "../../utils";
 import type { BusReservation, BusTrip, BusTripReport } from "../../types";
 
 import { BusReportsCard, BusReservationsCard, BusTripCard } from "./components";
@@ -28,7 +28,9 @@ interface State {
   reservations: BusReservation[];
   reports: BusTripReport[];
   selectedTrip: BusTrip | null;
+  isLoading: boolean;
 }
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducer = (state: State, action: any) => {
   switch (action.type) {
@@ -37,16 +39,20 @@ const reducer = (state: State, action: any) => {
         ...state,
         [action.payload.field as string]: action.payload.value,
       };
+    case "set_loading":
+      return { ...state, isLoading: action.payload };
     default:
       return state;
   }
 };
+
 const initialState: State = {
   date: new Date(),
   trips: [],
   reservations: [],
   reports: [],
   selectedTrip: null,
+  isLoading: false,
 };
 
 export function BusTripPage() {
@@ -58,23 +64,54 @@ export function BusTripPage() {
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { date, trips, selectedTrip, reservations, reports } = state;
+  const { date, trips, selectedTrip, reservations, reports, isLoading } = state;
 
-  useEffect(() => {
-    const strDate = date.toISOString().split("T")[0];
+  // Função para formatar data localmente YYYY-MM-DD
+  const formatDateToInputValue = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-    getManyBusTripsByDate(strDate).then((trips) =>
-      dispatch({ type: "field", payload: { field: "trips", value: trips } })
-    );
-    getManyBusTripReportsByDate(strDate).then((reports) =>
-      dispatch({ type: "field", payload: { field: "reports", value: reports } })
-    );
-    getManyBusReservationsByDate(strDate).then((reservations) =>
+  const handleDateChange = (dateString: string) => {
+    if (!dateString) return;
+    // Cria a data baseada nos componentes para evitar problemas de timezone (UTC vs Local)
+    const [y, m, d] = dateString.split("-").map(Number);
+    const newDate = new Date(y, m - 1, d);
+    dispatch({ type: "field", payload: { field: "date", value: newDate } });
+  };
+
+  const fetchData = useCallback(async () => {
+    dispatch({ type: "set_loading", payload: true });
+    try {
+      const strDate = formatDateToInputValue(date);
+
+      // Executa todas as requisições em paralelo
+      const [fetchedTrips, fetchedReports, fetchedReservations] =
+        await Promise.all([
+          getManyBusTripsByDate(strDate),
+          getManyBusTripReportsByDate(strDate),
+          getManyBusReservationsByDate(strDate),
+        ]);
+
       dispatch({
         type: "field",
-        payload: { field: "reservations", value: reservations },
-      })
-    );
+        payload: { field: "trips", value: fetchedTrips },
+      });
+      dispatch({
+        type: "field",
+        payload: { field: "reports", value: fetchedReports },
+      });
+      dispatch({
+        type: "field",
+        payload: { field: "reservations", value: fetchedReservations },
+      });
+    } catch (error) {
+      console.error("Erro ao buscar dados", error);
+    } finally {
+      dispatch({ type: "set_loading", payload: false });
+    }
   }, [
     date,
     getManyBusTripsByDate,
@@ -82,14 +119,21 @@ export function BusTripPage() {
     getManyBusReservationsByDate,
   ]);
 
+  // Effect para carregar dados quando a data mudar
   useEffect(() => {
-    if (id)
+    fetchData();
+  }, [fetchData]);
+
+  // Effect para carregar viagem específica via URL (apenas na montagem ou troca de ID)
+  useEffect(() => {
+    if (id) {
       getBusTripById(id).then((trip) =>
         dispatch({
           type: "field",
           payload: { field: "selectedTrip", value: trip },
         })
       );
+    }
   }, [id, getBusTripById]);
 
   return (
@@ -99,14 +143,21 @@ export function BusTripPage() {
         leftSide={
           <div className={styles.left}>
             <header className={styles.header}>
-              <h1>Viagens</h1>
-              <p>Gerencie as rotas diárias</p>
+              <div>
+                <h1>Viagens</h1>
+                <p>Gerencie as rotas diárias</p>
+              </div>
+              {isLoading && (
+                <span className={styles.loadingBadge}>Carregando...</span>
+              )}
             </header>
 
-            <DateInput
-              value={date.toISOString().split("T")[0]}
-              onChange={(e) => dispatch(parseDateInput(e.target.value))}
-            />
+            <div className={styles.controls}>
+              <DateInput
+                value={formatDateToInputValue(date)}
+                onChange={(e) => handleDateChange(e.target.value)}
+              />
+            </div>
 
             <ul className={styles.tripList}>
               {trips
@@ -124,34 +175,51 @@ export function BusTripPage() {
                         })
                       }
                     >
-                      <div className={styles.tripItemDate}>
-                        <I.calendar size={18} color="var(--color-primary)" />
-                        <h5>
-                          {new Date(trip.date).toLocaleDateString("pt-BR")}
-                        </h5>
+                      <div className={styles.tripItemMain}>
+                        <div className={styles.tripItemDate}>
+                          {/* Ícone muda conforme o período */}
+                          {trip.period === "morning" ? (
+                            <I.sun size={18} color="#eab308" />
+                          ) : (
+                            <I.moon size={18} color="#6366f1" />
+                          )}
+                          <h5>
+                            {new Date(trip.date).toLocaleDateString("pt-BR", {
+                              timeZone: "UTC",
+                            })}
+                          </h5>
+                        </div>
+                        <span className={styles.routeText}>
+                          {trip.direction === "go"
+                            ? "Ida ao Campus"
+                            : "Retorno"}
+                        </span>
                       </div>
 
                       <div className={styles.tripItemInfo}>
-                        <span className={styles.badge}>
-                          {trip.period === "morning" ? "Manhã" : "Tarde"}
-                        </span>
-                        <span className={styles.badge}>
+                        <span
+                          className={`${styles.badge} ${
+                            trip.direction === "go"
+                              ? styles.badgeGo
+                              : styles.badgeBack
+                          }`}
+                        >
+                          {trip.direction === "go" ? (
+                            <I.arrow_forward size={12} />
+                          ) : (
+                            <I.arrow_back size={12} />
+                          )}
                           {trip.direction === "go" ? "Ida" : "Volta"}
                         </span>
                       </div>
                     </Card>
                   </li>
                 ))}
-              {trips.length === 0 && (
-                <p
-                  style={{
-                    textAlign: "center",
-                    color: "#94a3b8",
-                    marginTop: "1rem",
-                  }}
-                >
-                  Nenhuma viagem encontrada.
-                </p>
+              {!isLoading && trips.length === 0 && (
+                <div className={styles.emptyState}>
+                  <I.calendar size={32} color="#cbd5e1" />
+                  <p>Nenhuma viagem encontrada para esta data.</p>
+                </div>
               )}
             </ul>
           </div>
@@ -173,31 +241,51 @@ export function BusTripPage() {
                   }
                 />
 
-                {/* Agrupamento visual das informações complementares */}
                 <div className={styles.detailsGrid}>
-                  {reservations.length > 0 && (
-                    <BusReservationsCard
-                      reservations={reservations.filter(
-                        (res) => res.bus_trip_id === selectedTrip.id
-                      )}
-                    />
-                  )}
-                  {reports.length > 0 && (
-                    <BusReportsCard
-                      reports={reports.filter(
-                        (rep) => rep.bus_trip_id === selectedTrip.id
-                      )}
-                    />
-                  )}
+                  <div className={styles.gridColumn}>
+                    <h3>
+                      Reservas (
+                      {
+                        reservations.filter(
+                          (r) => r.bus_trip_id === selectedTrip.id
+                        ).length
+                      }
+                      )
+                    </h3>
+                    {reservations.length > 0 ? (
+                      <BusReservationsCard
+                        reservations={reservations.filter(
+                          (res) => res.bus_trip_id === selectedTrip.id
+                        )}
+                      />
+                    ) : (
+                      <p className={styles.emptySubText}>Sem reservas.</p>
+                    )}
+                  </div>
+
+                  <div className={styles.gridColumn}>
+                    <h3>Relatórios</h3>
+                    {reports.length > 0 ? (
+                      <BusReportsCard
+                        reports={reports.filter(
+                          (rep) => rep.bus_trip_id === selectedTrip.id
+                        )}
+                      />
+                    ) : (
+                      <p className={styles.emptySubText}>Nenhum relatório.</p>
+                    )}
+                  </div>
                 </div>
               </>
             ) : (
               <Card className={styles.nonSelectedTripBox}>
-                <I.calendar size={48} />
-                <h1 style={{ marginTop: "1rem" }}>Selecione uma viagem</h1>
+                <I.map size={48} color="#cbd5e1" />
+                <h1 style={{ marginTop: "1rem", color: "#475569" }}>
+                  Selecione uma viagem
+                </h1>
                 <p>
-                  Escolha uma rota na lista à esquerda para gerenciar reservas e
-                  relatórios.
+                  Clique em um card à esquerda para ver os detalhes, passageiros
+                  e relatórios.
                 </p>
               </Card>
             )}

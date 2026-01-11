@@ -3,7 +3,6 @@
   flex-direction: column;
   width: 100%;
   gap: 1rem;
-  box-sizing: border-box;
 }
 
 /* Cabeçalho com Título e Botão lado a lado */

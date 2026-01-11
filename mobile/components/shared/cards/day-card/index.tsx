@@ -12,13 +12,25 @@ interface DayCardProps {
 
 export function DayCard({ children, date, weekDay, onPress }: DayCardProps) {
   return (
-    <Pressable onPress={onPress} style={styles.dayCard}>
-      <View style={styles.dayCardFixedInfo}>
-        <Text>{weekDay}</Text>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.dayCard,
+        pressed && {
+          transform: [{ scale: 0.98 }],
+          opacity: 0.9,
+        }, // Feedback tátil ao pressionar
+      ]}
+    >
+      <View style={styles.header}>
+        <Text style={styles.weekDayText}>{weekDay.toUpperCase()}</Text>
+        {date && <Text style={styles.dateText}>{date.getDate()}</Text>}
       </View>
+
       <View style={styles.dayCardBody}>{children}</View>
-      <View style={styles.dayCardFixedInfo}>
-        {date && <Text>{date.toLocaleTimeString()}</Text>}
+
+      <View style={styles.footer}>
+        <View style={styles.indicator} />
       </View>
     </Pressable>
   );

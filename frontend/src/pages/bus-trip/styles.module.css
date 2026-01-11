@@ -2,19 +2,41 @@
 .left {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1rem;
+  width: 100%;
+  gap: 1rem;
 }
 
 .header {
-  text-align: left; /* Alinhamento à esquerda é mais natural para listas */
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .header h1 {
+  margin: 0;
   font-size: 1.5rem;
-  margin-bottom: 0.25rem;
+  color: var(--color-text-primary, #333);
+}
+
+.header p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.loadingBadge {
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: #64748b;
+}
+
+.controls {
+  margin-bottom: 0.5rem;
 }
 
 /* Lista com Scroll Independente */
@@ -24,8 +46,22 @@
   gap: 0.75rem;
   width: 100%;
   padding: 4px;
-  flex: 1; /* Ocupa o espaço restante */
+  flex: 1;
   overflow-y: auto;
+  /* Scrollbar fina para estética */
+  scrollbar-width: thin;
+}
+
+/* Estado vazio */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #94a3b8;
+  gap: 1rem;
+  text-align: center;
 }
 
 /* Melhoria no Item da Viagem (Card) */
@@ -33,57 +69,72 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.8rem 1rem !important;
+  padding: 1rem !important;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid #e2e8f0 !important;
   border-radius: 8px;
+  background-color: white;
 }
 
 .tripItem:hover {
-  background-color: #f8fafc;
-  transform: translateX(4px);
+  border-color: #cbd5e1 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .selectedTrip {
   border-color: var(--color-primary) !important;
-  background-color: rgba(
-    28,
-    104,
-    92,
-    0.05
-  ); /* Usando sua cor primária com transparência */
+  background-color: rgba(28, 104, 92, 0.04) !important;
   box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.tripItemMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .tripItemDate {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: #475569;
+  color: #334155;
 }
 
 .tripItemDate h5 {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  margin: 0;
 }
 
-.tripItemInfo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+.routeText {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-left: 28px; /* Alinha com o texto da data ignorando o ícone */
 }
 
 /* Badges para Período e Direção */
 .badge {
-  padding: 2px 8px;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  background-color: #f1f5f9;
-  color: #64748b;
+  letter-spacing: 0.025em;
+}
+
+.badgeGo {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.badgeBack {
+  background-color: #eff6ff;
+  color: #1d4ed8;
 }
 
 /* Estilo para a área da direita */
@@ -94,6 +145,35 @@
   width: 100%;
   padding: 1rem;
   overflow-y: auto;
+  height: 100%;
+}
+
+/* GRID DA DIREITA QUE FALTAVA */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .detailsGrid {
+    grid-template-columns: 1fr; /* Vira uma coluna em telas menores */
+  }
+}
+
+.gridColumn h3 {
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.emptySubText {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 
 .nonSelectedTripBox {
@@ -103,4 +183,8 @@
   flex-direction: column;
   text-align: center;
   color: #94a3b8;
+  height: 100%; /* Centraliza verticalmente no espaço vazio */
+  border: 2px dashed #e2e8f0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }

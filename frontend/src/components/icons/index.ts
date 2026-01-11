@@ -3,6 +3,8 @@ import {
   FaCheckCircle,
   FaSearch,
   FaUserCircle,
+  FaSun,
+  FaMoon,
 } from "react-icons/fa";
 import {
   IoIosArrowBack,
@@ -13,6 +15,7 @@ import {
   IoIosMenu,
   IoIosClock,
   IoIosInformation,
+  IoIosMap,
 } from "react-icons/io";
 import { BiSolidError } from "react-icons/bi";
 import { LuLoaderCircle } from "react-icons/lu";
@@ -29,7 +32,10 @@ export const I = {
   error: BiSolidError,
   info: IoIosInformation,
   loader: LuLoaderCircle,
+  map: IoIosMap,
   menu: IoIosMenu,
+  moon: FaMoon,
   search: FaSearch,
+  sun: FaSun,
   user: FaUserCircle,
 };

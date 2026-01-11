@@ -1,6 +1,5 @@
 .container {
   display: flex;
-  flex-direction: row; /* Coloca os blocos lado a lado */
   align-items: flex-start; /* Alinha o topo dos cards */
   gap: 2.5rem; /* Espaço generoso entre as colunas */
   padding: 2.5rem;
@@ -44,4 +43,22 @@
   padding: 1.25rem !important;
   border-radius: 16px;
   background: #ffffff;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .detailsSection {
+    position: static;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .calendarSection {
+    width: 100%;
+  }
 }

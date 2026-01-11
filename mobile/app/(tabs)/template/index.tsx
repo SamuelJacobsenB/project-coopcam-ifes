@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -68,7 +69,7 @@ export default function TemplatePage() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Title>Predefinição</Title>
 
       {isLoading && (
@@ -114,10 +115,8 @@ export default function TemplatePage() {
       )}
 
       {template && !error && (
-        <FlatList
-          contentContainerStyle={styles.list}
-          data={weekDays}
-          renderItem={({ item: day }) => {
+        <View style={styles.list}>
+          {weekDays.map((day) => {
             const dayIndex = weekDays.indexOf(day);
 
             const morningGoReserved =
@@ -147,11 +146,10 @@ export default function TemplatePage() {
                 />
               </DayCard>
             );
-          }}
-          keyExtractor={(day) => day}
-        />
+          })}
+        </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -174,8 +172,7 @@ const styles = StyleSheet.create({
   },
   fixedBtnContainer: {
     position: "absolute",
-    top: 24,
-    right: 24,
+    right: 0,
   },
   list: {
     display: "flex",
@@ -185,5 +182,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     rowGap: 18,
     columnGap: 12,
+    marginBottom: 60,
   },
 });
