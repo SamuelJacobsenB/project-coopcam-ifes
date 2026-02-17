@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View } from "react-native";
 import {
   Calendar as RNCalendar,
   DateData,
   LocaleConfig,
 } from "react-native-calendars";
+import { MarkingProps } from "react-native-calendars/src/calendar/day/marking";
 
 import type { AvailableOverride, UnavailableDay } from "@/types";
 import { colors } from "@/styles";
 import styles from "./styles";
 
-// Localização em português
+// Configuração de Localização (Mantida)
 LocaleConfig.locales["pt-br"] = {
   monthNames: [
     "Janeiro",
@@ -40,14 +41,26 @@ LocaleConfig.locales["pt-br"] = {
     "Nov",
     "Dez",
   ],
-  dayNames: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+  dayNames: [
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+  ],
   dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
   today: "Hoje",
 };
 LocaleConfig.defaultLocale = "pt-br";
 
-function formatDateKey(date: Date) {
-  return date.toISOString().split("T")[0];
+// Função auxiliar interna (caso não crie o utils.ts)
+function toDateId(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 interface CalendarProps {
@@ -60,117 +73,111 @@ interface CalendarProps {
 export function Calendar({
   date,
   setDate,
-  availableOverrides,
-  unavailableDays,
+  availableOverrides = [],
+  unavailableDays = [],
 }: CalendarProps) {
-  const markings: Record<string, any> = {};
+  // Data base para cálculos
+  const today = useMemo(() => new Date(), []);
+  const todayId = toDateId(today);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Lógica de marcação memoizada
+  const markedDates = useMemo(() => {
+    const markings: Record<string, MarkingProps> = {};
 
-  // Dias indisponíveis exceto Override
-  for (let i = 0; i <= 720; i++) {
-    const d = new Date();
-
-    d.setDate(today.getDate() - i);
-    d.setHours(0, 0, 0, 0);
-
-    const key = formatDateKey(d);
-    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-    const hasOverride = availableOverrides.some(
-      (o) => formatDateKey(o.date) === key
+    // Set de Overrides para busca rápida O(1)
+    const overrideSet = new Set(
+      availableOverrides.map((o) => toDateId(o.date))
     );
 
-    if ((isWeekend || d < today) && !hasOverride) {
+    // 1. Marcação de Finais de Semana (Range de 1 ano futuro para performance)
+    // Usamos minDate para o passado, então focamos no futuro aqui.
+    for (let i = 0; i <= 365; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+
+      const dayOfWeek = d.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // 0=Dom, 6=Sáb
+      const key = toDateId(d);
+
+      if (isWeekend && !overrideSet.has(key)) {
+        markings[key] = {
+          disabled: true,
+          customStyles: {
+            container: styles.unavailable,
+            text: styles.unavailableText,
+          },
+        };
+      }
+    }
+
+    // 2. Dias especificamente indisponíveis (Feriados, lotados, etc)
+    unavailableDays.forEach((d) => {
+      const key = toDateId(d.date);
+      // Se tiver override, ignoramos a indisponibilidade
+      if (!overrideSet.has(key)) {
+        markings[key] = {
+          disabled: true,
+          customStyles: {
+            container: styles.unavailable,
+            text: styles.unavailableText,
+          },
+        };
+      }
+    });
+
+    // 3. Dias de Exceção (Overrides - Disponível mesmo se for FDS/Indisponível)
+    availableOverrides.forEach((o) => {
+      const key = toDateId(o.date);
       markings[key] = {
-        disabled: true,
+        disabled: false, // Força habilitação
         customStyles: {
-          container: styles.unavailable,
-          text: styles.unavailableText,
+          container: styles.override,
+          text: styles.overrideText,
         },
       };
-    }
-  }
+    });
 
-  // Finais de semana futuros
-  for (let i = 0; i <= 720; i++) {
-    const d = new Date();
+    // 4. Marca o dia Selecionado
+    const selectedKey = toDateId(date);
+    const existingMarking = markings[selectedKey] || {};
 
-    d.setDate(today.getDate() + i);
-    d.setHours(0, 0, 0, 0);
-
-    const key = formatDateKey(d);
-    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-    const hasOverride = availableOverrides.some(
-      (o) => formatDateKey(o.date) === key
-    );
-
-    if (isWeekend && !hasOverride) {
-      markings[key] = {
-        disabled: true,
-        customStyles: {
-          container: styles.unavailable,
-          text: styles.unavailableText,
-        },
-      };
-    }
-  }
-
-  // Dias indisponíveis
-  unavailableDays.forEach((d) => {
-    const key = formatDateKey(d.date);
-    const hasOverride = availableOverrides.some(
-      (o) => formatDateKey(o.date) === key
-    );
-    if (!hasOverride) {
-      markings[key] = {
-        disabled: true,
-        customStyles: {
-          container: styles.unavailable,
-          text: styles.unavailableText,
-        },
-      };
-    }
-  });
-
-  // Dias disponíveis
-  availableOverrides.forEach((o) => {
-    const key = formatDateKey(o.date);
-    markings[key] = {
+    markings[selectedKey] = {
+      ...existingMarking,
+      selected: true,
+      // Prioriza o estilo de selecionado, mas mantém container base se necessário
       customStyles: {
-        container: styles.override,
-        text: styles.overrideText,
+        container: styles.selected,
+        text: styles.selectedText,
       },
     };
-  });
 
-  // Marca selecionado
-  const selectedKey = formatDateKey(date);
-  markings[selectedKey] = {
-    ...markings[selectedKey],
-    selected: true,
-    customStyles: {
-      container: styles.selected,
-      text: styles.selectedText,
-    },
-  };
+    return markings;
+  }, [availableOverrides, unavailableDays, date, today]); // Recalcula apenas se estas mudarem
 
   return (
     <View style={styles.container}>
       <RNCalendar
-        current={selectedKey}
+        // Propriedade chave para bloquear o passado nativamente
+        minDate={todayId}
+        current={toDateId(date)}
         onDayPress={(day: DateData) => {
-          const [y, m, d] = day.dateString.split("-").map(Number);
-          const newDate = new Date(y, m - 1, d, 12);
+          // Cria data meio-dia para evitar problemas de fuso horário 00:00 vs GMT
+          const newDate = new Date(day.year, day.month - 1, day.day, 12, 0, 0);
           setDate(newDate);
         }}
         markingType="custom"
-        markedDates={markings}
+        markedDates={markedDates}
+        // Melhorias visuais e de UX
+        enableSwipeMonths={true}
+        hideExtraDays={true}
         theme={{
           todayTextColor: colors.warning,
           arrowColor: colors.primary,
           textMonthFontSize: 18,
           textDayHeaderFontWeight: "600",
+          // Garante que o fundo do calendário seja transparente ou da cor desejada
+          calendarBackground: "transparent",
+          textSectionTitleColor: colors.gray,
         }}
       />
     </View>

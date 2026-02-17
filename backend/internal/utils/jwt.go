@@ -10,10 +10,10 @@ import (
 
 var jwtKey = []byte(os.Getenv("JWT_KEY"))
 
-func GenerateJWT(userID uuid.UUID, roles []string) (string, error) {
+func GenerateJWT(userID uuid.UUID, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID.String(),
-		"roles":   roles,
+		"role":    role,
 		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
 	}
 

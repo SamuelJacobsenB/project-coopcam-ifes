@@ -45,20 +45,13 @@ func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 			return
 		}
 
-		roleInterfaces, ok := claims["roles"].([]interface{})
+		userRole, ok := claims["role"].(string)
 		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing roles in token"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing role in token"})
 			return
 		}
 
-		userRoles := make([]string, len(roleInterfaces))
-		for i, role := range roleInterfaces {
-			if roleStr, ok := role.(string); ok {
-				userRoles[i] = roleStr
-			}
-		}
-
-		if !types.HasRoles(userRoles, allowedRoles...) {
+		if !types.HasRole(userRole, []string(allowedRoles)) {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden: insufficient role"})
 			return
 		}

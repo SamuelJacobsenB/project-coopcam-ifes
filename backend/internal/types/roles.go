@@ -17,21 +17,6 @@ func ValidateRole(role string) bool {
 	}
 }
 
-func ValidateUserRoles(roles []string) bool {
-	for _, role := range roles {
-		if !ValidateRole(role) {
-			return false
-		}
-	}
-	return true
-}
-
-func HasRoles(userRoles []string, allowedRoles ...string) bool {
-	for _, role := range allowedRoles {
-		if !slices.Contains(userRoles, role) {
-			return false
-		}
-	}
-
-	return true
+func HasRole(userRole string, allowedRoles []string) bool {
+	return slices.Contains(allowedRoles, userRole)
 }

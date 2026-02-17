@@ -6,39 +6,44 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { routes } from "@/routes";
 import { colors } from "@/styles";
+import { Header } from "@/components";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarLabel: () => null,
-        tabBarInactiveTintColor: "white",
-        tabBarActiveTintColor: colors.secondary,
-        tabBarStyle: styles.navbar,
-      }}
-    >
-      {routes.map(({ name, icon }) => (
-        <Tabs.Screen
-          key={name}
-          name={name}
-          options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons
-                name={icon}
-                size={name === "(home)/index" || focused ? size + 6 : size}
-                color={color}
-                style={
-                  name === "(home)/index" || focused
-                    ? { marginBottom: -4 }
-                    : undefined
-                }
-              />
-            ),
-          }}
-        />
-      ))}
-    </Tabs>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
+      <Header />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarLabel: () => null,
+          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: colors.secondary,
+          tabBarStyle: styles.navbar,
+        }}
+      >
+        {routes.map(({ name, icon }) => (
+          <Tabs.Screen
+            key={name}
+            name={name}
+            options={{
+              tabBarIcon: ({ color, size, focused }) => (
+                <Ionicons
+                  name={icon}
+                  size={name === "(home)/index" || focused ? size + 6 : size}
+                  color={color}
+                  style={
+                    name === "(home)/index" || focused
+                      ? { marginBottom: -4 }
+                      : undefined
+                  }
+                />
+              ),
+            }}
+          />
+        ))}
+      </Tabs>
+    </SafeAreaView>
   );
 }
 

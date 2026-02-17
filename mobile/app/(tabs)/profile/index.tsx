@@ -38,7 +38,7 @@ const ProfileSectionCard = ({ title, children, icon }: any) => (
 );
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const { logout } = useLogout();
   const { showMessage } = useMessage();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -171,7 +171,8 @@ export default function ProfilePage() {
         onClose={() => setIsLogoutModalOpen(false)}
         onConfirm={async () => {
           await logout();
-          router.replace("/login");
+          setUser(null);
+          router.navigate("/login");
         }}
       />
     </View>
@@ -179,7 +180,7 @@ export default function ProfilePage() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: "#f4f6f9" },
+  mainContainer: { flex: 1 },
   scrollContainer: { padding: 20, paddingBottom: 40 },
   headerContainer: { alignItems: "center", marginBottom: 25 },
   logoutButton: { position: "absolute", top: 0, right: 0, zIndex: 10 },

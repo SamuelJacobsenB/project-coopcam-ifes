@@ -1,2 +1,2 @@
-POST http://localhost:4000/api/v1/user/dev/promote-to-admin/0589b265-20f1-4b76-b797-9bc436550e42
+POST http://localhost:4000/api/v1/user/dev/promote-to-admin/9d0788ce-fd29-48b2-8bee-c3a0d4b5580c
 Content-Type: application/json

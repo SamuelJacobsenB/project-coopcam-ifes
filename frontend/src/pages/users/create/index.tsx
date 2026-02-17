@@ -1,11 +1,18 @@
 import { useReducer } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import {
+  Checkbox,
+  Error,
+  FormPage,
+  I,
+  Input,
+  Private,
+} from "../../../components";
 import { useMessage } from "../../../contexts";
 import { useCreateUser } from "../../../hooks";
-import { Error, FormPage, I, Input, Private } from "../../../components";
-import { validateUserRequestDTO } from "../../../utils";
 import type { UserRequestDTO } from "../../../types";
+import { validateUserRequestDTO } from "../../../utils";
 
 import styles from "./styles.module.css";
 
@@ -18,6 +25,7 @@ interface State {
   address: string;
   cep: string;
   birth: string;
+  has_financial_aid: boolean;
   error: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,6 +49,7 @@ const initialState: State = {
   address: "",
   cep: "",
   birth: "",
+  has_financial_aid: false,
   error: "",
 };
 
@@ -51,8 +60,18 @@ export function CreateUserPage() {
   const { showMessage } = useMessage();
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { name, email, password, cpf, phone, address, cep, birth, error } =
-    state;
+  const {
+    name,
+    email,
+    password,
+    cpf,
+    phone,
+    address,
+    cep,
+    birth,
+    has_financial_aid,
+    error,
+  } = state;
 
   async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -66,6 +85,7 @@ export function CreateUserPage() {
       address,
       cep,
       birth,
+      has_financial_aid,
     };
 
     const error = validateUserRequestDTO(user);
@@ -176,7 +196,7 @@ export function CreateUserPage() {
           />
           <Input
             label="Endereço"
-            name="adress"
+            name="address"
             type="text"
             placeholder="Digite o endereço"
             required
@@ -213,6 +233,20 @@ export function CreateUserPage() {
               dispatch({
                 type: "field",
                 payload: { field: "birth", value: e.target.value },
+              })
+            }
+          />
+          <Checkbox
+            label="Possui auxílio financeiro"
+            name="has_financial_aid"
+            checked={has_financial_aid}
+            onChange={(e) =>
+              dispatch({
+                type: "field",
+                payload: {
+                  field: "has_financial_aid",
+                  value: e.target.checked,
+                },
               })
             }
           />

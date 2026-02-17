@@ -1,0 +1,36 @@
+.checkbox_container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  width: fit-content;
+  padding: 4px;
+}
+
+.label_text {
+  font-size: 1rem;
+  color: inherit;
+}
+
+.checkbox_input {
+  cursor: pointer;
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #2563eb;
+  background-color: var(--color-gray);
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  transition: transform 0.1s ease;
+}
+
+/* Melhora a lógica de foco para acessibilidade */
+.checkbox_input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Feedback leve ao clicar */
+.checkbox_input:active {
+  transform: scale(0.9);
+}

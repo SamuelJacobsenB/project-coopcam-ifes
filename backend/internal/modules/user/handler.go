@@ -75,7 +75,7 @@ func (handler *UserHandler) FindByID(ctx *gin.Context) {
 
 	if id != userID {
 		ifUserIsAdmin, err := handler.service.FindByID(userID)
-		if !types.HasRoles(ifUserIsAdmin.Roles, types.RoleCoordinator) || err != nil {
+		if !types.HasRole(ifUserIsAdmin.Role, []string{types.RoleAdmin, types.RoleCoordinator}) || err != nil {
 			ctx.JSON(403, gin.H{"error": "usuário não autorizado"})
 			return
 		}
@@ -118,7 +118,7 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	var userRequest dtos.UserRequestDTO
+	var userRequest dtos.UserUpdateDTO
 	if err := ctx.ShouldBindJSON(&userRequest); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

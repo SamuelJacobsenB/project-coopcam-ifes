@@ -7,7 +7,7 @@ export interface User {
 
   name: string;
   email: string;
-  roles: Role[];
+  role: Role;
 
   cpf: string;
   phone: string;
@@ -15,6 +15,8 @@ export interface User {
   cep: string;
   birth: string;
   avatar_url: string | null;
+
+  has_financial_aid: boolean;
 
   template: Template | null;
   weekly_preference: WeeklyPreference | null;

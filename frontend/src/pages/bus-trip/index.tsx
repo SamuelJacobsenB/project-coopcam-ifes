@@ -1,12 +1,6 @@
-import { useEffect, useReducer, useCallback } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-  useBusTripById,
-  useManyBusReservationsByDate,
-  useManyBusTripReportsByDate,
-  useManyBusTripsByDate,
-} from "../../hooks";
 import {
   Card,
   DateInput,
@@ -15,8 +9,14 @@ import {
   Navbar,
   Private,
 } from "../../components";
-import { isSameDate } from "../../utils";
+import {
+  useBusTripById,
+  useManyBusReservationsByDate,
+  useManyBusTripReportsByDate,
+  useManyBusTripsByDate,
+} from "../../hooks";
 import type { BusReservation, BusTrip, BusTripReport } from "../../types";
+import { isSameDate } from "../../utils";
 
 import { BusReportsCard, BusReservationsCard, BusTripCard } from "./components";
 
@@ -131,7 +131,7 @@ export function BusTripPage() {
         dispatch({
           type: "field",
           payload: { field: "selectedTrip", value: trip },
-        })
+        }),
       );
     }
   }, [id, getBusTripById]);
@@ -225,74 +225,68 @@ export function BusTripPage() {
           </div>
         }
         rightSide={
-          <div className={styles.busTripArea}>
-            {selectedTrip ? (
-              <>
-                <BusTripCard
-                  selectedTrip={selectedTrip}
-                  onStatusUpdated={(status) =>
-                    dispatch({
-                      type: "field",
-                      payload: {
-                        field: "selectedTrip",
-                        value: { ...selectedTrip, status },
-                      },
-                    })
-                  }
-                />
+          selectedTrip ? (
+            <div className={styles.busTripArea}>
+              <BusTripCard
+                selectedTrip={selectedTrip}
+                onStatusUpdated={(status) =>
+                  dispatch({
+                    type: "field",
+                    payload: {
+                      field: "selectedTrip",
+                      value: { ...selectedTrip, status },
+                    },
+                  })
+                }
+              />
 
-                <div className={styles.detailsGrid}>
-                  <div className={styles.gridColumn}>
-                    <h3>
-                      Reservas (
-                      {
-                        reservations.filter(
-                          (r) => r.bus_trip_id === selectedTrip.id
-                        ).length
-                      }
-                      )
-                    </h3>
-                    {reservations.length > 0 ? (
-                      <BusReservationsCard
-                        reservations={reservations.filter(
-                          (res) => res.bus_trip_id === selectedTrip.id
-                        )}
-                      />
-                    ) : (
-                      <p className={styles.emptySubText}>Sem reservas.</p>
-                    )}
-                  </div>
-
-                  <div className={styles.gridColumn}>
-                    <h3>Relatórios</h3>
-                    {reports.length > 0 ? (
-                      <BusReportsCard
-                        reports={reports.filter(
-                          (rep) => rep.bus_trip_id === selectedTrip.id
-                        )}
-                      />
-                    ) : (
-                      <p className={styles.emptySubText}>Nenhum relatório.</p>
-                    )}
-                  </div>
+              <div className={styles.detailsGrid}>
+                <div className={styles.gridColumn}>
+                  <h3>
+                    Reservas (
+                    {
+                      reservations.filter(
+                        (r) => r.bus_trip_id === selectedTrip.id,
+                      ).length
+                    }
+                    )
+                  </h3>
+                  {reservations.length > 0 ? (
+                    <BusReservationsCard
+                      reservations={reservations.filter(
+                        (res) => res.bus_trip_id === selectedTrip.id,
+                      )}
+                    />
+                  ) : (
+                    <p className={styles.emptySubText}>Sem reservas.</p>
+                  )}
                 </div>
-              </>
-            ) : (
-              <Card className={styles.nonSelectedTripBox}>
-                <I.map size={48} color="#cbd5e1" />
-                <h1 style={{ marginTop: "1rem", color: "#475569" }}>
-                  Selecione uma viagem
-                </h1>
-                <p>
-                  Clique em um card à esquerda para ver os detalhes, passageiros
-                  e relatórios.
-                </p>
-              </Card>
-            )}
-          </div>
+
+                <div className={styles.gridColumn}>
+                  <h3>Relatórios</h3>
+                  {reports.length > 0 ? (
+                    <BusReportsCard
+                      reports={reports.filter(
+                        (rep) => rep.bus_trip_id === selectedTrip.id,
+                      )}
+                    />
+                  ) : (
+                    <p className={styles.emptySubText}>Nenhum relatório.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.rightPlaceholder}>
+              <I.map size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+              <h2>Selecione uma viagem</h2>
+              <p>
+                Clique em uma viagem na lista à esquerda para ver os detalhes
+                completos.
+              </p>
+            </div>
+          )
         }
-        leftClassName={styles.left}
-        rightClassName={styles.right}
       />
     </Private>
   );

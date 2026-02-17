@@ -26,6 +26,5 @@ func (service *AuthService) Login(loginDTO *dtos.LoginDTO) (string, error) {
 		return "", errors.New("email ou senha incorretos")
 	}
 
-	return utils.GenerateJWT(user.ID, user.Roles)
+	return utils.GenerateJWT(user.ID, user.Role)
 }
-

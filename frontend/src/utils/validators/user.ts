@@ -45,7 +45,7 @@ export function validateUserRequestDTO(user: UserRequestDTO): string {
     return "O telefone deve ser preenchido";
   }
 
-  if (!user.adress) {
+  if (!user.address) {
     return "O endereço deve ser preenchido";
   }
 

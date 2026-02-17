@@ -7,7 +7,7 @@ export default StyleSheet.create({
     position: "relative",
     flex: 1,
     padding: 16,
-    backgroundColor: colors.lightGray,
+    backgroundColor: "white",
     borderRadius: 12,
     elevation: 4,
   },

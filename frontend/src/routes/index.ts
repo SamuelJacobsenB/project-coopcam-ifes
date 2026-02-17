@@ -3,6 +3,7 @@ import {
   CalendarPage,
   CreateUserPage,
   DashboardPage,
+  DevelopmentPage,
   LoginPage,
   UsersPage,
 } from "../pages";
@@ -15,6 +16,8 @@ export const routes = [
   { path: "/viagens", element: BusTripPage },
   { path: "/viagens/:id", element: BusTripPage },
   { path: "/calendario", element: CalendarPage },
+  { path: "/development", element: DevelopmentPage },
+  { path: "/development/:id", element: DevelopmentPage },
 ];
 
 export const navRoutes = [

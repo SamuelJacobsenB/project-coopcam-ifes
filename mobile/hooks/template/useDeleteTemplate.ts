@@ -16,9 +16,9 @@ export const fetchDeleteTemplate = async () => {
 };
 
 export const useDeleteTemplate = () => {
-  const { mutateAsync: deleteTemplate } = useMutation({
+  const { mutateAsync: deleteTemplate, isPending } = useMutation({
     mutationFn: fetchDeleteTemplate,
   });
 
-  return { deleteTemplate };
+  return { deleteTemplate, isPending };
 };

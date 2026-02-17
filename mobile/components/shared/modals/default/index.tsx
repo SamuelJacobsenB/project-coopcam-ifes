@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import {
-  Modal as ReactNativeModal,
+  Modal as RNModal,
   View,
   TouchableOpacity,
-  Dimensions,
-  StatusBar,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
-import * as SystemUI from "expo-system-ui";
 import { Ionicons } from "@expo/vector-icons";
+import * as SystemUI from "expo-system-ui";
 
 import { colors } from "@/styles";
 
@@ -27,23 +28,37 @@ export function Modal({ children, isOpen, onClose }: ModalProps) {
   }, [isOpen]);
 
   return (
-    <>
-      <ReactNativeModal transparent visible={isOpen} animationType="fade">
-        <View
-          style={[
-            styles.background,
-            { height: Dimensions.get("window").height },
-          ]}
-        >
-          <StatusBar backgroundColor={"black"} />
-          <View style={styles.modalArea}>
-            <TouchableOpacity onPress={onClose} style={styles.close}>
-              <Ionicons name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <View style={styles.card}>{children}</View>
-          </View>
+    <RNModal
+      transparent
+      visible={isOpen}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.background}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.modalArea}
+          >
+            <TouchableWithoutFeedback>
+              <View style={styles.contentWrapper}>
+                {/* Botão Fechar */}
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={onClose}
+                  style={styles.close}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Ionicons name="close" size={20} color="#64748b" />
+                </TouchableOpacity>
+
+                {/* Esta View substitui o componente Card */}
+                <View style={styles.modalCard}>{children}</View>
+              </View>
+            </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
         </View>
-      </ReactNativeModal>
-    </>
+      </TouchableWithoutFeedback>
+    </RNModal>
   );
 }

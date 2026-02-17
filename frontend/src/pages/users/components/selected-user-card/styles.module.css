@@ -65,6 +65,38 @@
 /* Estilização para o estado de erro */
 .errorContainer {
   margin-top: 1rem;
+} /* Adicione isso ao final do arquivo styles.module.css */
+
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #2563eb; /* Cor azul padrão do seu tema */
+  cursor: pointer;
+}
+
+/* Estilo para quando não está em modo de edição */
+.checkboxLabel.disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.checkboxLabel.disabled input[type="checkbox"] {
+  cursor: default;
 }
 
 @media (max-width: 768px) {

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
 type User struct {
@@ -12,20 +11,23 @@ type User struct {
 	TemplateID         *uuid.UUID `gorm:"type:uuid" json:"template_id"`
 	WeeklyPreferenceID *uuid.UUID `gorm:"type:uuid" json:"weekly_preference_id"`
 
-	Name     string         `gorm:"uniqueIndex;not null" json:"name"`
-	Email    string         `gorm:"uniqueIndex;not null" json:"email"`
-	Password string         `json:"password"`
-	Roles    pq.StringArray `gorm:"type:text[]" json:"roles"`
+	Name     string `gorm:"uniqueIndex;not null" json:"name"`
+	Email    string `gorm:"uniqueIndex;not null" json:"email"`
+	Password string `json:"-"`
+	Role     string `gorm:"type:text;default:'user'" json:"roles"`
 
 	CPF       string    `json:"cpf"`
 	Phone     string    `json:"phone"`
-	Address    string    `json:"address"`
+	Address   string    `json:"address"`
 	CEP       string    `json:"cep"`
 	Birth     time.Time `json:"birth"`
 	AvatarURL *string   `json:"avatar_url"`
 
+	HasFinancialAid bool `gorm:"default:false" json:"has_financial_aid"`
+
 	Template         *Template         `gorm:"foreignKey:TemplateID" json:"template"`
 	WeeklyPreference *WeeklyPreference `gorm:"foreignKey:WeeklyPreferenceID" json:"weekly_preference"`
+	Payments         []MonthlyPayment  `gorm:"foreignKey:UserID" json:"payments,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

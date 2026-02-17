@@ -4,7 +4,6 @@ import (
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -47,7 +46,6 @@ func (repo *UserRepository) FindByEmail(email string) (*entities.User, error) {
 }
 
 func (repo *UserRepository) Create(user *entities.User) error {
-	user.Roles = pq.StringArray{types.RoleUser}
 	user.ID = uuid.New()
 
 	return repo.db.Create(user).Error
@@ -62,19 +60,19 @@ func (repo *UserRepository) UpdateAvatarURL(avatarURL string, id uuid.UUID) erro
 }
 
 func (repo *UserRepository) PromoteToCoordinator(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("roles", gorm.Expr("?", pq.StringArray{types.RoleUser, types.RoleCoordinator})).Error
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleCoordinator).Error
 }
 
 func (repo *UserRepository) DemoteFromCoordinator(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("roles", gorm.Expr("?", pq.StringArray{types.RoleUser})).Error
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleUser).Error
 }
 
 func (repo *UserRepository) PromoteToAdmin(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("roles", gorm.Expr("?", pq.StringArray{types.RoleUser, types.RoleCoordinator, types.RoleAdmin})).Error
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleAdmin).Error
 }
 
 func (repo *UserRepository) DemoteFromAdmin(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("roles", gorm.Expr("?", pq.StringArray{types.RoleUser, types.RoleCoordinator})).Error
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleCoordinator).Error
 }
 
 func (repo *UserRepository) Delete(id uuid.UUID) error {

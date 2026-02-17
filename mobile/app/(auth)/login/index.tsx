@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -13,7 +14,7 @@ import { useLogin, useVerifyUser } from "@/hooks";
 import { Error, Input, Line } from "@/components";
 import { validateLoginDTO } from "@/utils";
 import { LoginDTO } from "@/types";
-import { btnStyles } from "@/styles";
+import { btnStyles, colors } from "@/styles";
 
 interface State {
   email: string;
@@ -78,59 +79,78 @@ export default function LoginPage() {
   }, [isVerified]);
 
   return (
-    <View style={styles.loginContainer}>
-      <Text style={styles.title}>Login</Text>
-      <Line style={styles.line} />
-      <Error
-        error={error}
-        onClose={() => dispatch({ type: "error", payload: "" })}
-      />
-      <Input
-        label="Email"
-        textContentType="emailAddress"
-        placeholder="Email"
-        value={email}
-        onChangeText={(email) =>
-          dispatch({ type: "field", payload: { field: "email", value: email } })
-        }
-      />
-      <Input
-        label="Senha"
-        textContentType="password"
-        placeholder="Senha"
-        secureTextEntry
-        value={password}
-        onChangeText={(password) =>
-          dispatch({
-            type: "field",
-            payload: { field: "password", value: password },
-          })
-        }
-      />
-      <TouchableOpacity onPress={handleLogin} style={styles.btn}>
-        <Text
-          style={[
-            btnStyles.btn,
-            btnStyles.btnSecondary,
-            isPending && btnStyles.btnDisabled,
-          ]}
-        >
-          {isPending ? <ActivityIndicator color={"white"} /> : "Login"}
-        </Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      <Image source={require("@/assets/images/logo.png")} />
+      <View style={styles.loginContainer}>
+        <Text style={styles.title}>Login</Text>
+        <Line style={styles.line} />
+        <Error
+          error={error}
+          onClose={() => dispatch({ type: "error", payload: "" })}
+        />
+        <Input
+          label="Email"
+          textContentType="emailAddress"
+          placeholder="Email"
+          value={email}
+          onChangeText={(email) =>
+            dispatch({
+              type: "field",
+              payload: { field: "email", value: email },
+            })
+          }
+        />
+        <Input
+          label="Senha"
+          textContentType="password"
+          placeholder="Senha"
+          secureTextEntry
+          value={password}
+          onChangeText={(password) =>
+            dispatch({
+              type: "field",
+              payload: { field: "password", value: password },
+            })
+          }
+        />
+        <TouchableOpacity onPress={handleLogin} style={styles.btn}>
+          <Text
+            style={[
+              btnStyles.btn,
+              btnStyles.btnSecondary,
+              isPending && btnStyles.btnDisabled,
+            ]}
+          >
+            {isPending ? <ActivityIndicator color={"white"} /> : "Login"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loginContainer: {
+  container: {
     flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 48,
+    backgroundColor: colors.primary,
+    padding: 16,
+  },
+  loginContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
     gap: 16,
-    padding: 32,
+    backgroundColor: "white",
+    width: "100%",
+    maxWidth: 400,
+    padding: 28,
+    paddingVertical: 42,
+    borderRadius: 8,
   },
   title: {
     fontSize: 48,

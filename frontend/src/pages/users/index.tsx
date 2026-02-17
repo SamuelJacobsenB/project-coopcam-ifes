@@ -4,7 +4,7 @@ import { useManyUsers } from "../../hooks";
 import {
   Card,
   DualPage,
-  I, // Assumindo que I.plus ou similar exista, senão mantenha texto
+  I,
   Loader,
   Navbar,
   Private,
@@ -99,7 +99,10 @@ export function UsersPage() {
         }
         rightSide={
           selectedUser ? (
-            <SelectedUserCard selectedUser={selectedUser} />
+            <SelectedUserCard
+              selectedUser={selectedUser}
+              setSelectedUser={(user) => setSelectedUser(user)}
+            />
           ) : (
             <div className={styles.rightPlaceholder}>
               <I.user size={48} color="#ccc" style={{ marginBottom: "1rem" }} />

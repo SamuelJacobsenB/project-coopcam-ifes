@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"time"
 	"os"
+	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/gin-contrib/cors"
@@ -35,6 +35,9 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 
 	templateGroup := v1.Group("/template")
 	SetupTemplateRoutes(templateGroup, handlers.TemplateHandler)
+
+	monthlyPaymentGroup := v1.Group("/monthly-payment")
+	SetupMonthlyPaymentRoutes(monthlyPaymentGroup, handlers.MonthlyPaymentHandler)
 
 	busReservationGroup := v1.Group("/bus-reservation")
 	SetupBusReservationRoutes(busReservationGroup, handlers.BusReservationHandler)

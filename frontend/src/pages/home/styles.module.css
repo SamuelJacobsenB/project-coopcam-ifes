@@ -3,18 +3,10 @@
   flex-direction: column;
   width: 100%;
   min-height: calc(100vh - 88px);
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 1.5rem;
+  max-width: 900px;
   margin: 0 auto;
-}
-
-.header {
-  margin-bottom: 2rem;
-}
-
-.header h1 {
-  font-size: 2rem;
-  color: var(--color-text-main);
+  transition: max-width 0.3s ease;
 }
 
 .noTrips {
@@ -22,33 +14,89 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
+  padding: 2rem;
   text-align: center;
   color: var(--color-text-light, #999);
   gap: 1rem;
 }
 
-/* Grid Responsivo */
+/* --- Ajustes para Telas Grandes (Desktop) --- */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1100px; /* Expande o container em monitores ultra-wide/grandes */
+  }
+
+  .header h1 {
+    font-size: 1.8rem; /* Título levemente maior */
+  }
+
+  .tripCard {
+    height: 180px; /* Aumentado de 150px para 180px */
+    padding: 1.5rem;
+  }
+
+  .tripGraph {
+    width: 130px; /* Gráfico ganha mais destaque */
+    height: 130px;
+  }
+
+  .tripDetails p {
+    font-size: 1.2rem; /* Texto principal mais legível */
+  }
+
+  .tripDetails span {
+    font-size: 0.95rem; /* Sublegendas maiores */
+  }
+}
+
+/* --- Estrutura Base (Mantida e Refinada) --- */
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: #1e293b;
+}
+
+.dateSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
 .tripGrid {
   display: grid;
-  /* Cria colunas automáticas de no mínimo 350px */
+  /* Mantém as 2 colunas ideais para as 4 trips */
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
+  gap: 1.25rem;
   width: 100%;
 }
 
 .tripCard {
   display: flex;
-  flex-direction: row; /* Gráfico lado a lado com info */
+  flex-direction: row;
   align-items: center;
-  padding: 1rem;
-  height: 180px; /* Altura fixa para uniformidade */
-  transition: transform 0.2s;
+  padding: 1.2rem;
+  height: 160px; /* Base ligeiramente maior que a anterior */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px; /* Bordas mais arredondadas para um ar moderno */
+  background: #fff;
+}
+
+.tripCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+  border-color: #3b82f6; /* Realce sutil no hover */
 }
 
 .tripGraph {
-  width: 120px; /* Tamanho fixo para o gráfico não estourar */
-  height: 120px;
+  width: 110px;
+  height: 110px;
   flex-shrink: 0;
 }
 
@@ -58,29 +106,83 @@
   flex-direction: column;
   justify-content: center;
   padding-left: 1.5rem;
-  border-left: 1px solid #eee;
-  margin-left: 1rem;
-  height: 100%;
+  margin-left: 1.5rem;
+  border-left: 1px solid #f1f5f9;
+  height: 70%;
 }
 
-.tripBadge {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: var(--color-primary);
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-}
-
-.tripDetails {
+.tripStatusRow {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: #666;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.tripDetails p {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+  color: #1e293b;
 }
 
 .tripDetails span {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.statusLabel {
+  font-weight: 700;
+  font-size: 0.8rem !important;
+  margin-top: 0.4rem;
+  letter-spacing: 0.025em;
+}
+
+/* Estilos de Status e Badges permanecem os mesmos */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.go {
+  background: #dcfce7;
+  color: #166534;
+}
+.return {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.finished {
+  background-color: #22c55e;
+}
+.started {
+  background-color: #3b82f6;
+  animation: pulse 2s infinite;
+}
+.unstarted {
+  background-color: #cbd5e1;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

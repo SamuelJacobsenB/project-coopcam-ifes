@@ -176,15 +176,17 @@
   font-style: italic;
 }
 
-.nonSelectedTripBox {
+/* Lado Direito (Placeholder) */
+.rightPlaceholder {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   text-align: center;
-  color: #94a3b8;
-  height: 100%; /* Centraliza verticalmente no espaço vazio */
-  border: 2px dashed #e2e8f0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  color: #666;
+  padding: 2rem;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.01);
 }

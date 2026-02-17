@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from "react";
 
+import { useMessage } from "../../../../contexts";
 import { useDeleteUserById, useUpdateUserById } from "../../../../hooks";
 import { Card, ConfirmModal, Error, I, Input } from "../../../../components";
 import type { User } from "../../../../types";
@@ -7,9 +8,12 @@ import type { User } from "../../../../types";
 import { EditableField, UserActions } from "./components";
 
 import styles from "./styles.module.css";
+import { formatCEP, formatCPF } from "../../../../utils";
+import { Checkbox } from "../../../../components/shared/checkbox";
 
 interface SelectedUserCardProps {
   selectedUser: User;
+  setSelectedUser: (user: User) => void;
 }
 
 interface State {
@@ -24,6 +28,7 @@ interface State {
   cep: string;
   birth: string;
   error: string;
+  has_financial_aid: boolean;
 }
 
 type Action =
@@ -42,6 +47,7 @@ const initialState: State = {
   cep: "",
   birth: "",
   error: "",
+  has_financial_aid: false,
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -52,6 +58,7 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         ...action.payload,
+        editMode: false,
         password: "",
         error: "",
       };
@@ -60,9 +67,15 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
+export function SelectedUserCard({
+  selectedUser,
+  setSelectedUser,
+}: SelectedUserCardProps) {
   const { updateUserById } = useUpdateUserById();
   const { deleteUserById } = useDeleteUserById();
+
+  const { showMessage } = useMessage();
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
@@ -76,6 +89,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
     address,
     cep,
     birth,
+    has_financial_aid,
     error,
   } = state;
 
@@ -91,7 +105,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
 
   const handleUpdate = async () => {
     try {
-      await updateUserById({
+      const updatedUser = await updateUserById({
         id: selectedUser.id,
         user: {
           name,
@@ -102,9 +116,13 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
           address,
           cep,
           birth: new Date(birth),
+          has_financial_aid,
         },
       });
+      setSelectedUser(updatedUser);
+
       handleFieldChange("editMode", false);
+      showMessage("Usuário atualizado com sucesso", "success");
     } catch {
       handleFieldChange("error", "Erro ao atualizar usuário.");
     }
@@ -114,6 +132,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
     try {
       await deleteUserById(selectedUser.id);
       handleFieldChange("isDeleteModalOpen", false);
+      showMessage("Usuário deletado com sucesso", "success");
     } catch {
       handleFieldChange("error", "Erro ao deletar usuário.");
     }
@@ -130,7 +149,13 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
       {/* Ações posicionadas de forma fixa ou relativa ao card */}
       <UserActions
         editMode={editMode}
-        onToggleEdit={() => handleFieldChange("editMode", !editMode)}
+        onToggleEdit={() => {
+          if (editMode) {
+            dispatch({ type: "fillUser", payload: selectedUser });
+          } else {
+            handleFieldChange("editMode", true);
+          }
+        }}
         onConfirmEdit={handleUpdate}
         onOpenDeleteModal={() => handleFieldChange("isDeleteModalOpen", true)}
       />
@@ -160,7 +185,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
         <div className={styles.userDetails}>
           <section>
             <EditableField
-              label="Endereço de Email"
+              label="Email"
               name="email"
               type="email"
               value={email}
@@ -171,12 +196,14 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
               label="CPF"
               name="cpf"
               type="text"
-              value={cpf}
+              value={formatCPF(cpf)}
               editMode={editMode}
-              onChange={(val) => handleFieldChange("cpf", val)}
+              onChange={(val) =>
+                handleFieldChange("cpf", val.replace(".", "").replace("-", ""))
+              }
             />
             <EditableField
-              label="Telefone de Contacto"
+              label="Telefone"
               name="phone"
               type="text"
               value={phone}
@@ -187,7 +214,7 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
 
           <section>
             <EditableField
-              label="Endereço Residencial"
+              label="Endereço"
               name="address"
               type="text"
               value={address}
@@ -198,9 +225,9 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
               label="Código Postal (CEP)"
               name="cep"
               type="text"
-              value={cep}
+              value={formatCEP(cep)}
               editMode={editMode}
-              onChange={(val) => handleFieldChange("cep", val)}
+              onChange={(val) => handleFieldChange("cep", val.replace("-", ""))}
             />
             <EditableField
               label="Data de Nascimento"
@@ -209,6 +236,14 @@ export function SelectedUserCard({ selectedUser }: SelectedUserCardProps) {
               value={birth.split("/").reverse().join("-")}
               editMode={editMode}
               onChange={(val) => handleFieldChange("birth", val)}
+            />
+            <Checkbox
+              label="Recebe auxílio financeiro"
+              checked={has_financial_aid}
+              disabled={!editMode}
+              onChange={(e) =>
+                handleFieldChange("has_financial_aid", e.target.checked)
+              }
             />
           </section>
         </div>

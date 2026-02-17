@@ -15,11 +15,13 @@ type UserRequestDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 
-	CPF    string    `json:"cpf"`
-	Phone  string    `json:"phone"`
+	CPF     string    `json:"cpf"`
+	Phone   string    `json:"phone"`
 	Address string    `json:"address"`
-	CEP    string    `json:"cep"`
-	Birth  time.Time `json:"birth"`
+	CEP     string    `json:"cep"`
+	Birth   time.Time `json:"birth"`
+
+	HasFinancialAid bool `json:"has_financial_aid"`
 }
 
 func (dto *UserRequestDTO) Validate() error {
@@ -75,14 +77,15 @@ func (dto *UserRequestDTO) Validate() error {
 
 func (dto *UserRequestDTO) ToEntity() *entities.User {
 	return &entities.User{
-		Name:     dto.Name,
-		Email:    dto.Email,
-		Password: dto.Password,
-		CPF:      dto.CPF,
-		Phone:    dto.Phone,
-		Address:   dto.Address,
-		CEP:      dto.CEP,
-		Birth:    dto.Birth,
+		Name:            dto.Name,
+		Email:           dto.Email,
+		Password:        dto.Password,
+		CPF:             dto.CPF,
+		Phone:           dto.Phone,
+		Address:         dto.Address,
+		CEP:             dto.CEP,
+		Birth:           dto.Birth,
+		HasFinancialAid: dto.HasFinancialAid,
 	}
 }
 
@@ -91,11 +94,13 @@ type UserUpdateDTO struct {
 	Email    *string `json:"email"`
 	Password *string `json:"password"`
 
-	CPF    *string    `json:"cpf"`
-	Phone  *string    `json:"phone"`
-	Address *string    `json:"adress"`
-	CEP    *string    `json:"cep"`
-	Birth  *time.Time `json:"birth"`
+	CPF     *string    `json:"cpf"`
+	Phone   *string    `json:"phone"`
+	Address *string    `json:"address"`
+	CEP     *string    `json:"cep"`
+	Birth   *time.Time `json:"birth"`
+
+	HasFinancialAid *bool `json:"has_financial_aid"`
 }
 
 func (dto *UserUpdateDTO) Validate() error {
@@ -115,8 +120,10 @@ func (dto *UserUpdateDTO) Validate() error {
 		return errors.New("senha é obrigatória")
 	}
 
-	if err := utils.ValidatePassword(*dto.Password); err != nil {
-		return err
+	if dto.Password != nil {
+		if err := utils.ValidatePassword(*dto.Password); err != nil {
+			return err
+		}
 	}
 
 	if dto.CPF != nil && *dto.CPF == "" {
@@ -185,22 +192,28 @@ func (dto *UserUpdateDTO) ToEntity() *entities.User {
 		user.Birth = *dto.Birth
 	}
 
+	if dto.HasFinancialAid != nil {
+		user.HasFinancialAid = *dto.HasFinancialAid
+	}
+
 	return &user
 }
 
 type UserResponseDTO struct {
 	ID uuid.UUID `json:"id"`
 
-	Name  string   `json:"name"`
-	Email string   `json:"email"`
-	Roles []string `json:"roles"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Role  string `json:"roles"`
 
 	CPF       string  `json:"cpf"`
 	Phone     string  `json:"phone"`
-	Address    string  `json:"adress"`
+	Address   string  `json:"address"`
 	CEP       string  `json:"cep"`
 	Birth     string  `json:"birth"`
 	AvatarURL *string `json:"avatar_url"`
+
+	HasFinancialAid bool `json:"has_financial_aid"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -208,17 +221,18 @@ type UserResponseDTO struct {
 
 func ToUserResponseDTO(entity *entities.User) *UserResponseDTO {
 	return &UserResponseDTO{
-		ID:        entity.ID,
-		Name:      entity.Name,
-		Email:     entity.Email,
-		Roles:     entity.Roles,
-		CPF:       entity.CPF,
-		Phone:     entity.Phone,
-		Address:    entity.Address,
-		CEP:       entity.CEP,
-		Birth:     entity.Birth.Format("02/01/2006"),
-		AvatarURL: entity.AvatarURL,
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
+		ID:              entity.ID,
+		Name:            entity.Name,
+		Email:           entity.Email,
+		Role:            entity.Role,
+		CPF:             entity.CPF,
+		Phone:           entity.Phone,
+		Address:         entity.Address,
+		CEP:             entity.CEP,
+		Birth:           entity.Birth.Format("02/01/2006"),
+		AvatarURL:       entity.AvatarURL,
+		HasFinancialAid: entity.HasFinancialAid,
+		CreatedAt:       entity.CreatedAt,
+		UpdatedAt:       entity.UpdatedAt,
 	}
 }
