@@ -1,33 +1,36 @@
 import { BiSolidError } from "react-icons/bi";
 import {
   FaCalendarAlt,
-  FaCheckCircle,
   FaMoon,
   FaSearch,
   FaSun,
   FaUserCircle,
 } from "react-icons/fa";
 import {
+  IoIosAlert,
   IoIosArrowBack,
   IoIosArrowDown,
   IoIosArrowForward,
   IoIosArrowUp,
+  IoIosCheckmarkCircle,
   IoIosClock,
   IoIosClose,
   IoIosInformation,
   IoIosMap,
   IoIosMenu,
   IoIosSettings,
+  IoIosWarning,
 } from "react-icons/io";
 import { LuLoaderCircle } from "react-icons/lu";
 
 export const I = {
+  alert_circle: IoIosAlert,
   arrow_back: IoIosArrowBack,
   arrow_down: IoIosArrowDown,
   arrow_forward: IoIosArrowForward,
   arrow_up: IoIosArrowUp,
   calendar: FaCalendarAlt,
-  check: FaCheckCircle,
+  check: IoIosCheckmarkCircle,
   clock: IoIosClock,
   close: IoIosClose,
   error: BiSolidError,
@@ -40,4 +43,5 @@ export const I = {
   settings: IoIosSettings,
   sun: FaSun,
   user: FaUserCircle,
+  warning: IoIosWarning,
 };

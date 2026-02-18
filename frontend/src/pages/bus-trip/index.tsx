@@ -1,14 +1,8 @@
-import { useCallback, useEffect, useReducer } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-  Card,
-  DateInput,
-  DualPage,
-  I,
-  Navbar,
-  Private,
-} from "../../components";
+import { DateInput, DualPage, I, Navbar, Private } from "../../components";
 import {
   useBusTripById,
   useManyBusReservationsByDate,
@@ -16,43 +10,32 @@ import {
   useManyBusTripsByDate,
 } from "../../hooks";
 import type { BusReservation, BusTrip, BusTripReport } from "../../types";
-import { isSameDate } from "../../utils";
 
-import { BusReportsCard, BusReservationsCard, BusTripCard } from "./components";
+import {
+  BusReportsCard,
+  BusReservationsCard,
+  BusTripCard,
+  SelectedBusTripCard,
+} from "./components";
 
 import styles from "./styles.module.css";
 
-interface State {
-  date: Date;
-  trips: BusTrip[];
-  reservations: BusReservation[];
-  reports: BusTripReport[];
-  selectedTrip: BusTrip | null;
-  isLoading: boolean;
-}
+const formatDateForInput = (d: Date) => d.toISOString().split("T")[0];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
+const parseInputDate = (dateString: string) => {
+  const [y, m, d] = dateString.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+
+const reducer = (state: any, action: any) => {
   switch (action.type) {
     case "field":
-      return {
-        ...state,
-        [action.payload.field as string]: action.payload.value,
-      };
+      return { ...state, [action.payload.field]: action.payload.value };
     case "set_loading":
       return { ...state, isLoading: action.payload };
     default:
       return state;
   }
-};
-
-const initialState: State = {
-  date: new Date(),
-  trips: [],
-  reservations: [],
-  reports: [],
-  selectedTrip: null,
-  isLoading: false,
 };
 
 export function BusTripPage() {
@@ -63,31 +46,35 @@ export function BusTripPage() {
   const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, {
+    date: new Date(),
+    trips: [],
+    reservations: [],
+    reports: [],
+    selectedTrip: null,
+    isLoading: false,
+  });
+
   const { date, trips, selectedTrip, reservations, reports, isLoading } = state;
 
-  // Função para formatar data localmente YYYY-MM-DD
-  const formatDateToInputValue = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+  const tripReservations = useMemo(
+    () =>
+      reservations.filter(
+        (r: BusReservation) => r.bus_trip_id === selectedTrip?.id,
+      ),
+    [reservations, selectedTrip],
+  );
 
-  const handleDateChange = (dateString: string) => {
-    if (!dateString) return;
-    // Cria a data baseada nos componentes para evitar problemas de timezone (UTC vs Local)
-    const [y, m, d] = dateString.split("-").map(Number);
-    const newDate = new Date(y, m - 1, d);
-    dispatch({ type: "field", payload: { field: "date", value: newDate } });
-  };
+  const tripReports = useMemo(
+    () =>
+      reports.filter((r: BusTripReport) => r.bus_trip_id === selectedTrip?.id),
+    [reports, selectedTrip],
+  );
 
   const fetchData = useCallback(async () => {
     dispatch({ type: "set_loading", payload: true });
     try {
-      const strDate = formatDateToInputValue(date);
-
-      // Executa todas as requisições em paralelo
+      const strDate = formatDateForInput(date);
       const [fetchedTrips, fetchedReports, fetchedReservations] =
         await Promise.all([
           getManyBusTripsByDate(strDate),
@@ -108,7 +95,7 @@ export function BusTripPage() {
         payload: { field: "reservations", value: fetchedReservations },
       });
     } catch (error) {
-      console.error("Erro ao buscar dados", error);
+      console.error("Erro ao buscar dados:", error);
     } finally {
       dispatch({ type: "set_loading", payload: false });
     }
@@ -119,12 +106,11 @@ export function BusTripPage() {
     getManyBusReservationsByDate,
   ]);
 
-  // Effect para carregar dados quando a data mudar
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Effect para carregar viagem específica via URL (apenas na montagem ou troca de ID)
+  // Sincronização da viagem selecionada via URL ou lista
   useEffect(() => {
     if (id) {
       getBusTripById(id).then((trip) =>
@@ -133,8 +119,13 @@ export function BusTripPage() {
           payload: { field: "selectedTrip", value: trip },
         }),
       );
+    } else if (trips.length > 0 && !selectedTrip) {
+      dispatch({
+        type: "field",
+        payload: { field: "selectedTrip", value: trips[0] },
+      });
     }
-  }, [id, getBusTripById]);
+  }, [id, trips, getBusTripById, selectedTrip]);
 
   return (
     <Private>
@@ -143,7 +134,7 @@ export function BusTripPage() {
         leftSide={
           <div className={styles.left}>
             <header className={styles.header}>
-              <div>
+              <div className={styles.headerText}>
                 <h1>Viagens</h1>
                 <p>Gerencie as rotas diárias</p>
               </div>
@@ -152,74 +143,35 @@ export function BusTripPage() {
               )}
             </header>
 
-            <div className={styles.controls}>
-              <DateInput
-                value={formatDateToInputValue(date)}
-                onChange={(e) => handleDateChange(e.target.value)}
-              />
-            </div>
+            <DateInput
+              value={formatDateForInput(date)}
+              onChange={(e) =>
+                dispatch({
+                  type: "field",
+                  payload: {
+                    field: "date",
+                    value: parseInputDate(e.target.value),
+                  },
+                })
+              }
+            />
 
             <ul className={styles.tripList}>
-              {trips
-                .filter((trip) => isSameDate(new Date(trip.date), date))
-                .map((trip) => (
-                  <li key={trip.id}>
-                    <Card
-                      className={`${styles.tripItem} ${
-                        selectedTrip?.id === trip.id ? styles.selectedTrip : ""
-                      }`}
-                      onClick={() =>
-                        dispatch({
-                          type: "field",
-                          payload: { field: "selectedTrip", value: trip },
-                        })
-                      }
-                    >
-                      <div className={styles.tripItemMain}>
-                        <div className={styles.tripItemDate}>
-                          {/* Ícone muda conforme o período */}
-                          {trip.period === "morning" ? (
-                            <I.sun size={18} color="#eab308" />
-                          ) : (
-                            <I.moon size={18} color="#6366f1" />
-                          )}
-                          <h5>
-                            {new Date(trip.date).toLocaleDateString("pt-BR", {
-                              timeZone: "UTC",
-                            })}
-                          </h5>
-                        </div>
-                        <span className={styles.routeText}>
-                          {trip.direction === "go"
-                            ? "Ida ao Campus"
-                            : "Retorno"}
-                        </span>
-                      </div>
-
-                      <div className={styles.tripItemInfo}>
-                        <span
-                          className={`${styles.badge} ${
-                            trip.direction === "go"
-                              ? styles.badgeGo
-                              : styles.badgeBack
-                          }`}
-                        >
-                          {trip.direction === "go" ? (
-                            <I.arrow_forward size={12} />
-                          ) : (
-                            <I.arrow_back size={12} />
-                          )}
-                          {trip.direction === "go" ? "Ida" : "Volta"}
-                        </span>
-                      </div>
-                    </Card>
-                  </li>
-                ))}
+              {trips.map((trip: BusTrip) => (
+                <BusTripCard
+                  key={trip.id}
+                  isSelected={selectedTrip?.id === trip.id}
+                  trip={trip}
+                  onSelectTrip={(t) =>
+                    dispatch({
+                      type: "field",
+                      payload: { field: "selectedTrip", value: t },
+                    })
+                  }
+                />
+              ))}
               {!isLoading && trips.length === 0 && (
-                <div className={styles.emptyState}>
-                  <I.calendar size={32} color="#cbd5e1" />
-                  <p>Nenhuma viagem encontrada para esta data.</p>
-                </div>
+                <p className={styles.emptyMsg}>Nenhuma viagem nesta data.</p>
               )}
             </ul>
           </div>
@@ -227,8 +179,10 @@ export function BusTripPage() {
         rightSide={
           selectedTrip ? (
             <div className={styles.busTripArea}>
-              <BusTripCard
+              <SelectedBusTripCard
                 selectedTrip={selectedTrip}
+                reservationsLength={tripReservations.length}
+                reports={tripReports}
                 onStatusUpdated={(status) =>
                   dispatch({
                     type: "field",
@@ -241,53 +195,29 @@ export function BusTripPage() {
               />
 
               <div className={styles.detailsGrid}>
-                <div className={styles.gridColumn}>
-                  <h3>
-                    Reservas (
-                    {
-                      reservations.filter(
-                        (r) => r.bus_trip_id === selectedTrip.id,
-                      ).length
-                    }
-                    )
-                  </h3>
-                  {reservations.length > 0 ? (
-                    <BusReservationsCard
-                      reservations={reservations.filter(
-                        (res) => res.bus_trip_id === selectedTrip.id,
-                      )}
-                    />
-                  ) : (
-                    <p className={styles.emptySubText}>Sem reservas.</p>
-                  )}
-                </div>
-
-                <div className={styles.gridColumn}>
-                  <h3>Relatórios</h3>
-                  {reports.length > 0 ? (
-                    <BusReportsCard
-                      reports={reports.filter(
-                        (rep) => rep.bus_trip_id === selectedTrip.id,
-                      )}
-                    />
-                  ) : (
-                    <p className={styles.emptySubText}>Nenhum relatório.</p>
-                  )}
-                </div>
+                <section className={styles.gridColumn}>
+                  <h3>Reservas ({tripReservations.length})</h3>
+                  <BusReservationsCard reservations={tripReservations} />
+                </section>
+                <section className={styles.gridColumn}>
+                  <h3>Relatórios ({tripReports.length})</h3>
+                  <BusReportsCard reports={tripReports} />
+                </section>
               </div>
             </div>
           ) : (
-            <div className={styles.rightPlaceholder}>
-              <I.map size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
-              <h2>Selecione uma viagem</h2>
-              <p>
-                Clique em uma viagem na lista à esquerda para ver os detalhes
-                completos.
-              </p>
-            </div>
+            <EmptyState />
           )
         }
       />
     </Private>
   );
 }
+
+const EmptyState = () => (
+  <div className={styles.rightPlaceholder}>
+    <I.map size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+    <h2>Selecione uma viagem</h2>
+    <p>Clique numa viagem na lista à esquerda para ver os detalhes.</p>
+  </div>
+);

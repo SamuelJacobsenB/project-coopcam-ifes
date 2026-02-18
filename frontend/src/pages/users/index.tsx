@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useManyUsers } from "../../hooks";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+
 import {
   Card,
   DualPage,
@@ -10,16 +10,31 @@ import {
   Private,
   Search,
 } from "../../components";
+import { useManyUsers, useUserById } from "../../hooks";
 import type { User } from "../../types";
+
 import { SelectedUserCard } from "./components";
+
 import styles from "./styles.module.css";
 
 export function UsersPage() {
+  const { id } = useParams();
+
   const [search, setSearch] = useState("");
+  const [activeSearch, setActiveSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Dica: Idealmente, adicione um 'debounce' aqui para não chamar a API a cada letra
-  const { users, isLoading, error } = useManyUsers(1, search);
+  const { getUserById } = useUserById();
+  const { users, isLoading, error } = useManyUsers(1, activeSearch);
+
+  useEffect(() => {
+    if (id) {
+      getUserById(id).then((user: User) => {
+        setSelectedUser(user);
+        setActiveSearch(user.name);
+      });
+    }
+  }, [id, getUserById]);
 
   return (
     <Private>
@@ -41,12 +56,14 @@ export function UsersPage() {
               </Link>
             </header>
 
-            {/* Busca Fixa */}
             <Search
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onSubmit={(e) => e.preventDefault()}
-              placeholder="Buscar por nome..."
+              onSubmit={(e) => {
+                e.preventDefault();
+                setActiveSearch(search);
+              }}
+              placeholder="Enter para buscar"
             />
 
             {/* Lista Scrollável */}
@@ -104,17 +121,20 @@ export function UsersPage() {
               setSelectedUser={(user) => setSelectedUser(user)}
             />
           ) : (
-            <div className={styles.rightPlaceholder}>
-              <I.user size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
-              <h2>Nenhum usuário selecionado</h2>
-              <p>
-                Clique em um usuário na lista à esquerda para ver os detalhes
-                completos.
-              </p>
-            </div>
+            <EmptyState />
           )
         }
       />
     </Private>
   );
 }
+
+const EmptyState = () => (
+  <div className={styles.rightPlaceholder}>
+    <I.user size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+    <h2>Nenhum usuário selecionado</h2>
+    <p>
+      Clique em um usuário na lista à esquerda para ver os detalhes completos.
+    </p>
+  </div>
+);

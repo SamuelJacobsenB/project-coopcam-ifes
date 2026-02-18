@@ -12,6 +12,7 @@ export const routes = [
   { path: "/", element: DashboardPage },
   { path: "/login", element: LoginPage },
   { path: "/usuarios", element: UsersPage },
+  { path: "/usuarios/:id", element: UsersPage },
   { path: "/usuarios/criar", element: CreateUserPage },
   { path: "/viagens", element: BusTripPage },
   { path: "/viagens/:id", element: BusTripPage },

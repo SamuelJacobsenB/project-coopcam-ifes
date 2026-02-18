@@ -8,20 +8,19 @@
 
 .header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.header h1 {
+.headerText h1 {
   margin: 0;
   font-size: 1.5rem;
   color: var(--color-text-primary, #333);
 }
 
-.header p {
+.headerText p {
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-text-secondary, #666);
@@ -62,79 +61,6 @@
   color: #94a3b8;
   gap: 1rem;
   text-align: center;
-}
-
-/* Melhoria no Item da Viagem (Card) */
-.tripItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem !important;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.tripItem:hover {
-  border-color: #cbd5e1 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.selectedTrip {
-  border-color: var(--color-primary) !important;
-  background-color: rgba(28, 104, 92, 0.04) !important;
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
-
-.tripItemMain {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.tripItemDate {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: #334155;
-}
-
-.tripItemDate h5 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.routeText {
-  font-size: 0.8rem;
-  color: #64748b;
-  margin-left: 28px; /* Alinha com o texto da data ignorando o ícone */
-}
-
-/* Badges para Período e Direção */
-.badge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.badgeGo {
-  background-color: #ecfdf5;
-  color: #047857;
-}
-
-.badgeBack {
-  background-color: #eff6ff;
-  color: #1d4ed8;
 }
 
 /* Estilo para a área da direita */
