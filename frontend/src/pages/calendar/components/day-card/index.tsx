@@ -1,12 +1,15 @@
-import { useEffect, useReducer, useCallback } from "react";
+import { useCallback, useEffect, useReducer } from "react";
+
+import { Card, ConfirmModal, I } from "../../../../components";
 import { useMessage } from "../../../../contexts";
 import {
   useDeleteAvailableOverride,
   useDeleteUnavailableDay,
 } from "../../../../hooks";
-import { Card, ConfirmModal, I } from "../../../../components";
 import type { AvailableOverride, UnavailableDay } from "../../../../types";
+
 import { CreateAvailableOverrideModal, CreateUnavailableDayModal } from "../";
+
 import styles from "./styles.module.css";
 
 interface DayCardProps {
@@ -59,6 +62,8 @@ export function DayCard({
   const { deleteAvailableOverride } = useDeleteAvailableOverride();
   const { deleteUnavailableDay } = useDeleteUnavailableDay();
 
+  const currentReason = override?.reason || unavailable?.reason;
+
   const setModal = useCallback((field: keyof State, value: boolean) => {
     dispatch({ type: "field", payload: { field, value } });
   }, []);
@@ -106,14 +111,14 @@ export function DayCard({
   const statusClass = override
     ? styles.statusAvailable
     : unavailable || state.isWeekend
-    ? styles.statusUnavailable
-    : styles.statusAvailable;
+      ? styles.statusUnavailable
+      : styles.statusAvailable;
 
   const statusText = override
     ? "Disponível (Exceção)"
     : unavailable || state.isWeekend
-    ? "Indisponível"
-    : "Disponível";
+      ? "Indisponível"
+      : "Disponível";
 
   return (
     <>
@@ -129,9 +134,16 @@ export function DayCard({
               })}
             </h2>
           </div>
-          <span className={`${styles.statusBadge} ${statusClass}`}>
-            {statusText}
-          </span>
+          <div className={styles.badgeWrapper}>
+            <span className={`${styles.statusBadge} ${statusClass}`}>
+              {statusText}
+            </span>
+            {currentReason && (
+              <p className={styles.reasonText}>
+                <strong>Motivo:</strong> {currentReason}
+              </p>
+            )}
+          </div>
         </div>
         <div className={styles.buttonContainer}>
           {!state.isPast ? (

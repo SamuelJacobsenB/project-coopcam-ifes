@@ -7,7 +7,8 @@
   background: #ffffff;
   border-radius: 16px; /* Bordas mais arredondadas são mais modernas */
   border: 1px solid #f1f5f9;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -2px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -111,4 +112,32 @@
   color: #cbd5e1;
   font-weight: 500;
   text-transform: uppercase;
+}
+
+.badgeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reasonText {
+  margin-left: 6px;
+  font-size: 0.8rem;
+  color: #64748b; /* Um cinza suave */
+  font-style: italic;
+  max-width: 250px; /* Evita que textos longos quebrem o layout horizontal */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reasonText strong {
+  font-weight: 600;
+  font-style: normal;
+  color: #475569;
+}
+
+/* Ajuste opcional: garantir que o card cresça se o texto for longo */
+.infoCard {
+  min-height: 80px;
 }

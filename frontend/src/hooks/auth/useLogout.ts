@@ -4,7 +4,7 @@ import { api } from "../../services";
 
 export const fetchLogout = async () => {
   try {
-    const res = await api.post("/v1/auth/logout/");
+    const res = await api.get("/v1/auth/logout/");
 
     if (res.status !== 200) throw new Error("Erro ao deslogar");
 

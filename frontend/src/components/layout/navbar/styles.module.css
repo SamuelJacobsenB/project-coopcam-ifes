@@ -1,5 +1,3 @@
-@import url("../../../styles/colors.css");
-
 .header {
   position: sticky;
   z-index: 1000;
@@ -85,7 +83,7 @@
 }
 
 /* Botão de Perfil */
-.profileBtn {
+.logoutBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,16 +96,29 @@
   cursor: pointer;
 }
 
-.profileBtn:hover {
+.profileIcon,
+.logoutIcon {
+  font-size: 1.6rem;
+  color: white;
+}
+
+.logoutIcon {
+  display: none;
+}
+
+.logoutBtn:hover {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
-.profileIcon {
-  font-size: 1.6rem;
-  color: white;
+.logoutBtn:hover .profileIcon {
+  display: none;
+}
+
+.logoutBtn:hover .logoutIcon {
+  display: block;
 }
 
 /* Menu Hamburguer */

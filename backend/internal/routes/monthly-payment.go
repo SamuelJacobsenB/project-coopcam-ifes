@@ -2,14 +2,15 @@ package routes
 
 import (
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/monthly_payment"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
+	monthly_payment "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/monthly-payment"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupMonthlyPaymentRoutes(rg *gin.RouterGroup, handler *monthly_payment.MonthlyPaymentHandler) {
-	rg.GET("/own/", middlewares.AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin), handler.FindByUser)
-	rg.POST("/", middlewares.AuthMiddleware(types.RoleAdmin), handler.Create)
-	rg.PATCH("/:id/status/", middlewares.AuthMiddleware(types.RoleAdmin), handler.UpdateStatus)
-	rg.GET("/user/:user_id/", middlewares.AuthMiddleware(types.RoleCoordinator, types.RoleAdmin), handler.FindByUser)
+	rg.GET("/user/:user_id", middlewares.AuthMiddlewareUser(), handler.FindByUser)
+	rg.POST("/emit-batch", middlewares.AuthMiddlewareManager(), handler.EmitBatch)
+	rg.PATCH("/:id/status", middlewares.AuthMiddlewareManager(), handler.UpdateStatus)
+
+	// Não usamos middleware aqui porque o Mercado Pago não envia token de sessão.
+	rg.POST("/webhook/mercadopago", handler.HandleWebhook)
 }

@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { I } from "../../";
-import { navRoutes } from "../../../routes";
+import { ConfirmModal, I } from "../../";
 import { logo } from "../../../assets";
+import { useLogout } from "../../../hooks";
+import { navRoutes } from "../../../routes";
 
 import styles from "./styles.module.css";
 
 export function Navbar() {
-  const location = useLocation(); // Hook para detectar mudança de rota
+  const navigate = useNavigate();
+
+  const { logout } = useLogout();
+
+  const location = useLocation();
   const activeRoute = location.pathname;
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   return (
     <header className={styles.header}>
@@ -38,8 +44,12 @@ export function Navbar() {
               </li>
             ))}
           </ul>
-          <button className={styles.profileBtn} aria-label="Perfil">
+          <button
+            onClick={() => setIsLogoutModalOpen(true)}
+            className={styles.logoutBtn}
+          >
             <I.user className={styles.profileIcon} />
+            <I.logout className={styles.logoutIcon} />
           </button>
 
           <div className={styles.menuBurguer}>
@@ -76,6 +86,17 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen((val) => !val)}
+        onConfirm={async () => {
+          await logout();
+          navigate("/login");
+        }}
+        title="Logout"
+        description="Você realmente deseja sair de sua conta?"
+      />
     </header>
   );
 }

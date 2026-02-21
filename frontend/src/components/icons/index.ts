@@ -1,4 +1,4 @@
-import { BiSolidError } from "react-icons/bi";
+import { BiLogOutCircle, BiSolidError } from "react-icons/bi";
 import {
   FaCalendarAlt,
   FaMoon,
@@ -36,6 +36,7 @@ export const I = {
   error: BiSolidError,
   info: IoIosInformation,
   loader: LuLoaderCircle,
+  logout: BiLogOutCircle,
   map: IoIosMap,
   menu: IoIosMenu,
   moon: FaMoon,

@@ -57,6 +57,19 @@ func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 		}
 
 		ctx.Set("user_id", userID)
+		ctx.Set("user_role", userRole)
 		ctx.Next()
 	}
+}
+
+func AuthMiddlewareUser() gin.HandlerFunc {
+	return AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin)
+}
+
+func AuthMiddlewareManager() gin.HandlerFunc {
+	return AuthMiddleware(types.RoleCoordinator, types.RoleAdmin)
+}
+
+func AuthMiddlewareAdmin() gin.HandlerFunc {
+	return AuthMiddleware(types.RoleAdmin)
 }

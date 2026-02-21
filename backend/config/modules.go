@@ -6,7 +6,8 @@ import (
 	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-reservation"
 	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip"
 	bus_trip_report "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip-report"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/monthly_payment"
+	monthly_fee_config "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/monthly-fee-config"
+	monthly_payment "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/monthly-payment"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/template"
 	unavailable_day "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/unavailable-day"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
@@ -24,6 +25,7 @@ type ModuleHandlers struct {
 	BusTripReportHandler     *bus_trip_report.BusTripReportHandler
 	AvailableOverrideHandler *available_override.AvailableOverrideHandler
 	UnavailableDayHandler    *unavailable_day.UnavailableDayHandler
+	MonthlyFeeConfigHandler  *monthly_fee_config.MonthlyFeeConfigHandler
 	MonthlyPaymentHandler    *monthly_payment.MonthlyPaymentHandler
 }
 
@@ -37,6 +39,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	busTripReportRepo := bus_trip_report.NewBusTripReportRepository(db)
 	availableOverrideRepo := available_override.NewAvailableOverrideRepository(db)
 	unavailableDayRepo := unavailable_day.NewUnavailableDayRepository(db)
+	monthlyFeeConfigRepo := monthly_fee_config.NewMonthlyFeeConfigRepository(db)
 	monthlyPaymentRepo := monthly_payment.NewMonthlyPaymentRepository(db)
 
 	// Services
@@ -49,6 +52,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	busTripService := bus_trip.NewBusTripService(busTripRepo)
 	availableOverrideService := available_override.NewAvailableOverrideService(availableOverrideRepo)
 	unavailableDayService := unavailable_day.NewUnavailableDayService(unavailableDayRepo)
+	monthlyFeeConfigService := monthly_fee_config.NewMonthlyFeeConfigService(monthlyFeeConfigRepo, userRepo, monthlyPaymentRepo)
 	monthlyPaymentService := monthly_payment.NewMonthlyPaymentService(monthlyPaymentRepo)
 
 	// Handlers
@@ -61,6 +65,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	busTripReportHandler := bus_trip_report.NewBusTripReportHandler(busTripReportService)
 	availableOverrideHandler := available_override.NewAvailableOverrideHandler(availableOverrideService)
 	unavailableDayHandler := unavailable_day.NewUnavailableDayHandler(unavailableDayService)
+	monthlyFeeConfigHandler := monthly_fee_config.NewMonthlyFeeConfigHandler(monthlyFeeConfigService)
 	monthlyPaymentHandler := monthly_payment.NewMonthlyPaymentHandler(monthlyPaymentService)
 
 	return &ModuleHandlers{
@@ -73,6 +78,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 		BusTripReportHandler:     busTripReportHandler,
 		AvailableOverrideHandler: availableOverrideHandler,
 		UnavailableDayHandler:    unavailableDayHandler,
+		MonthlyFeeConfigHandler:  monthlyFeeConfigHandler,
 		MonthlyPaymentHandler:    monthlyPaymentHandler,
 	}
 }
