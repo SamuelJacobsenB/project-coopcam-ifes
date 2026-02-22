@@ -4,7 +4,7 @@ import { api } from "../../services";
 
 export const fetchManyBusTripReportsByDate = async (date: string) => {
   try {
-    const res = await api.get(`/api/bus-trip-report/date/${date}/`);
+    const res = await api.get(`/v1/bus-trip-report/date/${date}/`);
 
     if (res.status !== 200) throw new Error("Erro ao buscar relatórios");
 

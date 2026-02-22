@@ -39,7 +39,6 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 	monthlyPaymentGroup := v1.Group("/monthly-payment")
 	SetupMonthlyPaymentRoutes(monthlyPaymentGroup, handlers.MonthlyPaymentHandler)
 
-	// Novas rotas de Configuração de Valor
 	monthlyFeeGroup := v1.Group("/monthly-fee-config")
 	SetupMonthlyFeeConfigRoutes(monthlyFeeGroup, handlers.MonthlyFeeConfigHandler)
 

@@ -1,15 +1,15 @@
 import { useEffect, useReducer } from "react";
 
+import { Card, ConfirmModal, Error, I, Input } from "../../../../components";
 import { useMessage } from "../../../../contexts";
 import { useDeleteUserById, useUpdateUserById } from "../../../../hooks";
-import { Card, ConfirmModal, Error, I, Input } from "../../../../components";
 import type { User } from "../../../../types";
 
 import { EditableField, UserActions } from "./components";
 
-import styles from "./styles.module.css";
-import { formatCEP, formatCPF } from "../../../../utils";
 import { Checkbox } from "../../../../components/shared/checkbox";
+import { formatCEP, formatCPF } from "../../../../utils";
+import styles from "./styles.module.css";
 
 interface SelectedUserCardProps {
   selectedUser: User;

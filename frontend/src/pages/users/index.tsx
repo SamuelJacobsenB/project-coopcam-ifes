@@ -13,7 +13,7 @@ import {
 import { useManyUsers, useUserById } from "../../hooks";
 import type { User } from "../../types";
 
-import { SelectedUserCard } from "./components";
+import { SelectedUserCard, UserReportsCard } from "./components";
 
 import styles from "./styles.module.css";
 
@@ -116,10 +116,22 @@ export function UsersPage() {
         }
         rightSide={
           selectedUser ? (
-            <SelectedUserCard
-              selectedUser={selectedUser}
-              setSelectedUser={(user) => setSelectedUser(user)}
-            />
+            <div className={styles.userArea}>
+              <SelectedUserCard
+                selectedUser={selectedUser}
+                setSelectedUser={(user) => setSelectedUser(user)}
+              />
+
+              <div className={styles.detailsGrid}>
+                <section className={styles.gridColumn}>
+                  <h3>Relatórios</h3>
+                  <UserReportsCard />
+                </section>
+                <section className={styles.gridColumn}>
+                  <h3>Pagamentos</h3>
+                </section>
+              </div>
+            </div>
           ) : (
             <EmptyState />
           )

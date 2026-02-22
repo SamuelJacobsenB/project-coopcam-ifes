@@ -32,7 +32,7 @@ func NewMercadoPagoClient() *MercadoPagoClient {
 	return &MercadoPagoClient{
 		AccessToken:     os.Getenv("MP_ACCESS_TOKEN"),
 		BaseURL:         "https://api.mercadopago.com/v1",
-		NotificationURL: os.Getenv("MP_WEBHOOK_URL"), // Ex: https://api.suaempresa.com.br/webhooks/mercadopago
+		NotificationURL: os.Getenv("MP_WEBHOOK_URL"),
 	}
 }
 

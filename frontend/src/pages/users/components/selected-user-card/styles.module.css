@@ -2,11 +2,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* Alinha o conteúdo à largura total */
+  align-items: stretch;
   gap: 1.5rem;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
   padding: 2rem;
   background-color: #ffffff;
   border-radius: 12px;

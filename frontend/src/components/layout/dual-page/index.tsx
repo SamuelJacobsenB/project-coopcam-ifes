@@ -7,7 +7,6 @@ interface DualPageProps {
   leftClassName?: string;
   rightClassName?: string;
   className?: string;
-  /** Se true, a página ocupa 100vh e o scroll acontece dentro dos painéis */
   isFixedLayout?: boolean;
 }
 

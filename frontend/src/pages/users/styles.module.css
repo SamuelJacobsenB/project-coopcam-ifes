@@ -118,3 +118,40 @@
   border-radius: 12px;
   background-color: rgba(0, 0, 0, 0.01);
 }
+
+.userArea {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .detailsGrid {
+    grid-template-columns: 1fr; /* Vira uma coluna em telas menores */
+  }
+}
+
+.gridColumn > h3 {
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.emptySubText {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
+}

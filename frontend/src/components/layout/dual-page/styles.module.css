@@ -34,6 +34,7 @@
 
   /* Se for layout fixo, permite scroll interno */
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* --- Lado Direito (Conteúdo) --- */
