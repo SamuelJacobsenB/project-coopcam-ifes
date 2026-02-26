@@ -125,7 +125,7 @@ export function UsersPage() {
               <div className={styles.detailsGrid}>
                 <section className={styles.gridColumn}>
                   <h3>Relatórios</h3>
-                  <UserReportsCard />
+                  <UserReportsCard user_id={selectedUser.id} />
                 </section>
                 <section className={styles.gridColumn}>
                   <h3>Pagamentos</h3>

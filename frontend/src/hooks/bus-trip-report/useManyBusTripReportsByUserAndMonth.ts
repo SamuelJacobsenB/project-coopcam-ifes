@@ -13,7 +13,7 @@ export const fetchManyBusTripReportsByUserAndMonth = async ({
 }: Data) => {
   try {
     const res = await api.get(
-      `/v1/bus-trip-report/user/${user_id}/month/${month}`,
+      `/v1/bus-trip-report/user/${user_id}/month/${month}/`,
     );
 
     if (res.status !== 200) throw new Error("Erro ao buscar relatórios");

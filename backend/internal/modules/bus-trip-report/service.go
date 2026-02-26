@@ -46,6 +46,10 @@ func (service *BusTripReportService) FindByUserIDNextDate(userID uuid.UUID, date
 	return service.repo.FindByUserIDNextDate(userID, date)
 }
 
+func (service *BusTripReportService) FindByUserAndMonth(userID uuid.UUID, month int) ([]entities.BusTripReport, error) {
+	return service.repo.FindByUserAndMonth(userID, month)
+}
+
 func (service *BusTripReportService) Create(busTripReport *entities.BusTripReport) error {
 	userExists, err := service.userRepo.FindByID(busTripReport.UserID)
 	if err != nil {

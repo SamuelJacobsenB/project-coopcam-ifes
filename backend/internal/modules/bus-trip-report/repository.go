@@ -65,6 +65,23 @@ func (repo *BusTripReportRepository) FindByUserIDNextDate(userID uuid.UUID, date
 	return busTripReport, err
 }
 
+func (repo *BusTripReportRepository) FindByUserAndMonth(userID uuid.UUID, month int) ([]entities.BusTripReport, error) {
+	var busTripReports []entities.BusTripReport
+
+	now := time.Now()
+	firstDay := time.Date(now.Year(), time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	lastDay := firstDay.AddDate(0, 1, 0)
+
+	err := repo.db.Where(
+		"user_id = ? AND date >= ? AND date < ?",
+		userID,
+		firstDay,
+		lastDay,
+	).Find(&busTripReports).Error
+
+	return busTripReports, err
+}
+
 func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripReport) error {
 	busTripReport.ID = uuid.New()
 	return repo.db.Create(busTripReport).Error

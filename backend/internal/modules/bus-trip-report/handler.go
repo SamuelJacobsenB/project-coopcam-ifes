@@ -1,9 +1,11 @@
 package bus_trip_report
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -165,6 +167,38 @@ func (handler *BusTripReportHandler) FindByUserIDAndNextDate(ctx *gin.Context) {
 	ctx.JSON(200, busTripReportsResponse)
 }
 
+func (handler *BusTripReportHandler) FindByUserAndMonth(ctx *gin.Context) {
+	userID, err := uuid.Parse(ctx.Param("user_id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
+		return
+	}
+
+	monthStr := ctx.Param("month")
+	month, err := strconv.Atoi(monthStr)
+	if err != nil || month < 1 || month > 12 {
+		ctx.JSON(400, gin.H{"error": "Mês inválido. Deve ser um número entre 1 e 12"})
+		return
+	}
+
+	if !utils.ValidateMonth(month) {
+		ctx.JSON(400, gin.H{"error": "Mês inválido. Deve ser um número entre 1 e 12"})
+		return
+	}
+
+	busTripReports, err := handler.service.FindByUserAndMonth(userID, month)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Erro ao buscar relatórios: " + err.Error()})
+		return
+	}
+
+	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
+	for i, busTripReport := range busTripReports {
+		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
+	}
+
+	ctx.JSON(200, busTripReportsResponse)
+}
 func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
 	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
@@ -242,4 +276,3 @@ func (handler *BusTripReportHandler) Delete(ctx *gin.Context) {
 
 	ctx.JSON(204, nil)
 }
-
