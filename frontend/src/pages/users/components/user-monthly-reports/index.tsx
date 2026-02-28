@@ -68,7 +68,7 @@ export function UserMonthlyReports({ month, onFetch }: Props) {
           className={styles.toggleButton}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <I.arrow_up /> : <I.arrow_down />}
+          {isOpen ? <I.arrow_down /> : <I.arrow_up />}
         </button>
       </div>
 

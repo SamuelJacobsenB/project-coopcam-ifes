@@ -19,7 +19,6 @@ export function TripStatusControl({
   const { showMessage } = useMessage();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mapeamento para exibição
   const statusOptions: { value: Status; label: string }[] = [
     { value: "unstarted", label: "Não iniciado" },
     { value: "started", label: "Em andamento" },

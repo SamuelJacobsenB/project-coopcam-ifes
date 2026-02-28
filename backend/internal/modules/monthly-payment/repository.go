@@ -66,6 +66,13 @@ func (r *MonthlyPaymentRepository) ListByPeriod(month, year int) ([]entities.Mon
 	return payments, err
 }
 
+func (r *MonthlyPaymentRepository) ListByPeriodLight(month, year int) ([]entities.MonthlyPayment, error) {
+	var payments []entities.MonthlyPayment
+	err := r.db.Where("month = ? AND year = ?", month, year).
+		Find(&payments).Error
+	return payments, err
+}
+
 // ExistsForPeriod verifica se já existem registros de pagamento para o mês/ano
 func (r *MonthlyPaymentRepository) ExistsForPeriod(month, year int) (bool, error) {
 	var count int64

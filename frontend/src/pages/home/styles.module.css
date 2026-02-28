@@ -20,7 +20,6 @@
   gap: 1rem;
 }
 
-/* --- Ajustes para Telas Grandes (Desktop) --- */
 @media (min-width: 1200px) {
   .container {
     max-width: 1100px; /* Expande o container em monitores ultra-wide/grandes */
@@ -49,7 +48,6 @@
   }
 }
 
-/* --- Estrutura Base (Mantida e Refinada) --- */
 .header {
   margin-bottom: 1.5rem;
 }

@@ -20,6 +20,12 @@ func (repo *MonthlyFeeConfigRepository) FindByID(id uuid.UUID) (*entities.Monthl
 	return &config, err
 }
 
+func (repo *MonthlyFeeConfigRepository) FindByYear(year int) ([]entities.MonthlyFeeConfig, error) {
+	var configs []entities.MonthlyFeeConfig
+	err := repo.db.Where("year = ?", year).Order("month asc").Find(&configs).Error
+	return configs, err
+}
+
 func (repo *MonthlyFeeConfigRepository) FindByMonthYear(month, year int) (*entities.MonthlyFeeConfig, error) {
 	var config entities.MonthlyFeeConfig
 	err := repo.db.Where("month = ? AND year = ?", month, year).First(&config).Error

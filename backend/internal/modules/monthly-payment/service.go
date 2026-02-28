@@ -30,6 +30,10 @@ func (s *MonthlyPaymentService) FindByUser(userID uuid.UUID) ([]entities.Monthly
 	return s.repo.FindByUserID(userID)
 }
 
+func (s *MonthlyPaymentService) ListByPeriodLight(month, year int) ([]entities.MonthlyPayment, error) {
+	return s.repo.ListByPeriodLight(month, year)
+}
+
 // UpdateStatus permite alterar manualmente o status de um pagamento (ex: marcar como pago manualmente).
 func (s *MonthlyPaymentService) UpdateStatus(id uuid.UUID, status types.PaymentStatus) error {
 	payment, err := s.repo.FindByID(id)

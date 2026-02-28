@@ -15,7 +15,7 @@ type MonthlyPaymentResponseDTO struct {
 	Month         int                 `json:"month"`
 	Year          int                 `json:"year"`
 	Amount        float64             `json:"amount"` // em reais
-	PaymentStatus types.PaymentStatus `json:"status"`
+	PaymentStatus types.PaymentStatus `json:"payment_status"`
 	DueDate       time.Time           `json:"due_date"`
 	PaymentURL    *string             `json:"payment_url,omitempty"`
 	PixQRCode     *string             `json:"pix_qr_code,omitempty"`

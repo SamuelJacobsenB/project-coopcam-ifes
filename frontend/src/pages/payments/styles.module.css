@@ -1,0 +1,48 @@
+.leftContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.headerText h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary, #333);
+}
+
+.headerText p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Botão agora é parte do fluxo, não absolute */
+.createBtn {
+  white-space: nowrap;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.rightPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.01);
+}

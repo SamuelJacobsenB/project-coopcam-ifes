@@ -1,6 +1,8 @@
 package monthly_fee_config
 
 import (
+	"strconv"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -28,6 +30,28 @@ func (h *MonthlyFeeConfigHandler) FindByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, dtos.ToMonthlyFeeConfigResponseDTO(config))
+}
+
+func (h *MonthlyFeeConfigHandler) FindByYear(ctx *gin.Context) {
+	yearStr := ctx.Param("year")
+	year, err := strconv.Atoi(yearStr) // Importe o pacote "strconv"
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "ano inválido"})
+		return
+	}
+
+	configs, err := h.service.FindByYear(year)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "erro ao buscar configurações"})
+		return
+	}
+
+	response := make([]*dtos.MonthlyFeeConfigResponseDTO, len(configs))
+	for i, c := range configs {
+		response[i] = dtos.ToMonthlyFeeConfigResponseDTO(&c)
+	}
+
+	ctx.JSON(200, response)
 }
 
 func (h *MonthlyFeeConfigHandler) Create(ctx *gin.Context) {

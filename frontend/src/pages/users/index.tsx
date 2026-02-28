@@ -42,7 +42,6 @@ export function UsersPage() {
       <DualPage
         leftSide={
           <div className={styles.leftContainer}>
-            {/* Cabeçalho Fixo */}
             <header className={styles.headerRow}>
               <div className={styles.headerText}>
                 <h1>Usuários</h1>

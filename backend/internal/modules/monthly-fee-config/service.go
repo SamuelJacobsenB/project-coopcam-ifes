@@ -25,6 +25,10 @@ func (s *MonthlyFeeConfigService) FindByID(id uuid.UUID) (*entities.MonthlyFeeCo
 	return s.repo.FindByID(id)
 }
 
+func (s *MonthlyFeeConfigService) FindByYear(year int) ([]entities.MonthlyFeeConfig, error) {
+	return s.repo.FindByYear(year)
+}
+
 func (s *MonthlyFeeConfigService) CreateConfigAndDrafts(config *entities.MonthlyFeeConfig) error {
 	existing, err := s.repo.FindByMonthYear(config.Month, config.Year)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

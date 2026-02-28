@@ -62,6 +62,24 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dtos.ToMonthlyPaymentListResponse(payments))
 }
 
+func (h *MonthlyPaymentHandler) ListByPeriod(ctx *gin.Context) {
+	month, errM := strconv.Atoi(ctx.Query("month"))
+	year, errY := strconv.Atoi(ctx.Query("year"))
+
+	if errM != nil || errY != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Mês e ano são obrigatórios"})
+		return
+	}
+
+	payments, err := h.service.ListByPeriodLight(month, year)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dtos.ToMonthlyPaymentListResponse(payments))
+}
+
 func (h *MonthlyPaymentHandler) EmitBatch(ctx *gin.Context) {
 	var req struct {
 		Month int `json:"month" binding:"required"`
