@@ -12,6 +12,7 @@ import (
 type MonthlyPaymentResponseDTO struct {
 	ID            uuid.UUID           `json:"id"`
 	UserID        uuid.UUID           `json:"user_id"`
+	UserName      string              `json:"user_name"`
 	Month         int                 `json:"month"`
 	Year          int                 `json:"year"`
 	Amount        float64             `json:"amount"` // em reais
@@ -26,6 +27,7 @@ func ToMonthlyPaymentResponse(p entities.MonthlyPayment) MonthlyPaymentResponseD
 	return MonthlyPaymentResponseDTO{
 		ID:            p.ID,
 		UserID:        p.UserID,
+		UserName:      p.UserName,
 		Month:         p.Month,
 		Year:          p.Year,
 		Amount:        float64(p.AmountDue) / 100.0,

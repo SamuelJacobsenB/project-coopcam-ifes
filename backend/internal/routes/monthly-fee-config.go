@@ -7,8 +7,8 @@ import (
 )
 
 func SetupMonthlyFeeConfigRoutes(rg *gin.RouterGroup, handler *monthly_fee_config.MonthlyFeeConfigHandler) {
-	rg.GET("/:id", middlewares.AuthMiddlewareManager(), handler.FindByID)
-	rg.GET("/year/:year", middlewares.AuthMiddlewareManager(), handler.FindByYear)
+	rg.GET("/:id/", middlewares.AuthMiddlewareManager(), handler.FindByID)
+	rg.GET("/year/:year/", middlewares.AuthMiddlewareManager(), handler.FindByYear)
 	rg.POST("/", middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.DELETE("/:id", middlewares.AuthMiddlewareManager(), handler.Delete)
+	rg.DELETE("/:id/", middlewares.AuthMiddlewareManager(), handler.Delete)
 }

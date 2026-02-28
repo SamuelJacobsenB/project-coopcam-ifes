@@ -5,7 +5,6 @@
   gap: 1rem;
 }
 
-/* Cabeçalho com Título e Botão lado a lado */
 .headerRow {
   display: flex;
   align-items: center;
@@ -27,27 +26,23 @@
   color: var(--color-text-secondary, #666);
 }
 
-/* Botão agora é parte do fluxo, não absolute */
 .createBtn {
   white-space: nowrap;
   font-size: 0.8rem;
   text-decoration: none;
 }
 
-/* Lista com Scroll Independente */
 .userList {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 
-  /* O PULO DO GATO: */
-  flex: 1; /* Ocupa todo o espaço vertical restante */
-  overflow-y: auto; /* Scroll apenas aqui dentro */
+  flex: 1;
+  overflow-y: auto;
 
-  padding: 2px; /* Espaço para o focus ring/border não cortar */
+  padding: 2px;
 }
 
-/* Item da Lista */
 .userItem {
   display: flex;
   align-items: center;
@@ -75,12 +70,14 @@
 
 .userName {
   margin: 0;
-  font-size: 1rem; /* Fonte reduzida de 0.95rem para 0.85rem */
+  font-size: 1rem;
+  /* Fonte reduzida de 0.95rem para 0.85rem */
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #475569; /* Cor levemente mais suave para o texto padrão */
+  color: #475569;
+  /* Cor levemente mais suave para o texto padrão */
 }
 
 /* Garante que o ícone não estique ou encolha */
@@ -97,7 +94,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1; /* Centraliza verticalmente se a lista estiver vazia */
+  flex: 1;
+  /* Centraliza verticalmente se a lista estiver vazia */
   text-align: center;
   color: #888;
   font-size: 0.9rem;
@@ -131,7 +129,8 @@
 
 .detailsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+  grid-template-columns: 1fr 1fr;
+  /* Duas colunas iguais */
   gap: 1.5rem;
   width: 100%;
   margin-top: 1rem;
@@ -139,11 +138,12 @@
 
 @media (max-width: 1024px) {
   .detailsGrid {
-    grid-template-columns: 1fr; /* Vira uma coluna em telas menores */
+    grid-template-columns: 1fr;
+    /* Vira uma coluna em telas menores */
   }
 }
 
-.gridColumn > h3 {
+.gridColumn>h3 {
   font-size: 1rem;
   color: #475569;
   margin-bottom: 0.75rem;

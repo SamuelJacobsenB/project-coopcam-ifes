@@ -1,4 +1,3 @@
-/* Melhoria no Item da Viagem (Card) */
 .tripItem {
   position: relative;
   display: flex;
@@ -46,7 +45,8 @@
 .routeText {
   font-size: 0.8rem;
   color: #64748b;
-  margin-left: 28px; /* Alinha com o texto da data ignorando o ícone */
+  margin-left: 28px;
+  /* Alinha com o texto da data ignorando o ícone */
 }
 
 /* Badges para Período e Direção */

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"

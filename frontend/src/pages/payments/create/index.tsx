@@ -2,30 +2,26 @@ import { useReducer } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
-  Checkbox,
   Error,
   FormPage,
   I,
   Input,
   Private,
+  Select,
 } from "../../../components";
 import { useMessage } from "../../../contexts";
-import { useCreateUser } from "../../../hooks";
-import type { UserRequestDTO } from "../../../types";
-import { validateUserRequestDTO } from "../../../utils";
+import { useCreateMonthlyFeeConfig } from "../../../hooks";
+import type { MonthlyFeeConfigRequestDTO } from "../../../types";
+import { months, validateMonthlyFeeConfigRequestDTO } from "../../../utils";
 
 import styles from "./styles.module.css";
 
 interface State {
-  name: string;
-  email: string;
-  password: string;
-  cpf: string;
-  phone: string;
-  address: string;
-  cep: string;
-  birth: string;
-  has_financial_aid: boolean;
+  month: number;
+  year: number;
+  base_amount: number;
+  financial_aid_amount: number;
+  due_date: Date;
   error: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,216 +37,121 @@ const reducer = (state: State, action: any) => {
   }
 };
 const initialState: State = {
-  name: "",
-  email: "",
-  password: "",
-  cpf: "",
-  phone: "",
-  address: "",
-  cep: "",
-  birth: "",
-  has_financial_aid: false,
+  month: new Date().getMonth() + 1,
+  year: new Date().getFullYear(),
+  base_amount: 0,
+  financial_aid_amount: 0,
+  due_date: new Date(new Date().setMonth(new Date().getMonth() + 1)),
   error: "",
 };
 
 export function CreatePaymentFeeConfigPage() {
   const navigate = useNavigate();
-
-  const { createUser } = useCreateUser();
+  const { createMonthlyFeeConfig } = useCreateMonthlyFeeConfig();
   const { showMessage } = useMessage();
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    name,
-    email,
-    password,
-    cpf,
-    phone,
-    address,
-    cep,
-    birth,
-    has_financial_aid,
-    error,
-  } = state;
+  const { month, year, base_amount, financial_aid_amount, due_date, error } =
+    state;
 
-  async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChange = (field: keyof State, value: any) => {
+    dispatch({ type: "field", payload: { field, value } });
+  };
+
+  async function handleCreateMonthlyFeeConfig(
+    e: React.FormEvent<HTMLFormElement>,
+  ) {
     e.preventDefault();
 
-    const user: UserRequestDTO = {
-      name,
-      email,
-      password,
-      cpf,
-      phone,
-      address,
-      cep,
-      birth,
-      has_financial_aid,
+    const monthlyFeeConfig: MonthlyFeeConfigRequestDTO = {
+      month: Number(month),
+      year: Number(year),
+      base_amount: base_amount * 100, // Centavos
+      financial_aid_amount: financial_aid_amount * 100,
+      due_date,
     };
 
-    const error = validateUserRequestDTO(user);
-    if (error) {
-      dispatch({ type: "field", payload: { field: "error", value: error } });
+    const validationError =
+      validateMonthlyFeeConfigRequestDTO(monthlyFeeConfig);
+    if (validationError) {
+      handleChange("error", validationError);
       return;
     }
 
     try {
-      await createUser(user);
-
-      showMessage("Usuário criado com sucesso!", "success");
-      navigate("/usuarios");
+      await createMonthlyFeeConfig(monthlyFeeConfig);
+      showMessage("Configuração de taxa criada com sucesso!", "success");
+      navigate("/pagamentos");
     } catch {
-      showMessage("Erro ao criar usuário", "error");
+      showMessage("Erro ao criar configuração de taxa", "error");
     }
   }
 
   return (
     <Private>
       <FormPage className={styles.formSection}>
-        <Link className={styles.back} to="/usuarios">
+        <Link className={styles.back} to="/pagamentos">
           <I.arrow_back />
         </Link>
+
         <section className={styles.header}>
-          <h1 className={styles.title}>Criar Usuário</h1>
+          <h1 className={styles.title}>Configurar Taxa Mensal</h1>
           <hr />
         </section>
-        <form onSubmit={handleCreateUser} className={styles.form}>
-          <Error
-            error={error}
-            onClose={() =>
-              dispatch({
-                type: "field",
-                payload: { field: "error", value: "" },
-              })
-            }
-          />
+
+        <form onSubmit={handleCreateMonthlyFeeConfig} className={styles.form}>
+          <Error error={error} onClose={() => handleChange("error", "")} />
+
+          <div className={styles.row}>
+            <Select
+              label="Mês de Referência"
+              name="month"
+              value={month}
+              options={months.map((m, i) => ({ value: i + 1, label: m }))}
+              onChange={(e) => handleChange("month", e.target.value)}
+            />
+            <Input
+              label="Ano"
+              name="year"
+              type="number"
+              value={year}
+              onChange={(e) => handleChange("year", e.target.value)}
+            />
+          </div>
+
           <Input
-            label="Nome"
-            name="name"
-            type="text"
-            placeholder="Digite o nome"
-            required
-            value={name}
+            label="Valor Base (R$)"
+            name="base_amount"
+            type="number"
+            step="0.1"
+            value={base_amount}
+            onChange={(e) => handleChange("base_amount", e.target.value)}
+          />
+
+          <Input
+            label="Valor com Auxílio (R$)"
+            name="financial_aid_amount"
+            type="number"
+            step="0.1"
+            value={financial_aid_amount}
             onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "name", value: e.target.value },
-              })
+              handleChange("financial_aid_amount", e.target.value)
             }
           />
+
           <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Digite o email"
-            required
-            value={email}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "email", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Senha"
-            name="password"
-            type="password"
-            placeholder="Digite a senha"
-            required
-            value={password}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "password", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="CPF"
-            name="cpf"
-            type="text"
-            placeholder="Digite o CPF"
-            required
-            value={cpf}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "cpf", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Telefone"
-            name="phone"
-            type="text"
-            placeholder="Digite o telefone"
-            required
-            value={phone}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "phone", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Endereço"
-            name="address"
-            type="text"
-            placeholder="Digite o endereço"
-            required
-            value={address}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "address", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="CEP"
-            name="cep"
-            type="text"
-            placeholder="Digite o CEP"
-            required
-            value={cep}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "cep", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Data de Nascimento"
-            name="birth"
+            label="Data de Vencimento"
+            name="due_date"
             type="date"
-            placeholder="Digite a data de nascimento"
-            required
-            value={birth}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "birth", value: e.target.value },
-              })
-            }
+            // Converte Date para string YYYY-MM-DD para o input HTML
+            value={due_date.toISOString().split("T")[0]}
+            onChange={(e) => handleChange("due_date", new Date(e.target.value))}
           />
-          <Checkbox
-            label="Possui auxílio financeiro"
-            name="has_financial_aid"
-            checked={has_financial_aid}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: {
-                  field: "has_financial_aid",
-                  value: e.target.checked,
-                },
-              })
-            }
-          />
-          <button className="btn btn-secondary">Enviar</button>
+
+          <button className="btn btn-secondary" type="submit">
+            Salvar Configuração
+          </button>
         </form>
       </FormPage>
     </Private>

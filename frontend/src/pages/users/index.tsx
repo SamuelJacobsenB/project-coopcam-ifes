@@ -65,7 +65,6 @@ export function UsersPage() {
               placeholder="Enter para buscar"
             />
 
-            {/* Lista Scrollável */}
             <ul className={styles.userList}>
               {isLoading && (
                 <div className={styles.emptyState}>

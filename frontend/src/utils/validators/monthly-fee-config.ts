@@ -1,6 +1,6 @@
 import type { MonthlyFeeConfigRequestDTO } from "../../types";
 
-export function validateAvailableOverrideRequestDTO(
+export function validateMonthlyFeeConfigRequestDTO(
   monthlyFeeConfig: MonthlyFeeConfigRequestDTO,
 ): string {
   if (!monthlyFeeConfig.year || monthlyFeeConfig.year.toString().includes("."))

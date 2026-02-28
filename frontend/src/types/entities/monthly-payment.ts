@@ -4,6 +4,8 @@ export interface MonthlyPayment {
   id: string;
   user_id: string;
 
+  user_name: string;
+
   month: number;
   year: number;
 

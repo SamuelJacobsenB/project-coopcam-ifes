@@ -11,6 +11,8 @@ type MonthlyPayment struct {
 	ID     uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
 	UserID uuid.UUID `gorm:"type:uuid;uniqueIndex:idx_user_month_year;not null" json:"user_id"`
 
+	UserName string `gorm:"type:text;not null" json:"user_name"`
+
 	Month int `gorm:"uniqueIndex:idx_user_month_year;not null" json:"month"`
 	Year  int `gorm:"uniqueIndex:idx_user_month_year;not null" json:"year"`
 

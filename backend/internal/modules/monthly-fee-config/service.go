@@ -63,6 +63,7 @@ func (s *MonthlyFeeConfigService) CreateConfigAndDrafts(config *entities.Monthly
 			payments = append(payments, entities.MonthlyPayment{
 				ID:        uuid.New(),
 				UserID:    user.ID,
+				UserName:  user.Name,
 				Month:     config.Month,
 				Year:      config.Year,
 				AmountDue: amount,

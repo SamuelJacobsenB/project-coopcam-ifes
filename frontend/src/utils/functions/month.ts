@@ -26,3 +26,32 @@ export function monthToString(month: number) {
       return "Dezembro";
   }
 }
+
+export function monthToNumber(month: string) {
+  switch (month) {
+    case "Janeiro":
+      return 1;
+    case "Fevereiro":
+      return 2;
+    case "Março":
+      return 3;
+    case "Abril":
+      return 4;
+    case "Maio":
+      return 5;
+    case "Junho":
+      return 6;
+    case "Julho":
+      return 7;
+    case "Agosto":
+      return 8;
+    case "Setembro":
+      return 9;
+    case "Outubro":
+      return 10;
+    case "Novembro":
+      return 11;
+    default:
+      return 12;
+  }
+}

@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
-import type { User } from "../../types";
+import type { MonthlyFeeConfig } from "../../types";
 
 export const fetchMonthlyFeeConfigByYear = async (year: number) => {
   try {
-    const res = await api.get<User[]>(
+    const res = await api.get<MonthlyFeeConfig[]>(
       `/v1/monthly-fee-config/year/${year}/`,
     );
 

@@ -5,7 +5,7 @@ import (
 )
 
 func MigrateDB() {
-	err := DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{}, &entities.MonthlyPayment{}, &entities.BusReservation{}, &entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{})
+	err := DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{}, &entities.MonthlyFeeConfig{}, &entities.MonthlyPayment{}, &entities.BusReservation{}, &entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{})
 
 	if err != nil {
 		panic("Falha na migração do banco de dados: " + err.Error())

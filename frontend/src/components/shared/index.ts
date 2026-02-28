@@ -1,11 +1,12 @@
 export * from "./cards";
 export * from "./modals";
 
-export * from "./input";
-export * from "./date-input";
 export * from "./checkbox";
-export * from "./search";
+export * from "./date-input";
 export * from "./error";
+export * from "./input";
+export * from "./search";
+export * from "./select";
 
 export * from "./calendar";
 
