@@ -1,5 +1,8 @@
 import { useState } from "react";
+
 import { Modal } from "../";
+import { Loader } from "../../loader";
+
 import styles from "./styles.module.css";
 
 interface ConfirmModalProps {
@@ -55,7 +58,7 @@ export const ConfirmModal = ({
             onClick={handleConfirm}
             disabled={loading}
           >
-            {loading ? "Processando..." : "Confirmar"}
+            {loading ? <Loader color="white" /> : "Confirmar"}
           </button>
         </div>
       </div>

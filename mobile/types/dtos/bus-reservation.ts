@@ -1,5 +1,3 @@
-import { Direction, Period } from "../others";
-
 export interface BusReservationRequestDTO {
   bus_trip_id: string;
 
@@ -7,8 +5,7 @@ export interface BusReservationRequestDTO {
   user_name: string;
 
   date: Date;
-  period: Period;
-  direction: Direction;
+  period: string;
 }
 
 export interface BusReservationUpdateDTO {

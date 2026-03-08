@@ -13,5 +13,5 @@ func SetupMonthlyPaymentRoutes(rg *gin.RouterGroup, handler *monthly_payment.Mon
 	rg.PATCH("/:id/status/", middlewares.AuthMiddlewareManager(), handler.UpdateStatus)
 
 	// Não uso middleware aqui porque o Mercado Pago não envia token de sessão.
-	rg.POST("/webhook/mercadopago", handler.HandleWebhook)
+	rg.POST("/webhook/mercadopago/", handler.HandleWebhook)
 }

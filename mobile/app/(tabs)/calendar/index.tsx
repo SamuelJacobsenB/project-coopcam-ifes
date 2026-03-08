@@ -1,19 +1,25 @@
-import React, { useState, useMemo } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import React, { useMemo, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { Calendar, CalendarDayCard, LoadPage, Title } from "@/components";
 import { useAllAvailableOverrides, useAllUnavailableDays } from "@/hooks";
-import { Calendar, LoadPage, Title, CalendarDayCard } from "@/components";
 import { colors } from "@/styles";
 
-const toDateId = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+const toDateId = (dateInput: Date | string | undefined | null): string => {
+  if (!dateInput) return "";
+
+  const d = new Date(dateInput);
+
+  if (isNaN(d.getTime())) return "";
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
   return `${year}-${month}-${day}`;
 };
 
 export default function CalendarPage() {
-  // Hooks de dados
   const {
     availableOverrides,
     isLoading: loadingOverrides,
@@ -26,15 +32,11 @@ export default function CalendarPage() {
     error: unavailableError,
   } = useAllUnavailableDays();
 
-  // Estado local
   const [date, setDate] = useState(() => new Date());
 
-  // Lógica de Seleção Otimizada (Memoizada)
-  // Só recalcula se a data selecionada ou os dados da API mudarem
   const { selectedOverride, selectedUnavailable } = useMemo(() => {
     const dayKey = toDateId(date);
 
-    // Evita crash se os dados vierem undefined
     const overrides = availableOverrides ?? [];
     const unavailables = unavailableDays ?? [];
 
@@ -46,12 +48,10 @@ export default function CalendarPage() {
     };
   }, [date, availableOverrides, unavailableDays]);
 
-  // Loading State
   if (loadingOverrides || loadingUnavailable) {
     return <LoadPage />;
   }
 
-  // Verificação de Erros
   const hasError = overridesError || unavailableError;
 
   return (
@@ -64,7 +64,6 @@ export default function CalendarPage() {
             <Text style={styles.errorText}>
               Ocorreu um problema ao carregar os dados do calendário.
             </Text>
-            {/* Aqui você poderia colocar um botão de "Tentar Novamente" */}
           </View>
         ) : (
           <>

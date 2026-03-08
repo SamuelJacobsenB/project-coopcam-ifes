@@ -5,7 +5,7 @@ export default StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    padding: 16,
+    padding: 14,
   },
   title: {
     fontSize: 18,

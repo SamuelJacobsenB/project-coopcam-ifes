@@ -3,6 +3,7 @@ export * from "./available-override";
 export * from "./bus-reservation";
 export * from "./bus-trip";
 export * from "./bus-trip-report";
+export * from "./monthly-fee-config";
 export * from "./template";
 export * from "./unavailable-day";
 export * from "./user";

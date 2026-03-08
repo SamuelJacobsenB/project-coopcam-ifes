@@ -29,7 +29,7 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 	}
 
 	// Obtém dados do usuário logado do contexto (definidos pelo AuthMiddleware)
-	loggedUserIDStr, exists := ctx.Get("userID")
+	loggedUserIDStr, exists := ctx.Get("user_id")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "não autorizado"})
 		return
@@ -40,7 +40,7 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 		return
 	}
 
-	role, exists := ctx.Get("userRole")
+	role, exists := ctx.Get("user_role")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "não autorizado"})
 		return
@@ -64,11 +64,15 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 }
 
 func (h *MonthlyPaymentHandler) ListByPeriod(ctx *gin.Context) {
-	month, errM := strconv.Atoi(ctx.Query("month"))
-	year, errY := strconv.Atoi(ctx.Query("year"))
+	year, err := strconv.Atoi(ctx.Param("year"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ano inválido"})
+		return
+	}
 
-	if errM != nil || errY != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Mês e ano são obrigatórios"})
+	month, err := strconv.Atoi(ctx.Param("month"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "mês inválido"})
 		return
 	}
 

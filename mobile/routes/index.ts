@@ -3,5 +3,5 @@ export const routes = [
   { name: "template", icon: "ticket" },
   { name: "(home)/index", icon: "home" },
   { name: "calendar/index", icon: "calendar" },
-  { name: "info/index", icon: "information-circle" },
+  { name: "payment/index", icon: "card" },
 ] as const;

@@ -11,7 +11,7 @@ export const fetchEmitMonthlyPaymentBatch = async (data: Data) => {
   try {
     const res = await api.post("/v1/monthly-payment/emit-batch/", data);
 
-    if (res.status != 201)
+    if (res.status != 200)
       throw new Error("Erro ao emitir configuração da taxa de pagamento");
 
     return res.data;

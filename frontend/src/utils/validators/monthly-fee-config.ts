@@ -14,16 +14,9 @@ export function validateMonthlyFeeConfigRequestDTO(
   )
     return "Mês inválido";
 
-  if (
-    !monthlyFeeConfig.base_amount ||
-    monthlyFeeConfig.base_amount.toString().includes(".")
-  )
-    return "Valor padrão inválido";
+  if (!monthlyFeeConfig.base_amount) return "Valor padrão inválido";
 
-  if (
-    !monthlyFeeConfig.financial_aid_amount ||
-    monthlyFeeConfig.financial_aid_amount.toString().includes(".")
-  )
+  if (!monthlyFeeConfig.financial_aid_amount)
     return "Valor com auxílio inválido";
 
   if (!monthlyFeeConfig.due_date) return "Data de vencimento inválida";

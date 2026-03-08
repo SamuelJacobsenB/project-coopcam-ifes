@@ -2,11 +2,11 @@ import type { MonthlyPayment } from "../../../../types";
 
 import styles from "./styles.module.css";
 
-interface Props {
+interface UserPaymentsCardProps {
   payments: MonthlyPayment[];
 }
 
-export function UserPaymentsCard({ payments }: Props) {
+export function UserPaymentsCard({ payments }: UserPaymentsCardProps) {
   const paidCount = payments.filter((p) => p.payment_status === "paid").length;
   const totalAmount = payments.reduce((acc, p) => acc + p.amount, 0);
 
@@ -43,7 +43,7 @@ export function UserPaymentsCard({ payments }: Props) {
             {paidCount} de {payments.length} pagos
           </span>
           <span className={styles.badgeCount}>
-            {(totalAmount / 100).toLocaleString("pt-BR", {
+            {totalAmount.toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
             })}{" "}
@@ -61,7 +61,7 @@ export function UserPaymentsCard({ payments }: Props) {
                   <div className={styles.userMainInfo}>
                     <strong>{p.user_name}</strong>
                     <span className={styles.userAmount}>
-                      {(p.amount / 100).toLocaleString("pt-BR", {
+                      {p.amount.toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })}

@@ -1,4 +1,4 @@
-import type { Direction, Period } from "../";
+import type { Period } from "../";
 
 export interface BusReservation {
   id: string;
@@ -9,7 +9,6 @@ export interface BusReservation {
 
   date: Date;
   period: Period;
-  direction: Direction;
 
   created_at: Date;
   updated_at: Date;

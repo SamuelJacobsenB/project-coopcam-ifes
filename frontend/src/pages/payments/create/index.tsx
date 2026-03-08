@@ -67,8 +67,8 @@ export function CreatePaymentFeeConfigPage() {
     const monthlyFeeConfig: MonthlyFeeConfigRequestDTO = {
       month: Number(month),
       year: Number(year),
-      base_amount: base_amount * 100, // Centavos
-      financial_aid_amount: financial_aid_amount * 100,
+      base_amount: Number(base_amount) * 100,
+      financial_aid_amount: Number(financial_aid_amount) * 100,
       due_date,
     };
 

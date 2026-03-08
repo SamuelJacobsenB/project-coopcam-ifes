@@ -8,6 +8,8 @@ export interface UserRequestDTO {
   address: string;
   cep: string;
   birth: string;
+
+  has_financial_aid: boolean;
 }
 
 export interface UserUpdateDTO {
@@ -20,4 +22,6 @@ export interface UserUpdateDTO {
   address: string | null;
   cep: string | null;
   birth: Date | null;
+
+  has_financial_aid: boolean | null;
 }

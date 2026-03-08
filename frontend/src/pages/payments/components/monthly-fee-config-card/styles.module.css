@@ -34,6 +34,19 @@
   color: #6b7280;
 }
 
+.cardHeaderActions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
 /* Tag de Mês/Ano */
 .monthTag {
   background-color: #f3f4f6;
