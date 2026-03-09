@@ -1,0 +1,55 @@
+import { StyleSheet } from "react-native";
+
+import { colors } from "./colors";
+
+export const btnStyles = StyleSheet.create({
+  btn: {
+    fontFamily: "Poppins-Regular",
+    textAlign: "center",
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
+  btnDisabled: {
+    opacity: 0.5,
+  },
+  btnSm: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 12,
+    textAlign: "center",
+    width: "100%",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  btnRounded: {
+    borderRadius: 999,
+    padding: 6,
+  },
+
+  btnPrimary: {
+    backgroundColor: colors.primary,
+    color: "white",
+  },
+  btnSecondary: {
+    backgroundColor: colors.secondary,
+    color: "white",
+  },
+  btnSuccess: {
+    backgroundColor: colors.success,
+    color: "white",
+  },
+  btnDanger: {
+    backgroundColor: colors.error,
+    color: "white",
+  },
+  btnWarning: {
+    backgroundColor: colors.warning,
+    color: "white",
+  },
+  btnInfo: {
+    backgroundColor: colors.info,
+    color: "white",
+  },
+});

@@ -1,0 +1,51 @@
+import { StyleSheet } from "react-native";
+
+export default StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalArea: {
+    width: "90%",
+    maxWidth: 450,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  contentWrapper: {
+    width: "100%",
+    position: "relative",
+  },
+  modalCard: {
+    padding: 24,
+    borderRadius: 12,
+    backgroundColor: "white",
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+    overflow: "hidden",
+  },
+  close: {
+    position: "absolute",
+    top: -16,
+    right: -10,
+    zIndex: 10,
+    backgroundColor: "white",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+});
