@@ -1,25 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
-  ActivityIndicator,
-  Image,
 } from "react-native";
 
-import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
+import * as Sharing from "expo-sharing";
 import QRCode from "react-native-qrcode-svg";
 import { captureRef } from "react-native-view-shot";
-import * as Sharing from "expo-sharing";
 
+import { ConfirmModal, LoadPage, ProfileInfoText } from "@/components";
 import { useMessage, useUser } from "@/contexts";
 import { useLogout } from "@/hooks";
-import { ConfirmModal, LoadPage, ProfileInfoText } from "@/components";
-import { colors, btnStyles } from "@/styles";
+import { btnStyles, colors } from "@/styles";
 
 // Componente para organizar as secções do perfil
 const ProfileSectionCard = ({ title, children, icon }: any) => (
@@ -69,7 +69,7 @@ export default function ProfilePage() {
   if (!user) return <LoadPage />;
 
   const userNameFormatted = user.name.split(" ").slice(0, 2).join(" ");
-  const qrCodeValue = `${user.id}:${user.email}`;
+  const qrCodeValue = `${user.id}:${user.name.replaceAll(" ", "-")}`;
 
   return (
     <View style={styles.mainContainer}>

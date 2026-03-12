@@ -41,7 +41,6 @@ export default function RootLayout() {
           barStyle={"light-content"}
         />
 
-        {/* O AuthGuard */}
         <View style={{ flex: 1 }}>
           <AuthGuard />
         </View>

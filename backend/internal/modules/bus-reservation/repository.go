@@ -47,6 +47,12 @@ func (repo *BusReservationRepository) FindByID(id uuid.UUID) (*entities.BusReser
 	return &busReservation, err
 }
 
+func (repo *BusReservationRepository) FindByTripID(tripID uuid.UUID) ([]entities.BusReservation, error) {
+	var busReservations []entities.BusReservation
+	err := repo.db.Where("trip_id = ?", tripID).Find(&busReservations).Error
+	return busReservations, err
+}
+
 func (repo *BusReservationRepository) Create(busReservation *entities.BusReservation) error {
 	busReservation.ID = uuid.New()
 	return repo.db.Create(busReservation).Error

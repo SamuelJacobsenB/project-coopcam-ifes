@@ -88,6 +88,27 @@ func (handler *BusReservationHandler) FindByID(ctx *gin.Context) {
 	ctx.JSON(200, dtos.ToBusReservationResponseDTO(busReservation))
 }
 
+func (handler *BusReservationHandler) FindByTripID(ctx *gin.Context) {
+	tripID, err := uuid.Parse(ctx.Param("trip_id"))
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "id inválido"})
+		return
+	}
+
+	busReservations, err := handler.service.FindByTripID(tripID)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	busReservationsResponse := make([]dtos.BusReservationResponseDTO, len(busReservations))
+	for i, busReservation := range busReservations {
+		busReservationsResponse[i] = *dtos.ToBusReservationResponseDTO(&busReservation)
+	}
+
+	ctx.JSON(200, busReservationsResponse)
+}
+
 func (handler *BusReservationHandler) Create(ctx *gin.Context) {
 	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
@@ -165,4 +186,3 @@ func (handler *BusReservationHandler) Delete(ctx *gin.Context) {
 
 	ctx.JSON(204, nil)
 }
-

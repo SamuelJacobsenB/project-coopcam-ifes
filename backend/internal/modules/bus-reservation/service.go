@@ -36,6 +36,10 @@ func (service *BusReservationService) FindByID(id uuid.UUID) (*entities.BusReser
 	return service.repo.FindByID(id)
 }
 
+func (service *BusReservationService) FindByTripID(tripID uuid.UUID) ([]entities.BusReservation, error) {
+	return service.repo.FindByTripID(tripID)
+}
+
 func (service *BusReservationService) Create(busReservation *entities.BusReservation) error {
 	userExists, err := service.userRepo.FindByID(busReservation.UserID)
 	if err != nil {

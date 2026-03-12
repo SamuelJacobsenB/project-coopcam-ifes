@@ -1,5 +1,5 @@
+import { router, Slot, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { Slot, useSegments, router } from "expo-router";
 
 import { useOwnUser } from "@/hooks";
 import { LoadPage } from "../../layout/load-page";
