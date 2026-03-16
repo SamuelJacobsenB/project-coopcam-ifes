@@ -71,6 +71,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
   },
 });

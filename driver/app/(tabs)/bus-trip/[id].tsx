@@ -1,20 +1,20 @@
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Picker } from "@react-native-picker/picker";
-import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { BusTripCard, LoadPage, QrCodeReader } from "@/components";
-import { useMessage } from "@/contexts";
-import { useBusTripById, useManyBusReservationsByTripId } from "@/hooks";
-import { colors } from "@/styles";
-import { BusTrip, ScannedUser, Status } from "@/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Constantes para evitar erros de digitação nas chaves
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+import { BusTripCard, Line, LoadPage, QrCodeReader } from "@/components";
+import { useMessage } from "@/contexts";
+import { useBusTripById } from "@/hooks";
+import { colors } from "@/styles";
+import { BusTrip, ScannedUser } from "@/types";
+
 const STORAGE_KEYS = {
   SCANNED: (id: string) => `@scanned_users_${id}`,
-  RESERVATIONS: (id: string) => `@reservations_${id}`,
+  TRIP_DATE: (id: string) => `@trip_date_${id}`,
 };
 
 export default function BusTripPage() {
@@ -24,12 +24,10 @@ export default function BusTripPage() {
 
   const { showMessage } = useMessage();
   const { getBusTripById } = useBusTripById();
-  const { getManyBusReservationsByTripId } = useManyBusReservationsByTripId();
 
   const [busTrip, setBusTrip] = useState<BusTrip | null>(null);
   const [scannedUsers, setScannedUsers] = useState<ScannedUser[]>([]);
 
-  // Carregar dados iniciais
   const loadData = useCallback(async () => {
     if (!tripId) return;
 
@@ -42,7 +40,7 @@ export default function BusTripPage() {
       if (trip) setBusTrip(trip);
       if (storedUsers) setScannedUsers(JSON.parse(storedUsers));
     } catch {
-      showMessage("Erro ao sincronizar dados locais.", "error");
+      showMessage("Erro ao sincronizar dados locais", "error");
     }
   }, [tripId, getBusTripById, showMessage]);
 
@@ -50,7 +48,6 @@ export default function BusTripPage() {
     loadData();
   }, [loadData]);
 
-  // Handler de Scan memorizado
   const handleScan = useCallback(
     async (data: string) => {
       try {
@@ -61,7 +58,7 @@ export default function BusTripPage() {
 
         const alreadyScanned = scannedUsers.some((u) => u.userId === userId);
         if (alreadyScanned) {
-          return showMessage("Este usuário já foi escaneado.", "error");
+          return showMessage("Este usuário já foi escaneado", "error");
         }
 
         const updatedUsers = [...scannedUsers, { userId, userName }];
@@ -79,26 +76,10 @@ export default function BusTripPage() {
     [scannedUsers, tripId, showMessage],
   );
 
-  async function handleStatusChange(newStatus: Status) {
-    if (!busTrip) return;
-    setBusTrip((prev) => (prev ? { ...prev, status: newStatus } : null));
-
-    try {
-      const reservas = await getManyBusReservationsByTripId(tripId);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.RESERVATIONS(tripId),
-        JSON.stringify(reservas),
-      );
-    } catch (error) {
-      console.error("Erro ao fazer backup offline:", error);
-    }
-  }
-
   if (!busTrip) return <LoadPage />;
 
   return (
     <View style={styles.container}>
-      {/* Header com botão de voltar melhorado */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={26} color="black" />
@@ -106,48 +87,59 @@ export default function BusTripPage() {
         <Text style={styles.headerTitle}>Detalhes da Viagem</Text>
       </View>
 
-      <FlatList
-        data={scannedUsers}
-        keyExtractor={(item) => item.userId}
-        contentContainerStyle={styles.scrollContent}
-        ListHeaderComponent={
-          <View style={styles.gap}>
-            <BusTripCard trip={busTrip} />
+      <View style={styles.gap}>
+        <BusTripCard trip={busTrip} />
 
-            <View style={styles.card}>
-              <Text style={styles.label}>Status da Viagem</Text>
-              <View style={styles.pickerWrapper}>
-                <Picker
-                  selectedValue={busTrip.status}
-                  onValueChange={(val) => handleStatusChange(val as Status)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Pendente" value="PENDING" />
-                  <Picker.Item label="Em Andamento" value="IN_PROGRESS" />
-                  <Picker.Item label="Concluída" value="COMPLETED" />
-                </Picker>
+        <View style={styles.cameraContainer}>
+          <QrCodeReader onScan={handleScan} />
+        </View>
+      </View>
+
+      <View style={styles.listContainer}>
+        <Text style={styles.sectionTitle}>
+          Passageiros ({scannedUsers.length})
+        </Text>
+        <Line />
+        {scannedUsers.length === 0 ? (
+          <Text style={styles.emptyText}>
+            Nenhum passageiro escaneado ainda
+          </Text>
+        ) : (
+          <FlatList
+            data={scannedUsers}
+            keyExtractor={(item) => item.userId}
+            contentContainerStyle={styles.scrollContent}
+            renderItem={({ item }) => (
+              <View style={styles.userItem}>
+                <Ionicons name="checkmark-circle" size={20} color={"#4CAF50"} />
+                <Text style={styles.userText}>{item.userName}</Text>
               </View>
-            </View>
-
-            <View style={styles.cameraContainer}>
-              <QrCodeReader onScan={handleScan} />
-            </View>
-
-            <Text style={styles.sectionTitle}>
-              Passageiros a bordo ({scannedUsers.length})
-            </Text>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.userItem}>
-            <Ionicons name="checkmark-circle" size={20} color={"#4CAF50"} />
-            <Text style={styles.userText}>{item.userName}</Text>
-          </View>
+            )}
+          />
         )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>Nenhum passageiro escaneado.</Text>
-        }
-      />
+      </View>
+
+      <View style={styles.listContainer}>
+        <Text style={styles.sectionTitle}>
+          Reservas ({scannedUsers.length})
+        </Text>
+        <Line />
+        {scannedUsers.length === 0 ? (
+          <Text style={styles.emptyText}>Nenhum reserva feita ainda</Text>
+        ) : (
+          <FlatList
+            data={scannedUsers}
+            keyExtractor={(item) => item.userId}
+            contentContainerStyle={styles.scrollContent}
+            renderItem={({ item }) => (
+              <View style={styles.userItem}>
+                <Ionicons name="checkmark-circle" size={20} color={"#4CAF50"} />
+                <Text style={styles.userText}>{item.userName}</Text>
+              </View>
+            )}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -160,9 +152,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 50,
+    paddingVertical: 15,
     paddingHorizontal: 20,
-    paddingBottom: 15,
     backgroundColor: "#fff",
   },
   headerTitle: {
@@ -179,6 +170,7 @@ const styles = StyleSheet.create({
   },
   gap: {
     gap: 20,
+    margin: 20,
     marginBottom: 15,
   },
   card: {
@@ -195,27 +187,41 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 8,
   },
-  pickerWrapper: {
+  dateDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#f8fafc",
     borderRadius: 8,
-    overflow: "hidden",
+    padding: 12,
     borderWidth: 1,
     borderColor: "#cbd5e1",
+    gap: 10,
   },
-  picker: {
-    height: 50,
+  dateText: {
+    fontSize: 16,
+    color: "#334155",
+    fontWeight: "500",
   },
   cameraContainer: {
-    height: 250, // Altura fixa para a câmera não quebrar o layout
+    height: 250,
     borderRadius: 15,
     overflow: "hidden",
     backgroundColor: "#000",
+  },
+  listContainer: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    backgroundColor: "#fff",
+    margin: 20,
+    padding: 16,
+    borderRadius: 8,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "800",
     color: "black",
-    marginTop: 10,
   },
   userItem: {
     flexDirection: "row",
@@ -233,6 +239,5 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: "center",
     color: "#94a3b8",
-    marginTop: 20,
   },
 });
