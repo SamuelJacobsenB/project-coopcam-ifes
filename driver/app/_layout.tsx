@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthGuard, LoadPage, Message } from "@/components";
 import { Provider } from "@/contexts";
 import { colors } from "@/styles";
+import { Slot } from "expo-router";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,7 +43,9 @@ export default function RootLayout() {
         />
 
         <View style={{ flex: 1 }}>
-          <AuthGuard />
+          <AuthGuard>
+            <Slot />
+          </AuthGuard>
         </View>
 
         <Message />

@@ -6,11 +6,13 @@ import { useOwnUser } from "@/hooks/user/useOwnUser";
 import type { User } from "@/types";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user: userData, refetch } = useOwnUser();
+  const { user: userData, isLoading: isUserLoading, refetch } = useOwnUser();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (userData) setUser(userData);
+    if (userData) {
+      setUser(userData);
+    }
   }, [userData]);
 
   const findUser = async () => {
@@ -21,7 +23,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, findUser }}>
+    <UserContext.Provider
+      value={{ user, setUser, findUser, isLoading: isUserLoading }}
+    >
       {children}
     </UserContext.Provider>
   );

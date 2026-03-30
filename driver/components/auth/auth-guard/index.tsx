@@ -1,25 +1,22 @@
-import { router, Slot, useSegments } from "expo-router";
-import { useEffect } from "react";
+import { Redirect, useSegments } from "expo-router";
 
-import { useOwnUser } from "@/hooks";
+import { useUser } from "@/contexts";
 import { LoadPage } from "../../layout/load-page";
 
-export function AuthGuard() {
+export function AuthGuard({ children }: { children: React.ReactNode }) {
   const segments = useSegments();
-  const { user, isLoading } = useOwnUser();
-
+  const { user, isLoading } = useUser();
   const isAuthRoute = segments[0] === "(auth)";
-  const isLoggedIn = !!user;
 
-  useEffect(() => {
-    if (!isLoading && !isAuthRoute && !isLoggedIn) {
-      router.replace("/(auth)/login");
-    }
-  }, [isLoading, isAuthRoute, isLoggedIn]);
+  if (isLoading) return <LoadPage />;
 
-  if (isLoading || (!isAuthRoute && !isLoggedIn)) {
-    return <LoadPage />;
+  if (!user && !isAuthRoute) {
+    return <Redirect href="/(auth)/login" />;
   }
 
-  return <Slot />;
+  if (user && isAuthRoute) {
+    return <Redirect href="/" />;
+  }
+
+  return <>{children}</>;
 }
