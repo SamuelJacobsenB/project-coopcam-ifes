@@ -49,7 +49,7 @@ func (repo *BusReservationRepository) FindByID(id uuid.UUID) (*entities.BusReser
 
 func (repo *BusReservationRepository) FindByTripID(tripID uuid.UUID) ([]entities.BusReservation, error) {
 	var busReservations []entities.BusReservation
-	err := repo.db.Where("trip_id = ?", tripID).Find(&busReservations).Error
+	err := repo.db.Where("bus_trip_id = ?", tripID).Find(&busReservations).Error
 	return busReservations, err
 }
 

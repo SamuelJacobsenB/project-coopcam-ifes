@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -8,23 +7,27 @@ import { BusTripCard, Line, LoadPage, QrCodeReader } from "@/components";
 import { useMessage } from "@/contexts";
 import { useBusTripById, useManyBusReservationsByTripId } from "@/hooks";
 import { colors } from "@/styles";
-import { BusTrip, ScannedUser } from "@/types";
-
-const STORAGE_KEYS = {
-  SCANNED: (id: string) => `@scanned_users_${id}`,
-  RESERVATIONS: (id: string) => `@reservations_trip_${id}`,
-};
+import { BusReservation, BusTrip, ScannedUser } from "@/types";
+import {
+  getReservationsByTripId,
+  getScannedUsersByTripId,
+  getBusTripById as getStoredBusTrip,
+  setReservationsByTripId,
+  setScannedUsersByTripId,
+} from "@/utils";
 
 export default function BusTripPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { showMessage } = useMessage();
 
-  const { getBusTripById } = useBusTripById();
-  const { getManyBusReservationsByTripId } = useManyBusReservationsByTripId();
+  // Hooks da API
+  const { getBusTripById: fetchBusTripApi } = useBusTripById();
+  const { getManyBusReservationsByTripId: fetchReservationsApi } =
+    useManyBusReservationsByTripId();
 
   const [busTrip, setBusTrip] = useState<BusTrip | null>(null);
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<BusReservation[]>([]);
   const [scannedUsers, setScannedUsers] = useState<ScannedUser[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,36 +35,41 @@ export default function BusTripPage() {
     if (!id) return;
 
     try {
-      // Tenta carregar dados básicos e o que já foi escaneado localmente
-      const [trip, storedScanned, storedReservations] = await Promise.all([
-        getBusTripById(id),
-        AsyncStorage.getItem(STORAGE_KEYS.SCANNED(id)),
-        AsyncStorage.getItem(STORAGE_KEYS.RESERVATIONS(id)),
-      ]);
+      // 1. Tenta carregar tudo o que estiver no Storage Local primeiro (Offline First)
+      const [storedTrip, storedScanned, storedReservations] = await Promise.all(
+        [
+          getStoredBusTrip(id),
+          getScannedUsersByTripId(id),
+          getReservationsByTripId(id),
+        ],
+      );
 
-      if (trip) setBusTrip(trip);
-      if (storedScanned) setScannedUsers(JSON.parse(storedScanned));
-      if (storedReservations) setReservations(JSON.parse(storedReservations));
+      if (storedTrip) setBusTrip(storedTrip);
+      setScannedUsers(storedScanned);
+      setReservations(storedReservations);
 
-      // Tenta atualizar a lista de reservas pela API (Online)
+      // 2. Busca dados atualizados da API e sincroniza o Cache
       try {
-        const freshReservations = await getManyBusReservationsByTripId(id);
+        const [freshTrip, freshReservations] = await Promise.all([
+          fetchBusTripApi(id),
+          fetchReservationsApi(id),
+        ]);
+
+        if (freshTrip) setBusTrip(freshTrip);
+
         if (freshReservations) {
           setReservations(freshReservations);
-          await AsyncStorage.setItem(
-            STORAGE_KEYS.RESERVATIONS(id),
-            JSON.stringify(freshReservations),
-          );
+          await setReservationsByTripId(id, freshReservations);
         }
       } catch {
-        console.log("Offline: Usando lista de reservas cacheada.");
+        console.log("Modo Offline: Não foi possível atualizar dados da API.");
       }
     } catch {
-      showMessage("Erro ao sincronizar dados", "error");
+      showMessage("Erro ao carregar dados", "error");
     } finally {
       setLoading(false);
     }
-  }, [id, getBusTripById, getManyBusReservationsByTripId, showMessage]);
+  }, [id, fetchBusTripApi, fetchReservationsApi, showMessage]);
 
   useEffect(() => {
     loadData();
@@ -69,6 +77,8 @@ export default function BusTripPage() {
 
   const handleScan = useCallback(
     async (data: string) => {
+      if (!id) return;
+
       try {
         const parts = data.split(":");
         const userId = parts[0];
@@ -79,25 +89,23 @@ export default function BusTripPage() {
         }
 
         const hasReservation = reservations.some(
-          (res) => res.user.id === userId,
+          (res) => res.user_id === userId,
         );
 
-        const newUser = { userId, userName, onList: hasReservation };
+        const newUser: ScannedUser = {
+          userId,
+          userName,
+        };
+        const updatedScanned = [...scannedUsers, newUser];
 
-        setScannedUsers((prev) => {
-          const updated = [...prev, newUser];
-          AsyncStorage.setItem(
-            STORAGE_KEYS.SCANNED(id!),
-            JSON.stringify(updated),
-          );
-          return updated;
-        });
+        // Atualiza estado e storage usando a nova função set
+        setScannedUsers(updatedScanned);
+        await setScannedUsersByTripId(id, updatedScanned);
 
-        // Mensagem personalizada baseada na reserva
         if (hasReservation) {
           showMessage(`${userName} confirmado na lista`, "success");
         } else {
-          showMessage(`${userName} não confirmado na lista!`, "error");
+          showMessage(`${userName} não está na lista oficial!`, "error");
         }
       } catch {
         showMessage("QR Code inválido.", "error");
@@ -117,37 +125,32 @@ export default function BusTripPage() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <BusTripCard trip={busTrip} />
 
-        <View style={styles.cameraContainer}>
-          <QrCodeReader onScan={handleScan} />
-        </View>
+        <QrCodeReader onScan={handleScan} />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
             Relatório de Embarque ({scannedUsers.length})
           </Text>
           <Line />
+
           {scannedUsers.length === 0 ? (
             <Text style={styles.emptyText}>Nenhum embarque registrado.</Text>
           ) : (
             scannedUsers.map((user, index) => {
-              const onList = reservations.some(
-                (res) => res.user.id === user.userId,
+              const isOnList = reservations.some(
+                (res) => res.user_id === user.userId,
               );
 
               return (
                 <View key={index} style={styles.userItem}>
                   <Ionicons
-                    name={
-                      reservations.some((res) => res.user.id === user.userId)
-                        ? "checkmark-circle"
-                        : "warning"
-                    }
+                    name={isOnList ? "checkmark-circle" : "warning"}
                     size={20}
-                    color={onList ? colors.primary : "#EAB308"}
+                    color={isOnList ? colors.primary : "#EAB308"}
                   />
                   <View>
                     <Text style={styles.userText}>{user.userName}</Text>
-                    {onList && (
+                    {!isOnList && (
                       <Text style={styles.warningSubtext}>
                         Não estava na lista
                       </Text>
@@ -167,12 +170,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.lightGray },
   backButton: { margin: 16 },
   scrollContent: { padding: 20, gap: 20 },
-  cameraContainer: {
-    height: 220,
-    borderRadius: 16,
-    overflow: "hidden",
-    backgroundColor: "#000",
-  },
   section: { backgroundColor: "#fff", padding: 16, borderRadius: 12, gap: 12 },
   sectionTitle: { fontSize: 17, fontWeight: "800" },
   userItem: {

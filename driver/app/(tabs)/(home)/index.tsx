@@ -1,16 +1,18 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BusTripCard, DateInput, Line } from "@/components";
 import { useManyBusTripsByDate } from "@/hooks";
 import { colors } from "@/styles";
 import { BusTrip } from "@/types";
+import { getBusTripsByDate, setBusTripsByDate } from "@/utils";
 
 export default function HomePage() {
   const navigation = useNavigation<any>();
   const params = useLocalSearchParams<{ date?: string }>();
-  const { getManyBusTripsByDate } = useManyBusTripsByDate();
+
+  const { getManyBusTripsByDate: fetchTrips } = useManyBusTripsByDate();
 
   const [date, setDate] = useState(() => {
     if (params.date) {
@@ -21,6 +23,7 @@ export default function HomePage() {
   });
 
   const [busTrips, setBusTrips] = useState<BusTrip[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const dateString = useMemo(() => {
     const year = date.getFullYear();
@@ -29,6 +32,28 @@ export default function HomePage() {
     return `${year}-${month}-${day}`;
   }, [date]);
 
+  const loadTrips = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Busca no Storage Local para exibição imediata
+      const storedTrips = await getBusTripsByDate(dateString);
+      if (storedTrips.length > 0) {
+        setBusTrips(storedTrips);
+      }
+
+      // Busca na API para atualizar os dados
+      const freshTrips = await fetchTrips(dateString);
+      if (freshTrips) {
+        setBusTrips(freshTrips);
+        await setBusTripsByDate(dateString, freshTrips);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar viagens:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [dateString, fetchTrips]);
+
   useEffect(() => {
     if (params.date !== dateString) {
       navigation.setParams({ date: dateString });
@@ -36,8 +61,8 @@ export default function HomePage() {
   }, [dateString, navigation, params.date]);
 
   useEffect(() => {
-    getManyBusTripsByDate(dateString).then(setBusTrips);
-  }, [dateString, getManyBusTripsByDate]);
+    loadTrips();
+  }, [loadTrips]);
 
   return (
     <View style={styles.container}>
@@ -49,7 +74,7 @@ export default function HomePage() {
       <DateInput label="Data" value={date} onChange={setDate} />
       <Line />
 
-      {busTrips.length === 0 ? (
+      {busTrips.length === 0 && !loading ? (
         <Text style={styles.emptyText}>Nenhuma rota encontrada.</Text>
       ) : (
         <ScrollView
@@ -60,7 +85,6 @@ export default function HomePage() {
             <BusTripCard
               key={trip.id}
               trip={trip}
-              // Navega para a tela de detalhes da viagem
               onPress={() =>
                 navigation.navigate("bus-trip/[id]", { id: trip.id })
               }
