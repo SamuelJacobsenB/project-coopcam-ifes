@@ -199,67 +199,37 @@ func (handler *BusTripReportHandler) FindByUserAndMonth(ctx *gin.Context) {
 
 	ctx.JSON(200, busTripReportsResponse)
 }
-func (handler *BusTripReportHandler) Create(ctx *gin.Context) {
-	userID, err := uuid.Parse(ctx.GetString("user_id"))
+
+func (handler *BusTripReportHandler) CreateMany(ctx *gin.Context) {
+	tripID, err := uuid.Parse(ctx.Param("trip_id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
+		ctx.JSON(400, gin.H{"error": "id de viagem inválido"})
 		return
 	}
 
-	var busTripReportRequest dtos.BusTripReportRequestDTO
-	if err := ctx.ShouldBindJSON(&busTripReportRequest); err != nil {
+	var userIDRequests []string
+	if err := ctx.ShouldBindJSON(&userIDRequests); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := busTripReportRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
+	var userIDs []uuid.UUID
+	for _, userIDRequest := range userIDRequests {
+		userID, err := uuid.Parse(userIDRequest)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
+			return
+		}
+
+		userIDs = append(userIDs, userID)
 	}
 
-	busTripReport := busTripReportRequest.ToEntity()
-	busTripReport.UserID = userID
-	if err := handler.service.Create(busTripReport); err != nil {
+	if err := handler.service.CreateMany(tripID, userIDs); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(201, dtos.ToBusTripReportResponseDTO(busTripReport))
-}
-
-func (handler *BusTripReportHandler) Update(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	userID, err := uuid.Parse(ctx.GetString("user_id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	var busTripReportRequest dtos.BusTripReportRequestDTO
-	if err := ctx.ShouldBindJSON(&busTripReportRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := busTripReportRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	busTripReport := busTripReportRequest.ToEntity()
-	busTripReport.ID = id
-	busTripReport.UserID = userID
-	if err := handler.service.Update(busTripReport); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToBusTripReportResponseDTO(busTripReport))
+	ctx.JSON(201, nil)
 }
 
 func (handler *BusTripReportHandler) Delete(ctx *gin.Context) {

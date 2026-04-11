@@ -34,21 +34,30 @@ export default function HomePage() {
 
   const loadTrips = useCallback(async () => {
     setLoading(true);
+    setBusTrips([]);
+
     try {
-      // Busca no Storage Local para exibição imediata
       const storedTrips = await getBusTripsByDate(dateString);
-      if (storedTrips.length > 0) {
+
+      if (storedTrips && storedTrips.length > 0) {
         setBusTrips(storedTrips);
       }
 
-      // Busca na API para atualizar os dados
-      const freshTrips = await fetchTrips(dateString);
-      if (freshTrips) {
-        setBusTrips(freshTrips);
-        await setBusTripsByDate(dateString, freshTrips);
+      // Tenta atualizar via API
+      try {
+        const freshTrips = await fetchTrips(dateString);
+        if (freshTrips) {
+          setBusTrips(freshTrips);
+          await setBusTripsByDate(dateString, freshTrips);
+        }
+      } catch {
+        console.warn(
+          "Offline ou erro de API: mantendo estado atual (cache ou vazio).",
+        );
       }
     } catch (error) {
-      console.error("Erro ao carregar viagens:", error);
+      console.error("Erro ao carregar rotas:", error);
+      setBusTrips([]);
     } finally {
       setLoading(false);
     }

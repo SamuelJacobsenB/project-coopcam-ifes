@@ -15,7 +15,6 @@ func SetupBusTripReportRoutes(rg *gin.RouterGroup, handler *bus_trip_report.BusT
 	rg.GET("/user-id/:id/date/:date/", middlewares.AuthMiddlewareManager(), handler.FindByUserIDAndDate)
 	rg.GET("/user/:user_id/month/:month/", middlewares.AuthMiddlewareManager(), handler.FindByUserAndMonth)
 	rg.GET("/user-id/:id/next-date/:date/", middlewares.AuthMiddlewareUser(), handler.FindByUserIDAndNextDate)
-	rg.POST("/", middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.PUT("/:id/", middlewares.AuthMiddlewareManager(), handler.Update)
+	rg.POST("/trip/:trip_id/", middlewares.AuthMiddlewareManager(), handler.CreateMany)
 	rg.DELETE("/:id/", middlewares.AuthMiddlewareManager(), handler.Delete)
 }

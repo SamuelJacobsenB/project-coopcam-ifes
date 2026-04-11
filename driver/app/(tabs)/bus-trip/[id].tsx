@@ -3,17 +3,29 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { BusTripCard, Line, LoadPage, QrCodeReader } from "@/components";
+import {
+  BusTripCard,
+  ConfirmModal,
+  Line,
+  LoadPage,
+  QrCodeReader,
+} from "@/components";
 import { useMessage } from "@/contexts";
-import { useBusTripById, useManyBusReservationsByTripId } from "@/hooks";
+import {
+  useBusTripById,
+  useCreateManyBusTripReports,
+  useManyBusReservationsByTripId,
+} from "@/hooks";
 import { colors } from "@/styles";
 import { BusReservation, BusTrip, ScannedUser } from "@/types";
 import {
   getReservationsByTripId,
   getScannedUsersByTripId,
   getBusTripById as getStoredBusTrip,
+  setBusTripById,
   setReservationsByTripId,
   setScannedUsersByTripId,
+  validateScannedUser,
 } from "@/utils";
 
 export default function BusTripPage() {
@@ -21,21 +33,28 @@ export default function BusTripPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { showMessage } = useMessage();
 
-  // Hooks da API
   const { getBusTripById: fetchBusTripApi } = useBusTripById();
   const { getManyBusReservationsByTripId: fetchReservationsApi } =
     useManyBusReservationsByTripId();
+
+  const { createManyBusTripReports } = useCreateManyBusTripReports();
 
   const [busTrip, setBusTrip] = useState<BusTrip | null>(null);
   const [reservations, setReservations] = useState<BusReservation[]>([]);
   const [scannedUsers, setScannedUsers] = useState<ScannedUser[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   const loadData = useCallback(async () => {
     if (!id) return;
 
+    setLoading(true);
+    setBusTrip(null);
+    setReservations([]);
+    setScannedUsers([]);
+
     try {
-      // 1. Tenta carregar tudo o que estiver no Storage Local primeiro (Offline First)
       const [storedTrip, storedScanned, storedReservations] = await Promise.all(
         [
           getStoredBusTrip(id),
@@ -45,27 +64,30 @@ export default function BusTripPage() {
       );
 
       if (storedTrip) setBusTrip(storedTrip);
-      setScannedUsers(storedScanned);
-      setReservations(storedReservations);
+      if (storedScanned) setScannedUsers(storedScanned);
+      if (storedReservations) setReservations(storedReservations);
 
-      // 2. Busca dados atualizados da API e sincroniza o Cache
       try {
         const [freshTrip, freshReservations] = await Promise.all([
           fetchBusTripApi(id),
           fetchReservationsApi(id),
         ]);
 
-        if (freshTrip) setBusTrip(freshTrip);
+        if (freshTrip) {
+          setBusTrip(freshTrip);
+          await setBusTripById(id, freshTrip);
+        }
 
         if (freshReservations) {
           setReservations(freshReservations);
           await setReservationsByTripId(id, freshReservations);
         }
       } catch {
-        console.log("Modo Offline: Não foi possível atualizar dados da API.");
+        console.log("Offline: Usando dados persistidos localmente.");
       }
-    } catch {
-      showMessage("Erro ao carregar dados", "error");
+    } catch (criticalError) {
+      console.error("Erro ao acessar Storage:", criticalError);
+      showMessage("Erro ao carregar dados locais", "error");
     } finally {
       setLoading(false);
     }
@@ -84,18 +106,23 @@ export default function BusTripPage() {
         const userId = parts[0];
         const userName = parts.slice(1).join(":").replaceAll("-", " ");
 
-        if (scannedUsers.some((u) => u.userId === userId)) {
-          return showMessage(`${userName} já realizou o check-in!`, "error");
-        }
-
-        const hasReservation = reservations.some(
-          (res) => res.user_id === userId,
-        );
-
         const newUser: ScannedUser = {
           userId,
           userName,
         };
+
+        if (!validateScannedUser(newUser)) {
+          return showMessage("QR Code inválido", "error");
+        }
+
+        if (scannedUsers.some((u) => u.userId === newUser.userId)) {
+          return showMessage(`${userName} já realizou o scaneamento`, "error");
+        }
+
+        const hasReservation = reservations.some(
+          (res) => res.user_id === newUser.userId,
+        );
+
         const updatedScanned = [...scannedUsers, newUser];
 
         // Atualiza estado e storage usando a nova função set
@@ -114,13 +141,60 @@ export default function BusTripPage() {
     [id, scannedUsers, reservations, showMessage],
   );
 
-  if (loading || !busTrip) return <LoadPage />;
+  const handleCreateReports = async () => {
+    if (!id || !busTrip) return;
+
+    try {
+      await createManyBusTripReports(busTrip.id);
+      showMessage("Relatórios criados com sucesso", "success");
+      router.back();
+    } catch {
+      showMessage("Erro ao criar relatórios", "error");
+    }
+  };
+
+  if (loading) return <LoadPage />;
+
+  if (!busTrip) {
+    return (
+      <View style={styles.container}>
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </Pressable>
+        <View
+          style={{
+            alignItems: "center",
+            marginHorizontal: 20,
+            marginTop: 40,
+            padding: 16,
+            borderRadius: 12,
+            backgroundColor: "#fff",
+          }}
+        >
+          <Text style={styles.emptyText}>
+            Viagem não encontrada ou você está offline sem dados salvos.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </Pressable>
+
+      {scannedUsers.length > 0 && (
+        <Pressable
+          onPress={() => setShowCreateModal(true)}
+          style={styles.createReportsButton}
+        >
+          <Text style={{ color: "#fff", fontWeight: "600" }}>
+            Gerar relatórios
+          </Text>
+        </Pressable>
+      )}
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <BusTripCard trip={busTrip} />
@@ -162,6 +236,14 @@ export default function BusTripPage() {
           )}
         </View>
       </ScrollView>
+
+      <ConfirmModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onConfirm={handleCreateReports}
+        title="Gerar Relatórios"
+        description="Tem certeza que deseja gerar os relatórios de embarque? Esta ação não pode ser desfeita."
+      />
     </View>
   );
 }
@@ -169,16 +251,28 @@ export default function BusTripPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.lightGray },
   backButton: { margin: 16 },
+  createReportsButton: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    backgroundColor: colors.secondary,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
   scrollContent: { padding: 20, gap: 20 },
   section: { backgroundColor: "#fff", padding: 16, borderRadius: 12, gap: 12 },
   sectionTitle: { fontSize: 17, fontWeight: "800" },
   userItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     gap: 12,
     borderBottomWidth: 0.5,
     borderBottomColor: "#f1f5f9",
+    borderLeftWidth: 4,
+    borderLeftColor: "#3333333b",
   },
   userText: { fontSize: 16, color: "#334155" },
   warningSubtext: { fontSize: 12, color: "#EAB308", fontWeight: "600" },

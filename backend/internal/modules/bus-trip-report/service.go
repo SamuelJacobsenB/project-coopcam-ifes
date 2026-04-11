@@ -1,21 +1,22 @@
 package bus_trip_report
 
 import (
-	"errors"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
+	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-reservation"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
 )
 
 type BusTripReportService struct {
-	repo     *BusTripReportRepository
-	userRepo *user.UserRepository
+	repo            *BusTripReportRepository
+	reservationRepo *bus_reservation.BusReservationRepository
+	userRepo        *user.UserRepository
 }
 
-func NewBusTripReportService(repo *BusTripReportRepository, userRepo *user.UserRepository) *BusTripReportService {
-	return &BusTripReportService{repo, userRepo}
+func NewBusTripReportService(repo *BusTripReportRepository, reservationRepo *bus_reservation.BusReservationRepository, userRepo *user.UserRepository) *BusTripReportService {
+	return &BusTripReportService{repo, reservationRepo, userRepo}
 }
 
 func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error) {
@@ -50,30 +51,74 @@ func (service *BusTripReportService) FindByUserAndMonth(userID uuid.UUID, month 
 	return service.repo.FindByUserAndMonth(userID, month)
 }
 
-func (service *BusTripReportService) Create(busTripReport *entities.BusTripReport) error {
-	userExists, err := service.userRepo.FindByID(busTripReport.UserID)
+func (service *BusTripReportService) CreateMany(busTripID uuid.UUID, userIDs []uuid.UUID) error {
+	if len(userIDs) == 0 {
+		return nil
+	}
+
+	busTrip, err := service.repo.FindByID(busTripID)
 	if err != nil {
 		return err
 	}
-	if userExists == nil {
-		return errors.New("user not found")
-	}
 
-	busTripReport.UserName = userExists.Name
-
-	busTripReportExists, err := service.repo.FindByUserIDAndDateAndPeriod(busTripReport.UserID, busTripReport.Date, busTripReport.Period)
-	if err != nil {
+	var users []entities.User
+	if err := service.repo.db.Select("id, name").Where("id IN ?", userIDs).Find(&users).Error; err != nil {
 		return err
 	}
-	if busTripReportExists != nil {
-		return errors.New("bus trip report already exists")
+	userMap := make(map[uuid.UUID]string, len(users))
+	for _, u := range users {
+		userMap[u.ID] = u.Name
 	}
 
-	return service.repo.Create(busTripReport)
-}
+	// Busca apenas as Reservas dos usuários que acabaram de entrar no ônibus
+	var reservations []entities.BusReservation
+	if err := service.repo.db.Select("user_id").Where("bus_trip_id = ? AND user_id IN ?", busTripID, userIDs).Find(&reservations).Error; err != nil {
+		return err
+	}
+	reservedMap := make(map[uuid.UUID]bool, len(reservations))
+	for _, r := range reservations {
+		reservedMap[r.UserID] = true
+	}
 
-func (service *BusTripReportService) Update(busTripReport *entities.BusTripReport) error {
-	return service.repo.Update(busTripReport)
+	// Busca se esses usuários JÁ TÊM relatório nesta viagem (contra requisições duplicadas)
+	var existingReports []entities.BusTripReport
+	if err := service.repo.db.Select("user_id").Where("bus_trip_id = ? AND user_id IN ?", busTripID, userIDs).Find(&existingReports).Error; err != nil {
+		return err
+	}
+	existingMap := make(map[uuid.UUID]bool, len(existingReports))
+	for _, r := range existingReports {
+		existingMap[r.UserID] = true
+	}
+
+	var newReports []entities.BusTripReport
+	processedRequestIDs := make(map[uuid.UUID]bool)
+
+	for _, userID := range userIDs {
+		if existingMap[userID] || processedRequestIDs[userID] {
+			continue
+		}
+		processedRequestIDs[userID] = true
+
+		newReports = append(newReports, entities.BusTripReport{
+			ID:        uuid.New(),
+			UserID:    userID,
+			BusTripID: busTripID,
+			UserName:  userMap[userID],
+			Date:      busTrip.Date,
+			Period:    busTrip.Period,
+			Direction: busTrip.Direction,
+			Marked:    reservedMap[userID],
+			Attended:  true,
+		})
+	}
+
+	if len(newReports) > 0 {
+		if err := service.repo.db.CreateInBatches(newReports, 100).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (service *BusTripReportService) Delete(id uuid.UUID) error {

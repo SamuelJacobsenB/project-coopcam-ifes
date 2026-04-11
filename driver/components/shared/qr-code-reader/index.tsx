@@ -41,7 +41,6 @@ export function QrCodeReader({ onScan }: QrCodeReaderProps) {
           }
         }}
       >
-        {/* Máscara visual do scanner */}
         <View style={styles.overlay}>
           <View style={styles.unfocusedContainer} />
           <View style={styles.middleContainer}>

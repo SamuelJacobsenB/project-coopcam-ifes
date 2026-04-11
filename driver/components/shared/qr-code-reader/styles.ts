@@ -1,5 +1,6 @@
-import { colors } from "@/styles";
 import { StyleSheet } from "react-native";
+
+import { colors } from "@/styles";
 
 export default StyleSheet.create({
   container: {
@@ -33,8 +34,7 @@ export default StyleSheet.create({
   focusedContainer: {
     width: 250,
     borderWidth: 2,
-    borderColor: "#FFF",
-    borderRadius: 16,
+    borderColor: "#fff",
     backgroundColor: "transparent",
   },
 });
