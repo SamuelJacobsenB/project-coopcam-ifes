@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,12 +15,16 @@ import * as Sharing from "expo-sharing";
 import QRCode from "react-native-qrcode-svg";
 import { captureRef } from "react-native-view-shot";
 
-import { ConfirmModal, LoadPage, ProfileInfoText } from "@/components";
+import {
+  ConfirmModal,
+  LoadPage,
+  ProfileInfoText,
+  UserAccessCard,
+} from "@/components";
 import { useMessage, useUser } from "@/contexts";
 import { useLogout } from "@/hooks";
 import { btnStyles, colors } from "@/styles";
 
-// Componente para organizar as secções do perfil
 const ProfileSectionCard = ({ title, children, icon }: any) => (
   <View style={styles.card}>
     <View style={styles.cardHeader}>
@@ -77,7 +80,6 @@ export default function ProfilePage() {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Conteúdo Visível do App */}
         <View style={styles.headerContainer}>
           <TouchableOpacity
             style={styles.logoutButton}
@@ -137,34 +139,11 @@ export default function ProfilePage() {
         </View>
       </ScrollView>
 
-      {/* VIEW OCULTA */}
-      <View style={styles.hiddenWrapper} pointerEvents="none">
-        <View
-          ref={cardToCaptureRef}
-          collapsable={false}
-          style={styles.hiddenCardContent}
-        >
-          <View style={styles.hiddenHeaderColor}>
-            <Image
-              source={require("@/assets/images/logo.png")}
-              style={styles.hiddenLogo}
-              resizeMode="contain"
-            />
-          </View>
-
-          <View style={styles.hiddenPaddingContainer}>
-            <Text style={styles.hiddenLabel}>CARTÃO DE ACESSO</Text>
-            <Text style={styles.hiddenName}>{userNameFormatted}</Text>
-            <Text style={styles.hiddenEmail}>{user.email}</Text>
-
-            <View style={styles.hiddenQrWrapper}>
-              <QRCode value={qrCodeValue} size={220} quietZone={10} />
-            </View>
-
-            <Text style={styles.hiddenFooter}>Documento Digital</Text>
-          </View>
-        </View>
-      </View>
+      <UserAccessCard
+        name={userNameFormatted}
+        qrCodeValue={qrCodeValue}
+        ref={cardToCaptureRef}
+      />
 
       <ConfirmModal
         isOpen={isLogoutModalOpen}
