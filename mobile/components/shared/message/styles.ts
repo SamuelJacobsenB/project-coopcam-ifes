@@ -4,7 +4,7 @@ import { colors } from "@/styles";
 
 export default StyleSheet.create({
   message: {
-    zIndex: 1000,
+    zIndex: 9999,
     position: "absolute",
     bottom: 84,
     right: 16,

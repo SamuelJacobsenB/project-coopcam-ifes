@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Platform, StatusBar, View } from "react-native"; // Adicionado Platform
+import { Platform, StatusBar, View } from "react-native";
 
 import { useFonts } from "expo-font";
-import * as NavigationBar from "expo-navigation-bar"; // 1. Importação necessária
+import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

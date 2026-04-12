@@ -1,14 +1,17 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-  backContainer: {
-    display: "flex",
+  container: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 16,
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    gap: 4,
+    marginBottom: 12,
   },
-  backText: {
-    fontFamily: "Poppins-Regular",
-    fontSize: 12,
+  text: {
+    fontFamily: "Poppins-Medium",
+    fontSize: 14,
+    color: "#666",
   },
 });

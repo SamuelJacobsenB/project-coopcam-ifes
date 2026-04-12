@@ -29,9 +29,9 @@ func (repo *BusReservationRepository) FindByDate(date time.Time) ([]entities.Bus
 	return busReservations, err
 }
 
-func (repo *BusReservationRepository) FindByUserIDAndDateAndPeriod(userID uuid.UUID, date time.Time, period types.Period) (*entities.BusReservation, error) {
+func (repo *BusReservationRepository) FindByUserIDAndDateAndPeriodAndDirection(userID uuid.UUID, date time.Time, period types.Period, direction types.Direction) (*entities.BusReservation, error) {
 	var busReservations entities.BusReservation
-	err := repo.db.Where("user_id = ? AND date = ? AND period = ?", userID, date, period).First(&busReservations).Error
+	err := repo.db.Where("user_id = ? AND date = ? AND period = ? AND direction = ?", userID, date, period, direction).First(&busReservations).Error
 	return &busReservations, err
 }
 

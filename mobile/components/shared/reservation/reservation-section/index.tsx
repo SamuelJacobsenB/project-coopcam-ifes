@@ -1,8 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 
 import { Line } from "../../line";
-
 import styles from "./styles";
 
 interface ReservationSectionProps {
@@ -10,6 +10,25 @@ interface ReservationSectionProps {
   goReserved: boolean;
   returnReserved: boolean;
 }
+
+const StatusIndicator = ({
+  label,
+  isReserved,
+}: {
+  label: string;
+  isReserved: boolean;
+}) => (
+  <View style={styles.statusRow}>
+    <Ionicons
+      name={isReserved ? "checkmark-circle" : "close-circle"}
+      size={14}
+      color={isReserved ? "#34C759" : "#FF3B30"}
+    />
+    <Text style={[styles.reservationText, isReserved && styles.textReserved]}>
+      {label}
+    </Text>
+  </View>
+);
 
 export function ReservationSection({
   title,
@@ -19,13 +38,12 @@ export function ReservationSection({
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      <Line style={styles.sectionLine} />
-      <Text style={styles.reservationText}>
-        Ida: {goReserved ? "Reservado" : "Não reservado"}
-      </Text>
-      <Text style={styles.reservationText}>
-        Volta: {returnReserved ? "Reservado" : "Não reservado"}
-      </Text>
+      <Line />
+
+      <View style={styles.statusContainer}>
+        <StatusIndicator label="Ida" isReserved={goReserved} />
+        <StatusIndicator label="Volta" isReserved={returnReserved} />
+      </View>
     </View>
   );
 }

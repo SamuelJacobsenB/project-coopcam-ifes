@@ -1,3 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import * as Sharing from "expo-sharing";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,36 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-
-import * as Sharing from "expo-sharing";
 import QRCode from "react-native-qrcode-svg";
 import { captureRef } from "react-native-view-shot";
 
-import {
-  ConfirmModal,
-  LoadPage,
-  ProfileInfoText,
-  UserAccessCard,
-} from "@/components";
+import { ConfirmModal, LoadPage, UserAccessCard } from "@/components";
 import { useMessage, useUser } from "@/contexts";
 import { useLogout } from "@/hooks";
-import { btnStyles, colors } from "@/styles";
+import { colors } from "@/styles";
 
-const ProfileSectionCard = ({ title, children, icon }: any) => (
-  <View style={styles.card}>
-    <View style={styles.cardHeader}>
-      <Ionicons
-        name={icon}
-        size={20}
-        color={colors.primary}
-        style={{ marginRight: 8 }}
-      />
-      <Text style={styles.cardTitle}>{title}</Text>
-    </View>
-    <View style={styles.cardContent}>{children}</View>
+const InfoRow = ({ label, value }: { label: string; value: string }) => (
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>{label}:</Text>
+    <Text style={styles.infoValue}>{value}</Text>
   </View>
 );
 
@@ -44,21 +29,31 @@ export default function ProfilePage() {
   const { user, setUser } = useUser();
   const { logout } = useLogout();
   const { showMessage } = useMessage();
+
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const cardToCaptureRef = useRef<View>(null);
 
+  if (!user) return <LoadPage />;
+
+  const userNameFormatted = user.name.split(" ").slice(0, 2).join(" ");
+  const qrCodeValue = `${user.id}:${user.name.replaceAll(" ", "-")}`;
+
   const handleDownloadCard = async () => {
     if (!cardToCaptureRef.current) {
-      showMessage("Erro ao gerar o cartão", "error");
+      showMessage("Erro ao acessar a visualização do cartão.", "error");
       return;
     }
 
-    setIsDownloading(true);
-
     try {
-      const uri = await captureRef(cardToCaptureRef);
+      setIsDownloading(true);
+
+      const uri = await captureRef(cardToCaptureRef, {
+        format: "png",
+        quality: 1,
+      });
+
       await Sharing.shareAsync(uri);
       showMessage("Cartão gerado com sucesso!", "success");
     } catch (error) {
@@ -69,56 +64,49 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return <LoadPage />;
-
-  const userNameFormatted = user.name.split(" ").slice(0, 2).join(" ");
-  const qrCodeValue = `${user.id}:${user.name.replaceAll(" ", "-")}`;
-
   return (
-    <View style={styles.mainContainer}>
+    <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={styles.scrollArea}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.headerContainer}>
+        <View style={styles.header}>
           <TouchableOpacity
-            style={styles.logoutButton}
+            style={styles.logoutBtn}
             onPress={() => setIsLogoutModalOpen(true)}
           >
-            <View style={[btnStyles.btnRounded, styles.logoutButtonInner]}>
-              <Ionicons name="log-out-outline" size={18} color="#fff" />
-            </View>
+            <Ionicons name="log-out-outline" size={24} color={colors.error} />
           </TouchableOpacity>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarIconWrapper}>
-              <Ionicons name="person" size={60} color={colors.primary} />
-            </View>
-          </View>
-          <Text style={styles.nameText}>{userNameFormatted}</Text>
-          <Text style={styles.emailText}>{user.email}</Text>
+          <Ionicons name="person-circle" size={160} color={colors.primary} />
+          <Text style={styles.name}>{userNameFormatted}</Text>
+          <Text style={styles.email}>{user.email}</Text>
         </View>
 
-        <View style={styles.bodyContainer}>
-          <ProfileSectionCard title="Dados Pessoais" icon="person-outline">
-            <ProfileInfoText label="Telefone" text={user.phone} />
-            <ProfileInfoText label="Email" text={user.email} />
-            <ProfileInfoText label="Endereço" text={user.address} />
-          </ProfileSectionCard>
-          <ProfileSectionCard title="Documentação" icon="document-text-outline">
-            <View style={styles.twoColumnRow}>
-              <ProfileInfoText label="CPF" text={user.cpf} />
-              <ProfileInfoText label="Nascimento" text={user.birth} />
-            </View>
-          </ProfileSectionCard>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Dados do Usuário</Text>
+          <InfoRow label="Telefone" value={user.phone} />
+          <InfoRow label="Endereço" value={user.address} />
+          <InfoRow
+            label="CEP"
+            value={user.cep.slice(0, 5) + "-" + user.cep.slice(5, 8)}
+          />
+          <InfoRow
+            label="CPF"
+            value={user.cpf.replace(
+              /(\d{3})(\d{3})(\d{3})(\d{2})/,
+              "$1.$2.$3-$4",
+            )}
+          />
+          <InfoRow label="Nascimento" value={user.birth} />
         </View>
 
-        <View style={styles.qrSectionCard}>
-          <Text style={styles.qrCodeAreaTitle}>Identificador Digital</Text>
-          <View style={styles.qrCodeWrapperOutline}>
-            <QRCode value={qrCodeValue} size={180} />
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Identificador Digital</Text>
+          <View style={styles.qrContainer}>
+            <QRCode value={qrCodeValue} size={160} />
           </View>
           <TouchableOpacity
-            style={[styles.downloadButton, isDownloading && { opacity: 0.6 }]}
+            style={[styles.downloadBtn, isDownloading && { opacity: 0.7 }]}
             onPress={handleDownloadCard}
             disabled={isDownloading}
           >
@@ -132,7 +120,7 @@ export default function ProfilePage() {
                   color="#fff"
                   style={{ marginRight: 8 }}
                 />
-                <Text style={styles.downloadButtonText}>Baixar Cartão</Text>
+                <Text style={styles.downloadBtnText}>Baixar Cartão</Text>
               </>
             )}
           </TouchableOpacity>
@@ -159,140 +147,50 @@ export default function ProfilePage() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1 },
-  scrollContainer: { padding: 20, paddingBottom: 40 },
-  headerContainer: { alignItems: "center", marginBottom: 25 },
-  logoutButton: { position: "absolute", top: 0, right: 0, zIndex: 10 },
-  logoutButtonInner: {
-    width: 36,
-    height: 36,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ff4d4d",
-    borderRadius: 18,
-  },
-  avatarContainer: { marginBottom: 12 },
-  avatarIconWrapper: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
-  nameText: { fontSize: 22, fontWeight: "bold", color: "#333" },
-  emailText: { fontSize: 14, color: "#666" },
-  bodyContainer: { gap: 16, marginBottom: 20 },
+  container: { flex: 1, backgroundColor: "#f9f9f9" },
+  scrollArea: { padding: 20, paddingBottom: 40 },
+  header: { alignItems: "center", marginBottom: 20, position: "relative" },
+  logoutBtn: { position: "absolute", top: 10, right: 0, padding: 8 },
+  name: { fontSize: 24, fontWeight: "bold", color: "#333", marginTop: 8 },
+  email: { fontSize: 14, color: "#666" },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 16,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    paddingBottom: 5,
-  },
-  cardTitle: { fontSize: 15, fontWeight: "bold", color: "#333" },
-  cardContent: { gap: 10 },
-  twoColumnRow: { flexDirection: "row", justifyContent: "space-between" },
-  qrSectionCard: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
     padding: 20,
-    alignItems: "center",
-    elevation: 3,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
-  qrCodeAreaTitle: {
-    fontSize: 18,
+  cardTitle: {
+    fontSize: 16,
     fontWeight: "bold",
     color: colors.primary,
     marginBottom: 15,
   },
-  qrCodeWrapperOutline: {
-    padding: 10,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-    marginBottom: 20,
-  },
-  downloadButton: {
+  infoRow: {
     flexDirection: "row",
-    backgroundColor: "#2ecc71",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-    width: "100%",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  infoLabel: { fontSize: 14, fontWeight: "800" },
+  infoValue: { fontSize: 14, color: "#333", flexShrink: 1, textAlign: "right" },
+  qrContainer: {
     alignItems: "center",
-  },
-  downloadButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-
-  // Estilos do Cartão Gerado (Oculto)
-  hiddenWrapper: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    zIndex: -9999,
-    opacity: 0,
-  },
-  hiddenCardContent: {
-    width: 450, // Largura maior para melhor resolução
-    backgroundColor: "#fff",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  hiddenHeaderColor: {
-    width: "100%",
-    height: 100,
-    backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  hiddenLogo: {
-    width: 180,
-    height: 90,
-  },
-  hiddenPaddingContainer: {
-    width: "100%",
-    paddingHorizontal: 40,
-    alignItems: "center",
-    paddingBottom: 50,
-  },
-  hiddenLabel: {
-    fontSize: 16,
-    color: "#888",
-    letterSpacing: 2,
-    marginBottom: 10,
-  },
-  hiddenName: {
-    fontSize: 34,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
-  },
-  hiddenEmail: {
-    fontSize: 20,
-    color: "#555",
-    marginBottom: 30,
-  },
-  hiddenQrWrapper: {
-    padding: 20,
-    backgroundColor: "#fff",
+    padding: 15,
     borderWidth: 1,
     borderColor: "#eee",
-    borderRadius: 25,
-    marginBottom: 30,
+    borderRadius: 12,
+    marginBottom: 15,
   },
-  hiddenFooter: {
-    fontSize: 14,
-    color: "#bbb",
-    textTransform: "uppercase",
+  downloadBtn: {
+    flexDirection: "row",
+    backgroundColor: colors.primary,
+    padding: 14,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
+  downloadBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });

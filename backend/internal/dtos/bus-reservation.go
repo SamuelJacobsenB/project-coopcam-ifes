@@ -10,29 +10,12 @@ import (
 )
 
 type BusReservationRequestDTO struct {
-	BusTripID uuid.UUID `json:"bus_trip_id"`
-
-	UserID   uuid.UUID `json:"user_id"`
-	UserName string    `json:"user_name"`
-
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `json:"period"`
 	Direction types.Direction `json:"direction"`
 }
 
 func (dto *BusReservationRequestDTO) Validate() error {
-	if dto.BusTripID == uuid.Nil {
-		return errors.New("id da viagem é obrigatório")
-	}
-
-	if dto.UserID == uuid.Nil {
-		return errors.New("id do usuário é obrigatório")
-	}
-
-	if dto.UserName == "" {
-		return errors.New("nome do usuário é obrigatório")
-	}
-
 	if dto.Date.IsZero() {
 		return errors.New("data é obrigatória")
 	}
@@ -58,11 +41,9 @@ func (dto *BusReservationRequestDTO) Validate() error {
 
 func (dto *BusReservationRequestDTO) ToEntity() *entities.BusReservation {
 	return &entities.BusReservation{
-		BusTripID: dto.BusTripID,
-		UserID:    dto.UserID,
-		UserName:  dto.UserName,
 		Date:      dto.Date,
-		Period:    types.Period(dto.Period),
+		Period:    dto.Period,
+		Direction: dto.Direction,
 	}
 }
 

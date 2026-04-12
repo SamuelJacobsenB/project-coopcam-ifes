@@ -9,7 +9,7 @@ export const fetchWeeklyPreferenceByUserId = async (id: string) => {
 
   try {
     const res = await api.get<WeeklyPreference>(
-      `/v1/weekly-preference/user-id/${id}/`
+      `/v1/weekly-preference/user/${id}/`,
     );
 
     if (res.status !== 200)

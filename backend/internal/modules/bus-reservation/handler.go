@@ -138,12 +138,6 @@ func (handler *BusReservationHandler) Create(ctx *gin.Context) {
 }
 
 func (handler *BusReservationHandler) Update(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
 	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
@@ -162,7 +156,6 @@ func (handler *BusReservationHandler) Update(ctx *gin.Context) {
 	}
 
 	busReservation := busReservationRequest.ToEntity()
-	busReservation.ID = id
 	busReservation.UserID = userID
 	if err := handler.service.Update(busReservation); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})

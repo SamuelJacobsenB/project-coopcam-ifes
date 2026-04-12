@@ -1,0 +1,28 @@
+import { useMutation } from "@tanstack/react-query";
+
+import { api } from "@/services";
+import { BusReservationRequestDTO } from "@/types";
+
+export const fetchCreateBusReservation = async (
+  dto: BusReservationRequestDTO,
+) => {
+  try {
+    const res = await api.post("/v1/bus-reservation/", dto);
+
+    if (res.status !== 201)
+      throw new Error("Ocorreu um erro ao criar a reserva");
+
+    return res.data;
+  } catch {
+    throw new Error("Ocorreu um erro ao criar a reserva");
+  }
+};
+
+export const useCreateBusReservation = () => {
+  const { mutateAsync: createBusReservation, isPending } = useMutation({
+    mutationFn: (dto: BusReservationRequestDTO) =>
+      fetchCreateBusReservation(dto),
+  });
+
+  return { createBusReservation, isPending };
+};

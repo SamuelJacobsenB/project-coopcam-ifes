@@ -35,6 +35,12 @@ func (repo *BusTripRepository) FindByNextDate(date time.Time) ([]entities.BusTri
 	return busTrips, err
 }
 
+func (repo *BusTripRepository) FindByDateAndPeriodAndDirection(date time.Time, period types.Period, direction types.Direction) (*entities.BusTrip, error) {
+	var busTrip entities.BusTrip
+	err := repo.db.Where("DATE(date) = ? AND period = ? AND direction = ?", date, period, direction).First(&busTrip).Error
+	return &busTrip, err
+}
+
 func (repo *BusTripRepository) FindByID(id uuid.UUID) (*entities.BusTrip, error) {
 	var busTrip entities.BusTrip
 	err := repo.db.Where("id = ?", id).First(&busTrip).Error

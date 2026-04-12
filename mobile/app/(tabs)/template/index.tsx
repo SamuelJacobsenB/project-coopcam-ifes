@@ -1,26 +1,25 @@
-import React, { useState, useCallback } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
-  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Certifique-se de ter o pacote de ícones
 
+import { ConfirmModal, DayCard, ReservationSection, Title } from "@/components";
+import { weekDays } from "@/constants";
 import { useMessage } from "@/contexts";
 import {
   useCreateTemplate,
   useDeleteTemplate,
   useTemplateByUserId,
 } from "@/hooks";
-import { ConfirmModal, DayCard, ReservationSection, Title } from "@/components";
-import { weekDays } from "@/constants";
-import { TemplateRequestDTO } from "@/types";
 import { btnStyles, colors } from "@/styles";
+import type { TemplateRequestDTO } from "@/types";
 
 export default function TemplatePage() {
   const { showMessage } = useMessage();
@@ -30,7 +29,7 @@ export default function TemplatePage() {
   const { createTemplate, isPending: isCreating } = useCreateTemplate();
   const { deleteTemplate, isPending: isDeleting } = useDeleteTemplate();
 
-  async function handleCreateTemplate() {
+  const handleCreateTemplate = async () => {
     if (isCreating) return;
 
     const dto: TemplateRequestDTO = {
@@ -45,20 +44,39 @@ export default function TemplatePage() {
     } catch {
       showMessage("Erro ao criar predefinição", "error");
     }
-  }
+  };
 
-  async function handleDeleteTemplate() {
+  const handleDeleteTemplate = async () => {
     try {
       await deleteTemplate();
       await refetch();
-      setIsDeleteModalVisible(false);
       showMessage("Predefinição excluída com sucesso!", "success");
     } catch {
       showMessage("Erro ao excluir predefinição", "error");
+    } finally {
+      setIsDeleteModalVisible(false);
     }
-  }
+  };
 
-  // Renderização condicional do conteúdo principal
+  const renderHeaderAction = () => {
+    if (!template || error || isLoading) return null;
+
+    return (
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => setIsDeleteModalVisible(true)}
+        disabled={isDeleting}
+      >
+        {isDeleting ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Ionicons name="trash-outline" size={20} color="white" />
+        )}
+        {!isDeleting && <Text style={styles.deleteButtonText}>Deletar</Text>}
+      </TouchableOpacity>
+    );
+  };
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -96,17 +114,16 @@ export default function TemplatePage() {
 
     return (
       <View style={styles.list}>
-        {weekDays.map((day) => {
-          const dayIndex = weekDays.indexOf(day);
+        {weekDays.map((day, dayIndex) => {
+          const { go_schedule, return_schedule } = template;
 
-          const morningGoReserved =
-            template.go_schedule.morning_days.includes(dayIndex);
+          const morningGoReserved = go_schedule.morning_days.includes(dayIndex);
           const morningReturnReserved =
-            template.return_schedule.morning_days.includes(dayIndex);
+            return_schedule.morning_days.includes(dayIndex);
           const afternoonGoReserved =
-            template.go_schedule.afternoon_days.includes(dayIndex);
+            go_schedule.afternoon_days.includes(dayIndex);
           const afternoonReturnReserved =
-            template.return_schedule.afternoon_days.includes(dayIndex);
+            return_schedule.afternoon_days.includes(dayIndex);
 
           return (
             <DayCard
@@ -133,26 +150,9 @@ export default function TemplatePage() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header Fixo */}
       <View style={styles.header}>
         <Title>Predefinição</Title>
-
-        {template && !error && !isLoading && (
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => setIsDeleteModalVisible(true)}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : (
-              <Ionicons name="trash-outline" size={20} color="white" />
-            )}
-            {!isDeleting && (
-              <Text style={styles.deleteButtonText}>Deletar</Text>
-            )}
-          </TouchableOpacity>
-        )}
+        {renderHeaderAction()}
       </View>
 
       <View style={styles.content}>{renderContent()}</View>
@@ -176,22 +176,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start",
     paddingHorizontal: 24,
-    paddingTop: 32, // Ajuste conforme SafeAreaView se necessário
+    paddingTop: 32,
     paddingBottom: 16,
     backgroundColor: colors.lightGray,
   },
   content: {
     paddingHorizontal: 24,
     paddingBottom: 60,
-    flexGrow: 1, // Garante que o conteúdo ocupe a tela para centralizar loading/empty states
+    flexGrow: 1,
   },
   centerFull: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: 300, // Altura mínima para evitar colapso
+    height: 300,
   },
-  // Estilos do Empty State
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
@@ -213,7 +212,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    backgroundColor: colors.primary || "#007AFF", // Fallback de cor
+    backgroundColor: colors.primary || "#007AFF",
     minWidth: 200,
   },
   btnLabel: {
@@ -221,11 +220,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 16,
   },
-  // Botão de Deletar estilizado
   deleteButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FF3B30", // Cor de erro padrão iOS
+    backgroundColor: "#FF3B30",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
@@ -236,7 +234,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
-  // Lista de Cards
   list: {
     flexDirection: "row",
     flexWrap: "wrap",

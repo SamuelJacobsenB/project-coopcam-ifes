@@ -49,7 +49,7 @@ func (service *BusReservationService) Create(busReservation *entities.BusReserva
 		return errors.New("user not found")
 	}
 
-	busReservationExists, err := service.repo.FindByUserIDAndDateAndPeriod(busReservation.UserID, busReservation.Date, busReservation.Period)
+	busReservationExists, err := service.repo.FindByUserIDAndDateAndPeriodAndDirection(busReservation.UserID, busReservation.Date, busReservation.Period, busReservation.Direction)
 	if err != nil {
 		return err
 	}
@@ -57,13 +57,15 @@ func (service *BusReservationService) Create(busReservation *entities.BusReserva
 		return errors.New("bus reservation already exists")
 	}
 
-	busTripExists, err := service.busTripRepo.FindByID(busReservation.BusTripID)
+	busTripExists, err := service.busTripRepo.FindByDateAndPeriodAndDirection(busReservation.Date, busReservation.Period, busReservation.Direction)
 	if err != nil {
 		return err
 	}
 	if busTripExists == nil {
 		return errors.New("bus trip not found")
 	}
+
+	busReservation.BusTripID = busTripExists.ID
 
 	return service.repo.Create(busReservation)
 }

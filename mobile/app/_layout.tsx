@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { StatusBar, View } from "react-native";
+import { Platform, StatusBar, View } from "react-native";
 
 import { useFonts } from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -29,6 +30,10 @@ export default function RootLayout() {
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.primary);
+
+    if (Platform.OS === "android") {
+      NavigationBar.setButtonStyleAsync("light");
+    }
   }, []);
 
   if (!fontsLoaded) return <LoadPage />;

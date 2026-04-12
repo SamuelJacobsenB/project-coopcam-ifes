@@ -14,7 +14,6 @@ export interface User {
   address: string;
   cep: string;
   birth: string;
-  avatar_url: string | null;
 
   has_financial_aid: boolean;
 

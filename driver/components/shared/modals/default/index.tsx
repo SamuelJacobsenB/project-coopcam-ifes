@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import {
-  Modal as RNModal,
-  View,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  Modal as RNModal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -42,7 +42,6 @@ export function Modal({ children, isOpen, onClose }: ModalProps) {
           >
             <TouchableWithoutFeedback>
               <View style={styles.contentWrapper}>
-                {/* Botão Fechar */}
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={onClose}
@@ -52,7 +51,6 @@ export function Modal({ children, isOpen, onClose }: ModalProps) {
                   <Ionicons name="close" size={20} color="#64748b" />
                 </TouchableOpacity>
 
-                {/* Esta View substitui o componente Card */}
                 <View style={styles.modalCard}>{children}</View>
               </View>
             </TouchableWithoutFeedback>

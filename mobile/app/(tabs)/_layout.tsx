@@ -1,12 +1,12 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 
-import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
+import { Header } from "@/components";
 import { routes } from "@/routes";
 import { colors } from "@/styles";
-import { Header } from "@/components";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
@@ -30,10 +30,10 @@ export default function TabsLayout() {
               tabBarIcon: ({ color, size, focused }) => (
                 <Ionicons
                   name={icon}
-                  size={name === "(home)/index" || focused ? size + 6 : size}
+                  size={name === "(home)" || focused ? size + 6 : size}
                   color={color}
                   style={
-                    name === "(home)/index" || focused
+                    name === "(home)" || focused
                       ? { marginBottom: -4 }
                       : undefined
                   }

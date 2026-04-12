@@ -13,6 +13,6 @@ func SetupBusReservationRoutes(rg *gin.RouterGroup, handler *bus_reservation.Bus
 	rg.GET("/trip/:trip_id/", middlewares.AuthMiddlewareManager(), handler.FindByTripID)
 	rg.GET("/:id/", middlewares.AuthMiddlewareUser(), handler.FindByID)
 	rg.POST("/", middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.PUT("/:id/", middlewares.AuthMiddlewareUser(), handler.Update)
+	rg.PUT("/", middlewares.AuthMiddlewareUser(), handler.Update)
 	rg.DELETE("/:id/", middlewares.AuthMiddlewareUser(), handler.Delete)
 }
