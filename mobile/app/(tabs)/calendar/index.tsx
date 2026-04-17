@@ -4,19 +4,13 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Calendar, CalendarDayCard, LoadPage, Title } from "@/components";
 import { useAllAvailableOverrides, useAllUnavailableDays } from "@/hooks";
 import { colors } from "@/styles";
+import type { AvailableOverride } from "@/types";
 
-const toDateId = (dateInput: Date | string | undefined | null): string => {
+const normalizeDate = (dateInput: Date | string | undefined | null): string => {
   if (!dateInput) return "";
-
   const d = new Date(dateInput);
-
   if (isNaN(d.getTime())) return "";
-
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  return d.toISOString().split("T")[0];
 };
 
 export default function CalendarPage() {
@@ -32,19 +26,19 @@ export default function CalendarPage() {
     error: unavailableError,
   } = useAllUnavailableDays();
 
-  const [date, setDate] = useState(() => new Date());
+  const [date, setDate] = useState(new Date());
 
   const { selectedOverride, selectedUnavailable } = useMemo(() => {
-    const dayKey = toDateId(date);
-
-    const overrides = availableOverrides ?? [];
-    const unavailables = unavailableDays ?? [];
+    const dayKey = normalizeDate(date);
 
     return {
       selectedOverride:
-        overrides.find((o) => toDateId(o.date) === dayKey) || null,
+        availableOverrides?.find(
+          (o: AvailableOverride) => normalizeDate(o.date) === dayKey,
+        ) || null,
       selectedUnavailable:
-        unavailables.find((u) => toDateId(u.date) === dayKey) || null,
+        unavailableDays?.find((u: any) => normalizeDate(u.date) === dayKey) ||
+        null,
     };
   }, [date, availableOverrides, unavailableDays]);
 
@@ -52,13 +46,17 @@ export default function CalendarPage() {
     return <LoadPage />;
   }
 
-  const hasError = overridesError || unavailableError;
+  const hasError = !!(overridesError || unavailableError);
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Title>Calendário</Title>
+    <View style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Title>Calendário</Title>
 
-      <View style={styles.scrollContent}>
         {hasError ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
@@ -66,7 +64,7 @@ export default function CalendarPage() {
             </Text>
           </View>
         ) : (
-          <>
+          <View style={styles.mainContent}>
             <Calendar
               date={date}
               setDate={setDate}
@@ -81,37 +79,45 @@ export default function CalendarPage() {
                 unavailable={selectedUnavailable}
               />
             </View>
-          </>
+          </View>
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: colors.lightGray,
-    padding: 16,
+  },
+  container: {
+    flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingTop: 32,
+    paddingBottom: 40,
+  },
+  mainContent: {
+    marginTop: 16,
   },
   cardContainer: {
     marginTop: 24,
   },
   errorContainer: {
-    padding: 16,
+    padding: 20,
     backgroundColor: "#FFECEC",
-    borderRadius: 8,
-    marginTop: 16,
+    borderRadius: 12,
+    marginTop: 24,
     borderWidth: 1,
     borderColor: colors.error,
+    alignItems: "center",
   },
   errorText: {
     color: colors.error,
     textAlign: "center",
     fontSize: 14,
+    fontFamily: "Poppins-Regular",
   },
 });

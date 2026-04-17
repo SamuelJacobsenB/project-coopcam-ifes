@@ -4,7 +4,6 @@ import { Card, I } from "../../../../components";
 import { useManyBusTripReportsByUserAndMonth } from "../../../../hooks";
 import { UserMonthlyReports } from "../user-monthly-reports";
 
-import type { BusTripReport } from "../../../../types";
 import styles from "./styles.module.css";
 
 interface UserReportsCardProps {
@@ -20,10 +19,10 @@ export function UserReportsCard({ user_id }: UserReportsCardProps) {
 
   const handleFetchReports = useCallback(
     async (month: number) => {
-      return (await getManyBusTripReportsByUserAndMonth({
+      return await getManyBusTripReportsByUserAndMonth({
         month,
         user_id,
-      })) as BusTripReport[];
+      });
     },
     [user_id, getManyBusTripReportsByUserAndMonth],
   );

@@ -1,3 +1,4 @@
+import { PaymentStatusBadge } from "../../../../components";
 import type { MonthlyPayment } from "../../../../types";
 
 import styles from "./styles.module.css";
@@ -9,25 +10,6 @@ interface UserPaymentsCardProps {
 export function UserPaymentsCard({ payments }: UserPaymentsCardProps) {
   const paidCount = payments.filter((p) => p.payment_status === "paid").length;
   const totalAmount = payments.reduce((acc, p) => acc + p.amount, 0);
-
-  const renderStatusBadge = (status: string) => {
-    const statusMap: Record<string, { label: string; class: string }> = {
-      paid: { label: "Pago", class: styles.statusPaid },
-      pending: { label: "Pendente", class: styles.statusPending },
-      draft: { label: "Rascunho", class: styles.statusDraft },
-      overdue: { label: "Atrasado", class: styles.statusOverdue },
-      cenceled: { label: "Cancelado", class: styles.statusCanceled },
-      failed: { label: "Falhou", class: styles.statusFailed },
-      refunded: { label: "Reembolsado", class: styles.statusRefunded },
-    };
-
-    const config = statusMap[status] || { label: status, class: "" };
-    return (
-      <span className={`${styles.statusBadge} ${config.class}`}>
-        {config.label}
-      </span>
-    );
-  };
 
   return (
     <div className={styles.detailsCard}>
@@ -86,7 +68,7 @@ export function UserPaymentsCard({ payments }: UserPaymentsCardProps) {
                 </div>
 
                 <div className={styles.userAction}>
-                  {renderStatusBadge(p.payment_status)}
+                  <PaymentStatusBadge status={p.payment_status} />
                 </div>
               </li>
             ))}

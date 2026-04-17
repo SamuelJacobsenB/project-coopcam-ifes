@@ -47,7 +47,6 @@
   padding: 4px;
   flex: 1;
   overflow-y: auto;
-  /* Scrollbar fina para estética */
   scrollbar-width: thin;
 }
 
@@ -74,10 +73,9 @@
   height: 100%;
 }
 
-/* GRID DA DIREITA QUE FALTAVA */
 .detailsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   width: 100%;
   margin-top: 1rem;
@@ -85,7 +83,7 @@
 
 @media (max-width: 1024px) {
   .detailsGrid {
-    grid-template-columns: 1fr; /* Vira uma coluna em telas menores */
+    grid-template-columns: 1fr;
   }
 }
 

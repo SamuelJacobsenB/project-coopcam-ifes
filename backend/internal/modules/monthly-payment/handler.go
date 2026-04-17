@@ -21,14 +21,12 @@ func NewMonthlyPaymentHandler(service *MonthlyPaymentService) *MonthlyPaymentHan
 }
 
 func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
-	// ID do usuário alvo (parâmetro da URL)
 	targetUserID, err := uuid.Parse(ctx.Param("user_id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id inválido"})
 		return
 	}
 
-	// Obtém dados do usuário logado do contexto (definidos pelo AuthMiddleware)
 	loggedUserIDStr, exists := ctx.Get("user_id")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "não autorizado"})
@@ -47,8 +45,6 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 	}
 	userRole := role.(string)
 
-	// Verifica permissão: admins e coordenadores podem ver qualquer um;
-	// usuários comuns só podem ver a si mesmos.
 	if userRole != types.RoleAdmin && userRole != types.RoleCoordinator && loggedUserID != targetUserID {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "você não tem permissão para ver pagamentos de outro usuário"})
 		return

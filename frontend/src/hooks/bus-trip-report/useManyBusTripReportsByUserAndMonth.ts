@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
+import type { BusTripReport } from "../../types";
 
 interface Data {
   user_id: string;
@@ -12,7 +13,7 @@ export const fetchManyBusTripReportsByUserAndMonth = async ({
   month,
 }: Data) => {
   try {
-    const res = await api.get(
+    const res = await api.get<BusTripReport[]>(
       `/v1/bus-trip-report/user/${user_id}/month/${month}/`,
     );
 

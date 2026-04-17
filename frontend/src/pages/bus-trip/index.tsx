@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
@@ -27,26 +26,48 @@ const parseInputDate = (dateString: string) => {
   return new Date(y, m - 1, d);
 };
 
-const reducer = (state: any, action: any) => {
+interface BusTripState {
+  date: Date;
+  trips: BusTrip[];
+  reservations: BusReservation[];
+  reports: BusTripReport[];
+  selectedTrip: BusTrip | null;
+  isLoading: boolean;
+}
+
+type BusTripAction =
+  | {
+      type: "SET_FIELD";
+      payload: { field: keyof BusTripState; value: unknown };
+    }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_DATA"; payload: Partial<BusTripState> };
+
+function busTripReducer(
+  state: BusTripState,
+  action: BusTripAction,
+): BusTripState {
   switch (action.type) {
-    case "field":
+    case "SET_FIELD":
       return { ...state, [action.payload.field]: action.payload.value };
-    case "set_loading":
+    case "SET_DATA":
+      return { ...state, ...action.payload };
+    case "SET_LOADING":
       return { ...state, isLoading: action.payload };
     default:
       return state;
   }
-};
+}
 
 export function BusTripPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const { getBusTripById } = useBusTripById();
   const { getManyBusTripsByDate } = useManyBusTripsByDate();
   const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
 
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(busTripReducer, {
     date: new Date(),
     trips: [],
     reservations: [],
@@ -58,21 +79,17 @@ export function BusTripPage() {
   const { date, trips, selectedTrip, reservations, reports, isLoading } = state;
 
   const tripReservations = useMemo(
-    () =>
-      reservations.filter(
-        (r: BusReservation) => r.bus_trip_id === selectedTrip?.id,
-      ),
-    [reservations, selectedTrip],
+    () => reservations.filter((r) => r.bus_trip_id === selectedTrip?.id),
+    [reservations, selectedTrip?.id],
   );
 
   const tripReports = useMemo(
-    () =>
-      reports.filter((r: BusTripReport) => r.bus_trip_id === selectedTrip?.id),
-    [reports, selectedTrip],
+    () => reports.filter((r) => r.bus_trip_id === selectedTrip?.id),
+    [reports, selectedTrip?.id],
   );
 
   const fetchData = useCallback(async () => {
-    dispatch({ type: "set_loading", payload: true });
+    dispatch({ type: "SET_LOADING", payload: true });
     try {
       const strDate = formatDateForInput(date);
       const [fetchedTrips, fetchedReports, fetchedReservations] =
@@ -83,21 +100,17 @@ export function BusTripPage() {
         ]);
 
       dispatch({
-        type: "field",
-        payload: { field: "trips", value: fetchedTrips },
-      });
-      dispatch({
-        type: "field",
-        payload: { field: "reports", value: fetchedReports },
-      });
-      dispatch({
-        type: "field",
-        payload: { field: "reservations", value: fetchedReservations },
+        type: "SET_DATA",
+        payload: {
+          trips: fetchedTrips,
+          reports: fetchedReports,
+          reservations: fetchedReservations,
+        },
       });
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     } finally {
-      dispatch({ type: "set_loading", payload: false });
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   }, [
     date,
@@ -110,18 +123,17 @@ export function BusTripPage() {
     fetchData();
   }, [fetchData]);
 
-  // Sincronização da viagem selecionada via URL ou lista
   useEffect(() => {
     if (id) {
       getBusTripById(id).then((trip) =>
         dispatch({
-          type: "field",
+          type: "SET_FIELD",
           payload: { field: "selectedTrip", value: trip },
         }),
       );
     } else if (trips.length > 0 && !selectedTrip) {
       dispatch({
-        type: "field",
+        type: "SET_FIELD",
         payload: { field: "selectedTrip", value: trips[0] },
       });
     }
@@ -132,82 +144,94 @@ export function BusTripPage() {
       <Navbar />
       <DualPage
         leftSide={
-          <div className={styles.left}>
+          <aside className={styles.left}>
             <header className={styles.header}>
               <div className={styles.headerText}>
                 <h1>Viagens</h1>
                 <p>Gerencie as rotas diárias</p>
               </div>
               {isLoading && (
-                <span className={styles.loadingBadge}>Carregando...</span>
+                <span role="status" className={styles.loadingBadge}>
+                  Carregando...
+                </span>
               )}
             </header>
 
-            <DateInput
-              value={formatDateForInput(date)}
-              onChange={(e) =>
-                dispatch({
-                  type: "field",
-                  payload: {
-                    field: "date",
-                    value: parseInputDate(e.target.value),
-                  },
-                })
-              }
-            />
+            <nav aria-label="Seleção de data">
+              <DateInput
+                value={formatDateForInput(date)}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_FIELD",
+                    payload: {
+                      field: "date",
+                      value: parseInputDate(e.target.value),
+                    },
+                  })
+                }
+              />
+            </nav>
 
-            <ul className={styles.tripList}>
-              {trips.map((trip: BusTrip) => (
+            <ul className={styles.tripList} aria-label="Lista de viagens">
+              {trips.map((trip) => (
                 <BusTripCard
                   key={trip.id}
                   isSelected={selectedTrip?.id === trip.id}
                   trip={trip}
                   onSelectTrip={(t) =>
                     dispatch({
-                      type: "field",
+                      type: "SET_FIELD",
                       payload: { field: "selectedTrip", value: t },
                     })
                   }
                 />
               ))}
               {!isLoading && trips.length === 0 && (
-                <p className={styles.emptyMsg}>Nenhuma viagem nesta data.</p>
+                <li className={styles.emptyMsg}>Nenhuma viagem nesta data.</li>
               )}
             </ul>
-          </div>
+          </aside>
         }
         rightSide={
-          selectedTrip ? (
-            <div className={styles.busTripArea}>
-              <SelectedBusTripCard
-                selectedTrip={selectedTrip}
-                reservationsLength={tripReservations.length}
-                reports={tripReports}
-                onStatusUpdated={(status) =>
-                  dispatch({
-                    type: "field",
-                    payload: {
-                      field: "selectedTrip",
-                      value: { ...selectedTrip, status },
-                    },
-                  })
-                }
-              />
+          <main className={styles.busTripArea}>
+            {selectedTrip ? (
+              <article>
+                <SelectedBusTripCard
+                  selectedTrip={selectedTrip}
+                  reservationsLength={tripReservations.length}
+                  reports={tripReports}
+                  onStatusUpdated={(status) =>
+                    dispatch({
+                      type: "SET_FIELD",
+                      payload: {
+                        field: "selectedTrip",
+                        value: { ...selectedTrip, status },
+                      },
+                    })
+                  }
+                />
 
-              <div className={styles.detailsGrid}>
-                <section className={styles.gridColumn}>
-                  <h3>Reservas ({tripReservations.length})</h3>
-                  <BusReservationsCard reservations={tripReservations} />
-                </section>
-                <section className={styles.gridColumn}>
-                  <h3>Relatórios ({tripReports.length})</h3>
-                  <BusReportsCard reports={tripReports} />
-                </section>
-              </div>
-            </div>
-          ) : (
-            <EmptyState />
-          )
+                <div className={styles.detailsGrid}>
+                  <section
+                    className={styles.gridColumn}
+                    aria-labelledby="res-title"
+                  >
+                    <h3 id="res-title">Reservas ({tripReservations.length})</h3>
+                    <BusReservationsCard reservations={tripReservations} />
+                  </section>
+                  <section
+                    className={styles.gridColumn}
+                    aria-labelledby="rep-title"
+                  >
+                    <h3 id="rep-title">Relatórios ({tripReports.length})</h3>
+                    <BusReportsCard reports={tripReports} />
+                  </section>
+                </div>
+              </article>
+            ) : (
+              <EmptyState />
+            )}
+          </main>
         }
       />
     </Private>
@@ -215,7 +239,7 @@ export function BusTripPage() {
 }
 
 const EmptyState = () => (
-  <div className={styles.rightPlaceholder}>
+  <div className={styles.rightPlaceholder} role="region" aria-live="polite">
     <I.map size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
     <h2>Selecione uma viagem</h2>
     <p>Clique numa viagem na lista à esquerda para ver os detalhes.</p>

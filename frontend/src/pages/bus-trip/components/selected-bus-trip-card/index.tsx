@@ -71,7 +71,6 @@ export function SelectedBusTripCard({
             <div className={styles.metaInfo}>
               <div className={styles.metaItem}>
                 <I.calendar size={14} />
-                {/* Idealmente tratar essa data fora do render ou com date-fns */}
                 {new Date(selectedTrip.date).toLocaleDateString("pt-BR", {
                   timeZone: "UTC",
                 })}

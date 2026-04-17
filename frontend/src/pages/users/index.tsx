@@ -13,7 +13,11 @@ import {
 import { useManyUsers, useUserById } from "../../hooks";
 import type { User } from "../../types";
 
-import { SelectedUserCard, UserReportsCard } from "./components";
+import {
+  SelectedUserCard,
+  UserPaymentsCard,
+  UserReportsCard,
+} from "./components";
 
 import styles from "./styles.module.css";
 
@@ -127,6 +131,7 @@ export function UsersPage() {
                 </section>
                 <section className={styles.gridColumn}>
                   <h3>Pagamentos</h3>
+                  <UserPaymentsCard user_id={selectedUser.id} />
                 </section>
               </div>
             </div>

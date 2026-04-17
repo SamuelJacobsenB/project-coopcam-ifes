@@ -14,12 +14,10 @@ import styles from "./styles.module.css";
 export function DashboardPage() {
   const navigate = useNavigate();
 
-  // Hooks de dados
   const { getManyBusTripsByDate } = useManyBusTripsByDate();
   const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
   const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
 
-  // Estados
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<{
     trips: BusTrip[];

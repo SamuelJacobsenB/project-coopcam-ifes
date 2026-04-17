@@ -1,0 +1,78 @@
+.userPaymentsBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 1.6rem !important;
+}
+
+.userPaymentsBoxButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1rem;
+}
+
+.userPaymentsList {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.userListItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.userListItem:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userMainInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userMainInfo strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.userAmount {
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.userMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.dotSeparator {
+  color: #cbd5e1;
+}
+
+.paidDate {
+  color: #166534;
+  font-weight: 500;
+}

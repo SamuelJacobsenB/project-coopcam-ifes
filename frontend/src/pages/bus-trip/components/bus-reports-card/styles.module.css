@@ -27,12 +27,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.6rem 0.8rem;
-  border: 2px solid var(--color-primary);
+  border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
+    border-color: var(--color-primary);
     transform: translateY(-5px);
     box-shadow: var(--shadow-md);
   }

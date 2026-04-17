@@ -147,8 +147,11 @@ export default function ProfilePage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9" },
-  scrollArea: { padding: 20, paddingBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.lightGray,
+  },
+  scrollArea: { padding: 24, paddingVertical: 40 },
   header: { alignItems: "center", marginBottom: 20, position: "relative" },
   logoutBtn: { position: "absolute", top: 10, right: 0, padding: 8 },
   name: { fontSize: 24, fontWeight: "bold", color: "#333", marginTop: 8 },

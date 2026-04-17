@@ -9,8 +9,7 @@ export const fetchMonthlyPaymentByUserId = async (user_id: string) => {
       `/v1/monthly-payment/user/${user_id}/`,
     );
 
-    if (res.status !== 200)
-      throw new Error("Erro ao buscar pagamentos");
+    if (res.status !== 200) throw new Error("Erro ao buscar pagamentos");
 
     return res.data;
   } catch {
@@ -19,9 +18,9 @@ export const fetchMonthlyPaymentByUserId = async (user_id: string) => {
 };
 
 export const useManyMonthlyPaymentByUserId = () => {
-  const { mutateAsync: getMonthlyPaymentByUserId } = useMutation({
+  const { mutateAsync: getMonthlyPaymentByUserId, isPending } = useMutation({
     mutationFn: async (user_id: string) => fetchMonthlyPaymentByUserId(user_id),
   });
 
-  return { getMonthlyPaymentByUserId };
+  return { getMonthlyPaymentByUserId, isPending };
 };
