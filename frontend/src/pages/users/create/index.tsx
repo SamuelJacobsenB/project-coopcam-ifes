@@ -1,46 +1,32 @@
-import { useReducer } from "react";
+import { useReducer, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import {
   Checkbox,
   Error,
   FormPage,
   I,
   Input,
+  PageHeader,
   Private,
 } from "../../../components";
 import { useMessage } from "../../../contexts";
 import { useCreateUser } from "../../../hooks";
 import type { UserRequestDTO } from "../../../types";
 import { validateUserRequestDTO } from "../../../utils";
-
 import styles from "./styles.module.css";
 
-interface State {
-  name: string;
-  email: string;
-  password: string;
-  cpf: string;
-  phone: string;
-  address: string;
-  cep: string;
-  birth: string;
-  has_financial_aid: boolean;
-  error: string;
-}
+// Tipagem rigorosa para as ações do reducer
+type Action = { type: "field"; payload: { field: string; value: unknown } };
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field as string]: action.payload.value,
-      };
-    default:
-      return state;
+const reducer = (state: any, action: Action) => {
+  if (action.type === "field") {
+    return { ...state, [action.payload.field]: action.payload.value };
   }
+  return state;
 };
-const initialState: State = {
+
+const initialState = {
   name: "",
   email: "",
   password: "",
@@ -55,68 +41,59 @@ const initialState: State = {
 
 export function CreateUserPage() {
   const navigate = useNavigate();
-
   const { createUser } = useCreateUser();
   const { showMessage } = useMessage();
-
   const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    name,
-    email,
-    password,
-    cpf,
-    phone,
-    address,
-    cep,
-    birth,
-    has_financial_aid,
-    error,
-  } = state;
 
-  async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const user: UserRequestDTO = {
-      name,
-      email,
-      password,
-      cpf,
-      phone,
-      address,
-      cep,
-      birth,
-      has_financial_aid,
+  // Função auxiliar para simplificar a atualização de campos
+  const handleChange =
+    (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
+      const value =
+        e.target.type === "checkbox" ? e.target.checked : e.target.value;
+      dispatch({ type: "field", payload: { field, value } });
     };
 
-    const error = validateUserRequestDTO(user);
-    if (error) {
-      dispatch({ type: "field", payload: { field: "error", value: error } });
+  async function handleCreateUser(e: FormEvent) {
+    e.preventDefault();
+    const { ...userData } = state;
+
+    const validationError = validateUserRequestDTO(userData as UserRequestDTO);
+    if (validationError) {
+      dispatch({
+        type: "field",
+        payload: { field: "error", value: validationError },
+      });
       return;
     }
 
     try {
-      await createUser(user);
-
-      showMessage("Usuário criado com sucesso!", "success");
+      await createUser(userData as UserRequestDTO);
+      showMessage("Utilizador criado com sucesso!", "success");
       navigate("/usuarios");
     } catch {
-      showMessage("Erro ao criar usuário", "error");
+      showMessage("Erro ao criar utilizador", "error");
     }
   }
 
   return (
     <Private>
-      <FormPage className={styles.formSection}>
-        <Link className={styles.back} to="/usuarios">
-          <I.arrow_back />
-        </Link>
-        <section className={styles.header}>
-          <h1 className={styles.title}>Criar Usuário</h1>
-          <hr />
-        </section>
+      <FormPage className={styles.formContainer}>
+        <header className={styles.header}>
+          <Link className={styles.backButton} to="/usuarios" title="Voltar">
+            <I.arrow_back size={24} />
+          </Link>
+          <PageHeader
+            title="Criar Usuário"
+            description="Preencha os campos e envie"
+            size={2}
+          />
+        </header>
+
+        <hr />
+
         <form onSubmit={handleCreateUser} className={styles.form}>
           <Error
-            error={error}
+            error={state.error}
             onClose={() =>
               dispatch({
                 type: "field",
@@ -124,133 +101,86 @@ export function CreateUserPage() {
               })
             }
           />
-          <Input
-            label="Nome"
-            name="name"
-            type="text"
-            placeholder="Digite o nome"
-            required
-            value={name}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "name", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Digite o email"
-            required
-            value={email}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "email", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Senha"
-            name="password"
-            type="password"
-            placeholder="Digite a senha"
-            required
-            value={password}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "password", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="CPF"
-            name="cpf"
-            type="text"
-            placeholder="Digite o CPF"
-            required
-            value={cpf}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "cpf", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Telefone"
-            name="phone"
-            type="text"
-            placeholder="Digite o telefone"
-            required
-            value={phone}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "phone", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Endereço"
-            name="address"
-            type="text"
-            placeholder="Digite o endereço"
-            required
-            value={address}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "address", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="CEP"
-            name="cep"
-            type="text"
-            placeholder="Digite o CEP"
-            required
-            value={cep}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "cep", value: e.target.value },
-              })
-            }
-          />
-          <Input
-            label="Data de Nascimento"
-            name="birth"
-            type="date"
-            placeholder="Digite a data de nascimento"
-            required
-            value={birth}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: { field: "birth", value: e.target.value },
-              })
-            }
-          />
-          <Checkbox
-            label="Possui auxílio financeiro"
-            name="has_financial_aid"
-            checked={has_financial_aid}
-            onChange={(e) =>
-              dispatch({
-                type: "field",
-                payload: {
-                  field: "has_financial_aid",
-                  value: e.target.checked,
-                },
-              })
-            }
-          />
-          <button className="btn btn-secondary">Enviar</button>
+
+          <div className={styles.inputGrid}>
+            <Input
+              label="Nome Completo"
+              placeholder="Nome completo do usuário"
+              required
+              value={state.name}
+              onChange={handleChange("name")}
+            />
+
+            <Input
+              label="E-mail"
+              type="email"
+              placeholder="teste@exemplo.com"
+              required
+              value={state.email}
+              onChange={handleChange("email")}
+            />
+
+            <Input
+              label="Senha"
+              type="password"
+              placeholder="••••••••"
+              required
+              value={state.password}
+              onChange={handleChange("password")}
+            />
+
+            <Input
+              label="CPF"
+              placeholder="00000000000"
+              required
+              value={state.cpf}
+              onChange={handleChange("cpf")}
+            />
+
+            <Input
+              label="Número de Telefone"
+              placeholder="(00) 00000-0000"
+              required
+              value={state.phone}
+              onChange={handleChange("phone")}
+            />
+
+            <Input
+              label="Data de Nascimento"
+              type="date"
+              required
+              value={state.birth}
+              onChange={handleChange("birth")}
+            />
+
+            <Input
+              label="Endereço"
+              placeholder="Rua, Número, Bairro..."
+              required
+              value={state.address}
+              onChange={handleChange("address")}
+            />
+
+            <Input
+              label="CEP"
+              placeholder="00000000"
+              required
+              value={state.cep}
+              onChange={handleChange("cep")}
+            />
+
+            <div className={styles.checkboxWrapper}>
+              <Checkbox
+                label="Possui auxílio financeiro"
+                checked={state.has_financial_aid}
+                onChange={handleChange("has_financial_aid")}
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="btn btn-secondary">
+            Criar usuário
+          </button>
         </form>
       </FormPage>
     </Private>

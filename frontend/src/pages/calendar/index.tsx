@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useMessage } from "../../contexts";
-import { useAllAvailableOverrides, useAllUnavailableDays } from "../../hooks";
 import {
   Calendar,
   Card,
@@ -11,17 +9,29 @@ import {
   Navbar,
   Private,
 } from "../../components";
+import { useMessage } from "../../contexts";
+import { useAllAvailableOverrides, useAllUnavailableDays } from "../../hooks";
 import { isSameDate } from "../../utils";
 
 import { DayCard } from "./components";
-
 import styles from "./styles.module.css";
+
+// Helpers para manipulação de data sem bugs de fuso horário local
+const formatDateForInput = (d: Date) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const parseInputDate = (dateString: string) => {
+  const [y, m, d] = dateString.split("-").map(Number);
+  return new Date(y, m - 1, d, 12); // Meio-dia para evitar problemas de borda de fuso
+};
 
 export function CalendarPage() {
   const navigate = useNavigate();
-
   const { showMessage } = useMessage();
-
   const [date, setDate] = useState(new Date());
 
   const {
@@ -38,13 +48,26 @@ export function CalendarPage() {
     refetch: refetchUnavailableDays,
   } = useAllUnavailableDays();
 
-  if (isLoadingAvailableOverrides || isLoadingUnavailableDays)
+  // Memoização dos dados do dia selecionado para performance
+  const dayStatus = useMemo(() => {
+    return {
+      unavailable:
+        unavailableDays?.find((u) => isSameDate(new Date(u.date), date)) ||
+        null,
+      override:
+        availableOverrides?.find((o) => isSameDate(new Date(o.date), date)) ||
+        null,
+    };
+  }, [date, unavailableDays, availableOverrides]);
+
+  if (isLoadingAvailableOverrides || isLoadingUnavailableDays) {
     return <LoadPage />;
+  }
 
   if (availableOverridesError || unavailableDaysError) {
     showMessage(
       "Erro ao carregar os dados. Tente novamente mais tarde.",
-      "error"
+      "error",
     );
     navigate("/");
     return <LoadPage />;
@@ -55,17 +78,10 @@ export function CalendarPage() {
       <Navbar />
 
       <main className={styles.container}>
-        {/* Ações do Dia Selecionado */}
         <aside className={styles.detailsSection}>
           <Card className={styles.titleCard}>
             <h2>Agenda de Operação</h2>
-            <p
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--color-text-light)",
-                margin: "4px 0 0",
-              }}
-            >
+            <p className={styles.subtitle}>
               Gerencie a disponibilidade da sua frota ou serviço
             </p>
           </Card>
@@ -74,29 +90,15 @@ export function CalendarPage() {
             <Input
               label="Ir para uma data específica"
               type="date"
-              value={date.toISOString().split("T")[0]}
-              onChange={(e) => {
-                const [year, month, day] = e.target.value
-                  .split("-")
-                  .map(Number);
-                const localDate = new Date(year, month - 1, day, 12);
-                setDate(localDate);
-              }}
+              value={formatDateForInput(date)}
+              onChange={(e) => setDate(parseInputDate(e.target.value))}
             />
           </Card>
 
           <DayCard
             date={date}
-            unavailable={
-              unavailableDays?.find((u) =>
-                isSameDate(new Date(u.date), date)
-              ) || null
-            }
-            override={
-              availableOverrides?.find((o) =>
-                isSameDate(new Date(o.date), date)
-              ) || null
-            }
+            unavailable={dayStatus.unavailable}
+            override={dayStatus.override}
             onAvailableOverrideCreated={async () => {
               await refetchAvailableOverrides();
             }}
@@ -106,7 +108,6 @@ export function CalendarPage() {
           />
         </aside>
 
-        {/* Seleção e Controle */}
         <section className={styles.calendarSection}>
           <Calendar
             date={date}

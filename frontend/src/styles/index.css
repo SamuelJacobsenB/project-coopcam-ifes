@@ -6,7 +6,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
-  -webkit-font-smoothing: antialiased; /* Texto mais nítido */
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -19,7 +19,12 @@ li {
   list-style: none;
 }
 
-/* Scrollbar personalizada sutil */
+hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 2px solid #e0e0e0;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }

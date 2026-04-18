@@ -146,7 +146,6 @@ export function SelectedUserCard({
         onConfirm={handleDelete}
       />
 
-      {/* Ações posicionadas de forma fixa ou relativa ao card */}
       <UserActions
         editMode={editMode}
         onToggleEdit={() => {
@@ -162,7 +161,7 @@ export function SelectedUserCard({
 
       <header className={styles.userHeader}>
         <div className={styles.userPicture}>
-          <I.user size={80} color="#64748b" /> {/* Tamanho mais equilibrado */}
+          <I.user size={80} color="#64748b" />
         </div>
 
         <div className={styles.userTitleInfo}>
@@ -180,6 +179,8 @@ export function SelectedUserCard({
           )}
         </div>
       </header>
+
+      <hr />
 
       <div className={styles.userInfo}>
         <div className={styles.userDetails}>

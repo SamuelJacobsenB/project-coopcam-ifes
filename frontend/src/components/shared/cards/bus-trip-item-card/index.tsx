@@ -1,19 +1,19 @@
-import { Card, I } from "../../../../components";
+import { Card, DirectionBadge, I } from "../../../../components";
 import type { BusTrip } from "../../../../types";
 
 import styles from "./styles.module.css";
 
-interface BusTripCardProps {
+interface BusTripItemCardProps {
   trip: BusTrip;
   isSelected: boolean;
   onSelectTrip: (trip: BusTrip) => void;
 }
 
-export function BusTripCard({
+export function BusTripItemCard({
   trip,
   isSelected,
   onSelectTrip,
-}: BusTripCardProps) {
+}: BusTripItemCardProps) {
   return (
     <Card
       className={`${styles.tripItem} ${isSelected ? styles.selectedTrip : ""}`}
@@ -29,19 +29,12 @@ export function BusTripCard({
           <h5>{new Date(trip.date).toLocaleDateString("pt-BR")}</h5>
         </div>
         <span className={styles.routeText}>
-          {trip.direction === "go" ? "Ida" : "Retorno"}
+          {trip.period === "morning" ? "Manhã" : "Tarde"}
         </span>
       </div>
-      <span
-        className={`${styles.badge} ${trip.direction === "go" ? styles.badgeGo : styles.badgeBack}`}
-      >
-        {trip.direction === "go" ? (
-          <I.arrow_forward size={12} />
-        ) : (
-          <I.arrow_back size={12} />
-        )}
-        {trip.direction === "go" ? "Ida" : "Volta"}
-      </span>
+      <div className={styles.directionBadge}>
+        <DirectionBadge direction={trip.direction} />
+      </div>
     </Card>
   );
 }

@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
-import { DateInput, DualPage, I, Navbar, Private } from "../../components";
+import {
+  BusTripItemCard,
+  DateInput,
+  DualPage,
+  I,
+  Navbar,
+  PageHeader,
+  Private,
+} from "../../components";
 import {
   useBusTripById,
   useManyBusReservationsByDate,
@@ -13,13 +21,18 @@ import type { BusReservation, BusTrip, BusTripReport } from "../../types";
 import {
   BusReportsCard,
   BusReservationsCard,
-  BusTripCard,
   SelectedBusTripCard,
 } from "./components";
 
 import styles from "./styles.module.css";
 
-const formatDateForInput = (d: Date) => d.toISOString().split("T")[0];
+// Formatação segura usando fuso horário local (evita bug do UTC/ISO)
+const formatDateForInput = (d: Date) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const parseInputDate = (dateString: string) => {
   const [y, m, d] = dateString.split("-").map(Number);
@@ -108,7 +121,7 @@ export function BusTripPage() {
         },
       });
     } catch (error) {
-      console.error("Erro ao buscar dados:", error);
+      console.error("Erro ao buscar dados da rota:", error);
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
@@ -144,20 +157,17 @@ export function BusTripPage() {
       <Navbar />
       <DualPage
         leftSide={
-          <aside className={styles.left}>
+          <aside className={styles.leftSidebar}>
             <header className={styles.header}>
-              <div className={styles.headerText}>
-                <h1>Viagens</h1>
-                <p>Gerencie as rotas diárias</p>
-              </div>
-              {isLoading && (
-                <span role="status" className={styles.loadingBadge}>
-                  Carregando...
-                </span>
-              )}
+              <PageHeader
+                title="Viagens"
+                description="Gerencie as rotas diárias"
+              />
             </header>
 
-            <nav aria-label="Seleção de data">
+            <hr />
+
+            <nav>
               <DateInput
                 value={formatDateForInput(date)}
                 onChange={(e) =>
@@ -172,16 +182,16 @@ export function BusTripPage() {
               />
             </nav>
 
-            <ul className={styles.tripList} aria-label="Lista de viagens">
+            <ul className={styles.tripList}>
               {trips.map((trip) => (
-                <BusTripCard
+                <BusTripItemCard
                   key={trip.id}
-                  isSelected={selectedTrip?.id === trip.id}
                   trip={trip}
-                  onSelectTrip={(t) =>
+                  isSelected={trip.id === selectedTrip?.id}
+                  onSelectTrip={(trip) =>
                     dispatch({
                       type: "SET_FIELD",
-                      payload: { field: "selectedTrip", value: t },
+                      payload: { field: "selectedTrip", value: trip },
                     })
                   }
                 />
@@ -193,7 +203,7 @@ export function BusTripPage() {
           </aside>
         }
         rightSide={
-          <main className={styles.busTripArea}>
+          <main className={styles.mainArea}>
             {selectedTrip ? (
               <article>
                 <SelectedBusTripCard
@@ -219,6 +229,7 @@ export function BusTripPage() {
                     <h3 id="res-title">Reservas ({tripReservations.length})</h3>
                     <BusReservationsCard reservations={tripReservations} />
                   </section>
+
                   <section
                     className={styles.gridColumn}
                     aria-labelledby="rep-title"
@@ -239,9 +250,9 @@ export function BusTripPage() {
 }
 
 const EmptyState = () => (
-  <div className={styles.rightPlaceholder} role="region" aria-live="polite">
-    <I.map size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+  <section className={styles.rightPlaceholder} role="region" aria-live="polite">
+    <I.map size={48} color="#cbd5e1" style={{ marginBottom: "1rem" }} />
     <h2>Selecione uma viagem</h2>
     <p>Clique numa viagem na lista à esquerda para ver os detalhes.</p>
-  </div>
+  </section>
 );

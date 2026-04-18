@@ -1,4 +1,3 @@
-/* Container Principal do Card */
 .detailsCard {
   background-color: #fff;
   border-radius: 12px;
@@ -10,28 +9,10 @@
   margin-bottom: 1.5rem;
 }
 
-/* Cabeçalho do Card */
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding-bottom: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.cardTitle {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.cardSubtitle {
-  margin: 0;
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: #6b7280;
 }
 
 .cardHeaderActions {
@@ -47,7 +28,6 @@
   gap: 0.4rem;
 }
 
-/* Tag de Mês/Ano */
 .monthTag {
   background-color: #f3f4f6;
   color: #374151;
@@ -58,7 +38,6 @@
   text-transform: capitalize;
 }
 
-/* Grid de Informações (Vencimento, Valores) */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -86,30 +65,6 @@
 .statValue {
   font-size: 1.15rem;
   color: #0f172a;
-  font-weight: 600;
-}
-
-/* Estilos para a Lista de Usuários (UserPaymentsCard) */
-.summaryBadges {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.badgeSuccess {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badgeCount {
-  background-color: #f1f5f9;
-  color: #475569;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
   font-weight: 600;
 }
 
@@ -149,36 +104,6 @@
   font-size: 0.85rem;
   color: #64748b;
   margin-top: 0.25rem;
-}
-
-.dotSeparator {
-  color: #cbd5e1;
-}
-
-/* Badges de Status de Pagamento */
-.statusBadge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.statusPaid {
-  background: #dcfce7;
-  color: #166534;
-}
-.statusPending {
-  background: #fef9c3;
-  color: #854d0e;
-}
-.statusOverdue {
-  background: #fee2e2;
-  color: #991b1b;
-}
-.statusDraft {
-  background: #f1f5f9;
-  color: #475569;
 }
 
 .emptyList {

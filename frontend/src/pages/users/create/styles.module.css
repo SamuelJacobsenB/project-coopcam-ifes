@@ -1,34 +1,77 @@
-.formSection {
+.formContainer {
   position: relative;
-}
-
-.back {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  color: black;
-}
-
-.title {
-  font-size: 3rem;
 }
 
 .header {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 1rem;
-  font-size: 2rem;
+}
+
+.backButton {
+  position: absolute;
+  left: -1rem;
+  top: -1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 50%;
+  color: #64748b;
+  transition: all 0.2s;
+  background: #f1f5f9;
+  text-decoration: none;
+}
+
+.backButton:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.birthInput {
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.checkboxWrapper {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  width: 100%;
+  align-items: center;
+}
+
+.submitBtn {
+  margin-top: 1rem;
+  background-color: var(--color-primary, #3b82f6);
+  color: white;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.submitBtn:hover {
+  filter: brightness(0.9);
+}
+
+/* Responsividade */
+@media screen and (max-width: 600px) {
+  .inputGrid {
+    grid-template-columns: 1fr; /* Um campo por linha no mobile */
+  }
+
+  .fullWidth {
+    grid-column: span 1;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
 }

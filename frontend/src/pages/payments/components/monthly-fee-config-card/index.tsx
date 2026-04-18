@@ -1,3 +1,4 @@
+import { PageHeader } from "../../../../components";
 import type { MonthlyFeeConfig } from "../../../../types";
 import { months } from "../../../../utils";
 
@@ -27,12 +28,10 @@ export function FeeConfigDetailsCard({
   return (
     <div className={styles.detailsCard}>
       <header className={styles.cardHeader}>
-        <div className={styles.cardHeaderMain}>
-          <h2 className={styles.cardTitle}>Detalhes da Cobrança</h2>
-          <p className={styles.cardSubtitle}>
-            Configuração de taxas e prazos para este período.
-          </p>
-        </div>
+        <PageHeader
+          title="Detalhes da Cobrança"
+          description="Configuração de taxas e prazos para este período"
+        />
 
         <div className={styles.cardHeaderActions}>
           <span className={styles.monthTag}>
@@ -52,6 +51,8 @@ export function FeeConfigDetailsCard({
           </div>
         </div>
       </header>
+
+      <hr />
 
       <div className={styles.statsGrid}>
         <div className={styles.statBox}>

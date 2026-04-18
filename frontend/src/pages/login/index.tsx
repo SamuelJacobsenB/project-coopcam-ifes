@@ -1,11 +1,11 @@
 import React, { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { Error, FormPage, Input, PageHeader } from "../../components";
 import { useMessage, useUser } from "../../contexts";
 import { useLogin } from "../../hooks";
-import { FormPage, Input, Error } from "../../components";
-import { validateLoginDTO } from "../../utils";
 import type { LoginDTO } from "../../types";
+import { validateLoginDTO } from "../../utils";
 
 import styles from "./styles.module.css";
 
@@ -14,6 +14,7 @@ interface State {
   password: string;
   error: string;
 }
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducer = (state: State, action: any) => {
   switch (action.type) {
@@ -35,7 +36,7 @@ const initialState: State = {
 export function LoginPage() {
   const navigate = useNavigate();
 
-  const { findUser } = useUser();
+  const { user, findUser } = useUser();
   const { showMessage } = useMessage();
   const { login } = useLogin();
 
@@ -72,12 +73,12 @@ export function LoginPage() {
     }
   }
 
+  if (user) navigate("/");
+
   return (
     <FormPage>
-      <section className={styles.header}>
-        <h1 className={styles.title}>Login</h1>
-        <hr />
-      </section>
+      <PageHeader title="Login" description="Faça seu login" size={3} />
+
       <form onSubmit={handleSubmit} className={styles.form}>
         <Error
           error={error}

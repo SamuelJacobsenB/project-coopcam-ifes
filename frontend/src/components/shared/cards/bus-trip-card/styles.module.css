@@ -1,0 +1,108 @@
+.tripCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.2rem;
+  height: 160px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.tripCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+  border-color: #3b82f6;
+}
+
+.tripGraph {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.tripInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 1.5rem;
+  margin-left: 1.5rem;
+  border-left: 1px solid #f1f5f9;
+  height: 70%;
+}
+
+.tripStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.tripDetails p {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+  color: #1e293b;
+}
+
+.tripDetails span {
+  display: block;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.finished {
+  background-color: #22c55e;
+}
+.started {
+  background-color: #3b82f6;
+  animation: pulse 2s infinite;
+}
+.unstarted {
+  background-color: #cbd5e1;
+}
+
+.statusLabel {
+  font-weight: 700;
+  font-size: 0.8rem !important;
+  margin-top: 0.4rem;
+  letter-spacing: 0.025em;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1200px) {
+  .tripCard {
+    height: 180px;
+    padding: 1.5rem;
+  }
+  .tripGraph {
+    width: 130px;
+    height: 130px;
+  }
+  .tripDetails p {
+    font-size: 1.2rem;
+  }
+}

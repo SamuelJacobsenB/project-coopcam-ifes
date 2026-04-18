@@ -5,7 +5,7 @@
   align-items: center;
   padding: 1rem 1.25rem !important;
   background: #ffffff;
-  border-radius: 16px; /* Bordas mais arredondadas são mais modernas */
+  border-radius: 16px;
   border: 1px solid #f1f5f9;
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
@@ -44,7 +44,6 @@
   opacity: 0.8;
 }
 
-/* Badge mais sofisticada e minimalista */
 .statusBadge {
   font-size: 0.7rem;
   font-weight: 600;

@@ -1,31 +1,20 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { Card, I } from "../../../../components";
-import { useManyBusTripReportsByUserAndMonth } from "../../../../hooks";
+import type { BusTripReport } from "../../../../types";
+
 import { UserMonthlyReports } from "../user-monthly-reports";
 
 import styles from "./styles.module.css";
 
 interface UserReportsCardProps {
-  user_id: string;
+  handleFetch: (month: number) => Promise<BusTripReport[]>;
 }
 
-export function UserReportsCard({ user_id }: UserReportsCardProps) {
-  const { getManyBusTripReportsByUserAndMonth } =
-    useManyBusTripReportsByUserAndMonth();
+export function UserReportsCard({ handleFetch }: UserReportsCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
-  const handleFetchReports = useCallback(
-    async (month: number) => {
-      return await getManyBusTripReportsByUserAndMonth({
-        month,
-        user_id,
-      });
-    },
-    [user_id, getManyBusTripReportsByUserAndMonth],
-  );
 
   return (
     <Card className={styles.userReportsBox}>
@@ -39,14 +28,11 @@ export function UserReportsCard({ user_id }: UserReportsCardProps) {
 
       {isOpen && (
         <>
-          <hr style={{ margin: "1rem 0", opacity: 0.2 }} />
+          <hr />
           <ul className={styles.monthList}>
             {months.map((month) => (
               <li key={month}>
-                <UserMonthlyReports
-                  month={month}
-                  onFetch={handleFetchReports}
-                />
+                <UserMonthlyReports month={month} onFetch={handleFetch} />
               </li>
             ))}
           </ul>

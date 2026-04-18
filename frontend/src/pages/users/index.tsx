@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import {
@@ -7,10 +7,16 @@ import {
   I,
   Loader,
   Navbar,
+  PageHeader,
   Private,
   Search,
 } from "../../components";
-import { useManyUsers, useUserById } from "../../hooks";
+import {
+  useManyBusTripReportsByUserAndMonth,
+  useManyMonthlyPaymentByUserId,
+  useManyUsers,
+  useUserById,
+} from "../../hooks";
 import type { User } from "../../types";
 
 import {
@@ -22,7 +28,7 @@ import {
 import styles from "./styles.module.css";
 
 export function UsersPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const [search, setSearch] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
@@ -31,13 +37,43 @@ export function UsersPage() {
   const { getUserById } = useUserById();
   const { users, isLoading, error } = useManyUsers(1, activeSearch);
 
+  const { getManyBusTripReportsByUserAndMonth } =
+    useManyBusTripReportsByUserAndMonth();
+  const { getMonthlyPaymentByUserId } = useManyMonthlyPaymentByUserId();
+
+  // Callbacks memoizados para os componentes filhos
+  const handleFetchReports = useCallback(
+    async (month: number) => {
+      if (!selectedUser) return [];
+      return await getManyBusTripReportsByUserAndMonth({
+        month,
+        user_id: selectedUser.id,
+      });
+    },
+    [selectedUser, getManyBusTripReportsByUserAndMonth],
+  );
+
+  const handleFetchPayments = useCallback(async () => {
+    if (!selectedUser) return [];
+    return await getMonthlyPaymentByUserId(selectedUser.id);
+  }, [selectedUser, getMonthlyPaymentByUserId]);
+
+  // Efeito para carregar usuário via URL
   useEffect(() => {
+    let isMounted = true;
+
     if (id) {
       getUserById(id).then((user: User) => {
-        setSelectedUser(user);
-        setActiveSearch(user.name);
+        if (isMounted) {
+          setSelectedUser(user);
+          setActiveSearch(user.name);
+        }
       });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, getUserById]);
 
   return (
@@ -45,12 +81,9 @@ export function UsersPage() {
       <Navbar />
       <DualPage
         leftSide={
-          <div className={styles.leftContainer}>
-            <header className={styles.headerRow}>
-              <div className={styles.headerText}>
-                <h1>Usuários</h1>
-                <p>Gerencie o acesso</p>
-              </div>
+          <aside className={styles.leftContainer}>
+            <header className={styles.header}>
+              <PageHeader title="Usuários" description="Gerencie usuários" />
               <Link
                 to="/usuarios/criar"
                 className={`btn-sm btn-primary ${styles.createBtn}`}
@@ -59,6 +92,8 @@ export function UsersPage() {
               </Link>
             </header>
 
+            <hr />
+
             <Search
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -66,30 +101,24 @@ export function UsersPage() {
                 e.preventDefault();
                 setActiveSearch(search);
               }}
-              placeholder="Enter para buscar"
+              placeholder="Pesquisar pelo nome"
             />
 
-            <ul className={styles.userList}>
-              {isLoading && (
+            <ul className={styles.userList} aria-label="Lista de utilizadores">
+              {isLoading ? (
                 <div className={styles.emptyState}>
                   <Loader />
                 </div>
-              )}
-
-              {error && (
+              ) : error ? (
                 <div className={styles.emptyState}>
-                  <p>Erro ao carregar.</p>
+                  <p>Erro ao carregar usuário.</p>
                 </div>
-              )}
-
-              {!isLoading && !error && users?.length === 0 && (
+              ) : users?.length === 0 ? (
                 <div className={styles.emptyState}>
                   <p>Nenhum usuário encontrado.</p>
                 </div>
-              )}
-
-              {users &&
-                users.map((user) => (
+              ) : (
+                users?.map((user) => (
                   <li key={user.id}>
                     <Card
                       className={`${styles.userItem} ${
@@ -98,6 +127,7 @@ export function UsersPage() {
                       onClick={() => setSelectedUser(user)}
                       tabIndex={0}
                       role="button"
+                      aria-pressed={selectedUser?.id === user.id}
                     >
                       <div className={styles.userIconWrapper}>
                         <I.user
@@ -112,32 +142,35 @@ export function UsersPage() {
                       <h5 className={styles.userName}>{user.name}</h5>
                     </Card>
                   </li>
-                ))}
+                ))
+              )}
             </ul>
-          </div>
+          </aside>
         }
         rightSide={
-          selectedUser ? (
-            <div className={styles.userArea}>
-              <SelectedUserCard
-                selectedUser={selectedUser}
-                setSelectedUser={(user) => setSelectedUser(user)}
-              />
+          <main className={styles.mainContent}>
+            {selectedUser ? (
+              <div className={styles.userArea}>
+                <SelectedUserCard
+                  selectedUser={selectedUser}
+                  setSelectedUser={setSelectedUser}
+                />
 
-              <div className={styles.detailsGrid}>
-                <section className={styles.gridColumn}>
-                  <h3>Relatórios</h3>
-                  <UserReportsCard user_id={selectedUser.id} />
-                </section>
-                <section className={styles.gridColumn}>
-                  <h3>Pagamentos</h3>
-                  <UserPaymentsCard user_id={selectedUser.id} />
-                </section>
+                <div className={styles.detailsGrid}>
+                  <section className={styles.gridColumn}>
+                    <h3>Relatórios de Viagem</h3>
+                    <UserReportsCard handleFetch={handleFetchReports} />
+                  </section>
+                  <section className={styles.gridColumn}>
+                    <h3>Histórico de Pagamentos</h3>
+                    <UserPaymentsCard handleFetch={handleFetchPayments} />
+                  </section>
+                </div>
               </div>
-            </div>
-          ) : (
-            <EmptyState />
-          )
+            ) : (
+              <EmptyState />
+            )}
+          </main>
         }
       />
     </Private>
@@ -145,11 +178,9 @@ export function UsersPage() {
 }
 
 const EmptyState = () => (
-  <div className={styles.rightPlaceholder}>
-    <I.user size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+  <section className={styles.rightPlaceholder} aria-live="polite">
+    <I.user size={48} color="#cbd5e1" style={{ marginBottom: "1.5rem" }} />
     <h2>Nenhum usuário selecionado</h2>
-    <p>
-      Clique em um usuário na lista à esquerda para ver os detalhes completos.
-    </p>
-  </div>
+    <p>Clique num usuário à esquerda para gerir os seus detalhes.</p>
+  </section>
 );

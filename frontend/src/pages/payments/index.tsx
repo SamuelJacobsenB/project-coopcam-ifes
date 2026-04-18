@@ -1,7 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { ConfirmModal, DualPage, I, Navbar, Private } from "../../components";
+import {
+  ConfirmModal,
+  DualPage,
+  I,
+  MonthlyFeeItemCard,
+  Navbar,
+  PageHeader,
+  Private,
+} from "../../components";
 import { useMessage } from "../../contexts";
 import {
   useDeleteMonthlyFeeConfigById,
@@ -11,11 +19,7 @@ import {
 } from "../../hooks";
 import type { MonthlyFeeConfig, MonthlyPayment } from "../../types";
 
-import {
-  FeeConfigDetailsCard,
-  MonthlyFeeItem,
-  UserPaymentsCard,
-} from "./components";
+import { FeeConfigDetailsCard, UserPaymentsCard } from "./components";
 
 import styles from "./styles.module.css";
 
@@ -39,11 +43,15 @@ export function PaymentsPage() {
   );
   const [payments, setPayments] = useState<MonthlyPayment[]>([]);
 
-  const isAllDraft =
-    payments.length > 0 && payments.every((p) => p.payment_status === "draft");
-
-  const canEmit = isAllDraft;
-  const canDelete = payments.length === 0 || isAllDraft;
+  const { canEmit, canDelete } = useMemo(() => {
+    const isAllDraft =
+      payments.length > 0 &&
+      payments.every((p) => p.payment_status === "draft");
+    return {
+      canEmit: isAllDraft,
+      canDelete: payments.length === 0 || isAllDraft,
+    };
+  }, [payments]);
 
   const handleEmitBatch = async () => {
     if (!selectedConfig || !canEmit) return;
@@ -58,7 +66,6 @@ export function PaymentsPage() {
         prev.map((p) => ({ ...p, payment_status: "pending" })),
       );
       setIsEmitModalOpen(false);
-
       showMessage("Pagamentos emitidos com sucesso", "success");
     } catch {
       showMessage("Erro ao emitir pagamentos", "error");
@@ -77,7 +84,6 @@ export function PaymentsPage() {
       setSelectedConfig(null);
       setPayments([]);
       setIsDeleteModalOpen(false);
-
       showMessage("Configuração deletada com sucesso", "success");
     } catch {
       showMessage("Erro ao deletar configuração", "error");
@@ -106,12 +112,12 @@ export function PaymentsPage() {
       <Navbar />
       <DualPage
         leftSide={
-          <div className={styles.leftContainer}>
-            <header className={styles.headerRow}>
-              <div className={styles.headerText}>
-                <h1>Pagamentos</h1>
-                <p>Gerencie mensalidades</p>
-              </div>
+          <aside className={styles.leftContainer}>
+            <header className={styles.header}>
+              <PageHeader
+                title="Pagamentos"
+                description="Gerencie mensalidades"
+              />
               <Link
                 to="/pagamentos/criar"
                 className={`btn-sm btn-primary ${styles.createBtn}`}
@@ -120,21 +126,34 @@ export function PaymentsPage() {
               </Link>
             </header>
 
-            <div className={styles.yearSelector}>
-              <button onClick={() => setYear((y) => y - 1)}>
+            <hr />
+
+            <nav className={styles.yearSelector} aria-label="Seletor de ano">
+              <button
+                onClick={() => setYear((y) => y - 1)}
+                className={styles.yearBtn}
+                aria-label="Ano anterior"
+              >
                 <I.arrow_back />
               </button>
               <h2>{year}</h2>
-              <button onClick={() => setYear((y) => y + 1)}>
+              <button
+                onClick={() => setYear((y) => y + 1)}
+                className={styles.yearBtn}
+                aria-label="Próximo ano"
+              >
                 <I.arrow_forward />
               </button>
-            </div>
+            </nav>
 
             {monthlyFeeConfigs.length > 0 ? (
-              <ul className={styles.list}>
+              <ul
+                className={styles.list}
+                aria-label="Lista de meses configurados"
+              >
                 {monthlyFeeConfigs.map((config) => (
                   <li key={config.id}>
-                    <MonthlyFeeItem
+                    <MonthlyFeeItemCard
                       month={config.month}
                       isSelected={config.id === selectedConfig?.id}
                       onClick={() => setSelectedConfig(config)}
@@ -143,14 +162,14 @@ export function PaymentsPage() {
                 ))}
               </ul>
             ) : (
-              <p className={styles.emptyState}>
+              <p className={styles.emptySidebar}>
                 Nenhuma configuração encontrada para {year}
               </p>
             )}
-          </div>
+          </aside>
         }
         rightSide={
-          <div className={styles.rightContainer}>
+          <main className={styles.rightContainer}>
             {selectedConfig ? (
               <div className={styles.rightContentScroll}>
                 <FeeConfigDetailsCard
@@ -165,7 +184,7 @@ export function PaymentsPage() {
             ) : (
               <EmptyState />
             )}
-          </div>
+          </main>
         }
       />
 
@@ -189,9 +208,9 @@ export function PaymentsPage() {
 }
 
 const EmptyState = () => (
-  <div className={styles.rightPlaceholder}>
-    <I.calendar size={48} color="#ccc" style={{ marginBottom: "1rem" }} />
+  <section className={styles.rightPlaceholder} aria-live="polite">
+    <I.calendar size={48} color="#cbd5e1" style={{ marginBottom: "1rem" }} />
     <h2>Selecione um mês</h2>
     <p>Escolha uma configuração na lista lateral para gerir os pagamentos.</p>
-  </div>
+  </section>
 );

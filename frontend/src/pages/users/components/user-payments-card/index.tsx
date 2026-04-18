@@ -1,28 +1,29 @@
 import { useEffect, useState } from "react";
 
-import { Card, I, Loader, PaymentStatusBadge } from "../../../../components";
+import { Card, I, Loader, PaymentCard } from "../../../../components";
 
-import { useManyMonthlyPaymentByUserId } from "../../../../hooks";
 import type { MonthlyPayment } from "../../../../types";
 import { monthToString } from "../../../../utils";
+
 import styles from "./styles.module.css";
 
 interface UserPaymentsCardProps {
-  user_id: string;
+  handleFetch: () => Promise<MonthlyPayment[]>;
 }
 
-export function UserPaymentsCard({ user_id }: UserPaymentsCardProps) {
-  const { getMonthlyPaymentByUserId, isPending } =
-    useManyMonthlyPaymentByUserId();
-
+export function UserPaymentsCard({ handleFetch }: UserPaymentsCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [payments, setPayments] = useState<MonthlyPayment[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getMonthlyPaymentByUserId(user_id).then((payments: MonthlyPayment[]) => {
-      setPayments(payments);
-    });
-  }, [user_id, getMonthlyPaymentByUserId]);
+    setIsLoading(true);
+    handleFetch()
+      .then((payments: MonthlyPayment[]) => {
+        setPayments(payments);
+      })
+      .finally(() => setIsLoading(false));
+  }, [handleFetch]);
 
   return (
     <Card className={styles.userPaymentsBox}>
@@ -36,50 +37,21 @@ export function UserPaymentsCard({ user_id }: UserPaymentsCardProps) {
 
       {isOpen && (
         <>
-          <hr style={{ margin: "1rem 0", opacity: 0.2 }} />
-          {isPending && <Loader />}
-          {!isPending && payments?.length === 0 && (
+          <hr />
+          {isLoading && <Loader />}
+          {!isLoading && payments?.length === 0 && (
             <p style={{ textAlign: "center", opacity: 0.5 }}>
               Nenhum pagamento encontrado.
             </p>
           )}
-          {!isPending && payments?.length !== 0 && (
+          {!isLoading && payments?.length !== 0 && (
             <ul className={styles.userPaymentsList}>
               {payments?.map((p) => (
-                <li key={p.id} className={styles.userListItem}>
-                  <div className={styles.userInfo}>
-                    <div className={styles.userMainInfo}>
-                      <strong>
-                        {p.year} / {monthToString(p.month)}
-                      </strong>
-                      <span className={styles.userAmount}>
-                        {p.amount.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                    </div>
-
-                    <div className={styles.userMeta}>
-                      <span>
-                        Vencimento:{" "}
-                        {new Date(p.due_date).toLocaleDateString("pt-BR")}
-                      </span>
-                      {p.paid_at && (
-                        <>
-                          <span className={styles.dotSeparator}>•</span>
-                          <span className={styles.paidDate}>
-                            Pago em:{" "}
-                            {new Date(p.paid_at).toLocaleDateString("pt-BR")}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className={styles.userAction}>
-                    <PaymentStatusBadge status={p.payment_status} />
-                  </div>
+                <li key={p.id}>
+                  <PaymentCard
+                    monthly_payment={p}
+                    main_info={p.year + " / " + monthToString(p.month)}
+                  />
                 </li>
               ))}
             </ul>

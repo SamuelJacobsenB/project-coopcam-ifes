@@ -1,0 +1,10 @@
+.headerText h1 {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.headerText p {
+  margin: 0.2rem 0 0;
+  color: #64748b;
+}

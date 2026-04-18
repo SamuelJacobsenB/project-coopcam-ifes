@@ -46,30 +46,10 @@
   font-size: 0.8rem;
   color: #64748b;
   margin-left: 28px;
-  /* Alinha com o texto da data ignorando o ícone */
 }
 
-/* Badges para Período e Direção */
-.badge {
+.directionBadge {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  display: flex;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.badgeGo {
-  background-color: #ecfdf5;
-  color: #047857;
-}
-
-.badgeBack {
-  background-color: #eff6ff;
-  color: #1d4ed8;
+  top: 0.8rem;
+  right: 0.8rem;
 }
