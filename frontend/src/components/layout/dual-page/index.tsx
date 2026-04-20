@@ -18,7 +18,6 @@ export function DualPage({
   className = "",
   isFixedLayout = false,
 }: DualPageProps) {
-  // Combina classes condicionalmente
   const containerClass = [
     styles.dualPage,
     isFixedLayout ? styles.fixedHeight : styles.autoHeight,
@@ -27,10 +26,7 @@ export function DualPage({
 
   return (
     <div className={containerClass}>
-      {/* Lado Esquerdo (Sidebar) */}
       <aside className={`${styles.left} ${leftClassName}`}>{leftSide}</aside>
-
-      {/* Lado Direito (Conteúdo Principal) */}
       <main className={`${styles.right} ${rightClassName}`}>{rightSide}</main>
     </div>
   );

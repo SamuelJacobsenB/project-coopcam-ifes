@@ -38,6 +38,7 @@ export function QrCodeReader({ onScan }: QrCodeReaderProps) {
         onBarcodeScanned={async (evt) => {
           if (evt.data) {
             await onScan(evt.data);
+            setTimeout(() => {}, 500);
           }
         }}
       >

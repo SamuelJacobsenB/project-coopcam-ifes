@@ -2,8 +2,12 @@
   display: flex;
   width: 100%;
 
+  /* Isolamento em variáveis para facilitar manutenção e criação de Dark Mode no futuro */
   --sidebar-width: 280px;
   --header-offset: 88px;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --bg-sidebar: #ffffff;
+  --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.05);
 }
 
 /* Opção 1: Altura fixa na tela (estilo Dashboard) */
@@ -21,55 +25,73 @@
 .left {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
+  flex-shrink: 0; /* Garante que o menu nunca amasse antes do breakpoint do mobile */
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 
-  background-color: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sidebar);
   padding: 1.5rem;
+  z-index: 10; /* Assegura que a sombra passe por cima do conteúdo principal */
 
-  /* Se for layout fixo, permite scroll interno */
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 /* --- Lado Direito (Conteúdo) --- */
 .right {
-  flex: 1; /* Ocupa todo o espaço restante */
-
+  flex: 1;
   display: flex;
   flex-direction: column;
-  /* Removemos o 'center' forçado para permitir layouts normais de texto/form */
   align-items: stretch;
 
   padding: 2rem;
-
-  /* Se for layout fixo, o scroll acontece AQUI e não na página */
   overflow-y: auto;
+  overflow-x: hidden; /* Previne scroll horizontal acidental causado por elementos filhos largos */
+}
+
+/* --- Polimento visual do Scrollbar interno (Funciona em navegadores baseados no Webkit/Blink) --- */
+.left::-webkit-scrollbar,
+.right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.left::-webkit-scrollbar-track,
+.right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left::-webkit-scrollbar-thumb,
+.right::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 /* --- Responsividade (Mobile) --- */
 @media (max-width: 768px) {
   .dualPage {
     flex-direction: column;
-    height: auto; /* Remove a altura fixa no mobile */
+    height: auto;
+    min-height: calc(100vh - var(--header-offset));
   }
 
   .left {
-    width: 100%; /* Sidebar vira topo ou rodapé */
+    width: 100%;
     min-width: 0;
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra redirecionada para baixo */
+    overflow: visible; /* Libera o scroll para a página inteira no mobile */
   }
 
   .right {
     width: 100%;
     height: auto;
-    overflow-y: visible;
+    overflow: visible; /* Libera o scroll para a página inteira no mobile */
   }
 }

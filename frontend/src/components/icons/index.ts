@@ -18,7 +18,9 @@ import {
   IoIosInformation,
   IoIosMap,
   IoIosMenu,
+  IoIosRemove,
   IoIosSettings,
+  IoIosSquareOutline,
   IoIosWarning,
 } from "react-icons/io";
 import { LuLoaderCircle } from "react-icons/lu";
@@ -40,8 +42,10 @@ export const I = {
   map: IoIosMap,
   menu: IoIosMenu,
   moon: FaMoon,
+  remove: IoIosRemove,
   search: FaSearch,
   settings: IoIosSettings,
+  square: IoIosSquareOutline,
   sun: FaSun,
   user: FaUserCircle,
   warning: IoIosWarning,

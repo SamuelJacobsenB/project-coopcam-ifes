@@ -1,8 +1,8 @@
 .header {
   position: sticky;
   z-index: 1000;
-  top: 0;
-  background-color: rgba(28, 104, 92, 0.95);
+  top: 34px;
+  background-color: var(--color-primary);
   width: 100%;
   backdrop-filter: blur(8px);
   box-shadow: var(--shadow-md);

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useVerifyCoordinator } from "../../hooks";
 import { LoadPage } from "../";
+import { useVerifyCoordinator } from "../../hooks";
 
 export function Private({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
