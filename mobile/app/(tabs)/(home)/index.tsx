@@ -62,7 +62,7 @@ const DayListItem = React.memo(
 DayListItem.displayName = "DayListItem";
 
 export default function HomePage() {
-  const router = useRouter(); // Inicializado apenas UMA vez aqui
+  const router = useRouter();
   const { weeklyPreference, isLoading, error } = useWeeklyPreferenceByUserId();
 
   if (isLoading) {

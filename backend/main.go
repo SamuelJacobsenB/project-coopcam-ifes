@@ -7,6 +7,7 @@ import (
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/db"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/routes"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/workers"
 )
 
 func main() {
@@ -16,7 +17,20 @@ func main() {
 	db.MigrateDB()
 
 	handlers := config.SetupModules(db.DB)
-	router := routes.SetupRoutes(handlers)
 
-	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
+	scheduler := workers.NewScheduler()
+
+	err := scheduler.RegisterTask("0 1 * * 0", func() {
+		workers.CreateTripsAndWeeklyPreferences(db.DB)
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	scheduler.Start()
+
+	router := routes.SetupRoutes(handlers)
+	if err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {
+		panic(err)
+	}
 }
