@@ -31,10 +31,10 @@ func (repo *UnavailableDayRepository) FindByID(id uuid.UUID) (*entities.Unavaila
 
 func (repo *UnavailableDayRepository) OtherEventExists(date time.Time) (bool, error) {
 	var unavailableDay entities.UnavailableDay
-	err1 := repo.db.Where("DATE(date) = ?", date.Format("2006-01-02")).First(&unavailableDay).Error
+	err1 := repo.db.Where("DATE(date) = DATE(?)", date.Format("2006-01-02")).First(&unavailableDay).Error
 
 	var availableOverride entities.AvailableOverride
-	err2 := repo.db.Where("DATE(date) = ?", date.Format("2006-01-02")).First(&availableOverride).Error
+	err2 := repo.db.Where("DATE(date) = DATE(?)", date.Format("2006-01-02")).First(&availableOverride).Error
 
 	if err1 != nil && !errors.Is(err1, gorm.ErrRecordNotFound) {
 		return false, err1

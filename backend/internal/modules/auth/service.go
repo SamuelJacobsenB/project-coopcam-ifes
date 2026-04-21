@@ -19,11 +19,11 @@ func NewAuthService(userRepo *user.UserRepository) *AuthService {
 func (service *AuthService) Login(loginDTO *dtos.LoginDTO) (string, error) {
 	user, err := service.userRepo.FindByEmail(loginDTO.Email)
 	if err != nil {
-		return "", err
+		return "", errors.New("credenciais inválidas")
 	}
 
 	if !utils.CheckPasswordHash(loginDTO.Password, user.Password) {
-		return "", errors.New("email ou senha incorretos")
+		return "", errors.New("credenciais inválidas")
 	}
 
 	return utils.GenerateJWT(user.ID, user.Role)

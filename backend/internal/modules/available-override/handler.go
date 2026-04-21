@@ -17,7 +17,7 @@ func NewAvailableOverrideHandler(service *AvailableOverrideService) *AvailableOv
 func (handler *AvailableOverrideHandler) FindAll(ctx *gin.Context) {
 	availableOverrides, err := handler.service.FindAll()
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar dias disponíveis"})
 		return
 	}
 
@@ -38,7 +38,7 @@ func (handler *AvailableOverrideHandler) FindByID(ctx *gin.Context) {
 
 	availableOverride, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar dia disponível"})
 		return
 	}
 
@@ -48,18 +48,18 @@ func (handler *AvailableOverrideHandler) FindByID(ctx *gin.Context) {
 func (handler *AvailableOverrideHandler) Create(ctx *gin.Context) {
 	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
 	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	if err := availableOverrideRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	availableOverride := availableOverrideRequest.ToEntity()
 	if err := handler.service.Create(availableOverride); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao criar dia disponível"})
 		return
 	}
 
@@ -75,19 +75,19 @@ func (handler *AvailableOverrideHandler) Update(ctx *gin.Context) {
 
 	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
 	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	if err := availableOverrideRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	availableOverride := availableOverrideRequest.ToEntity()
 	availableOverride.ID = id
 	if err := handler.service.Update(availableOverride); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao atualizar dia disponível"})
 		return
 	}
 
@@ -102,10 +102,9 @@ func (handler *AvailableOverrideHandler) Delete(ctx *gin.Context) {
 	}
 
 	if err := handler.service.Delete(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao deletar dia disponível"})
 		return
 	}
 
 	ctx.JSON(204, nil)
 }
-

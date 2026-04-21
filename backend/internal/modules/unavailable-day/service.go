@@ -25,15 +25,16 @@ func (service *UnavailableDayService) FindByID(id uuid.UUID) (*entities.Unavaila
 }
 
 func (service *UnavailableDayService) Create(unavailableDay *entities.UnavailableDay) error {
-	ifExists, err := service.repo.OtherEventExists(unavailableDay.Date)
+	normalizedDate := time.Date(unavailableDay.Date.Year(), unavailableDay.Date.Month(), unavailableDay.Date.Day(), 0, 0, 0, 0, time.Local)
+	unavailableDay.Date = normalizedDate
+
+	exists, err := service.repo.OtherEventExists(normalizedDate)
 	if err != nil {
 		return err
 	}
-	if ifExists {
-		return errors.New("já existe um evento agendado para essa data")
+	if exists {
+		return errors.New("já existe um evento agendado para esta data")
 	}
-
-	unavailableDay.Date = time.Date(unavailableDay.Date.Year(), unavailableDay.Date.Month(), unavailableDay.Date.Day(), 12, 0, 0, 0, time.Local)
 
 	return service.repo.Create(unavailableDay)
 }

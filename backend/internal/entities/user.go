@@ -14,14 +14,13 @@ type User struct {
 	Name     string `gorm:"uniqueIndex;not null" json:"name"`
 	Email    string `gorm:"uniqueIndex;not null" json:"email"`
 	Password string `json:"-"`
-	Role     string `gorm:"type:text;default:'user'" json:"roles"`
+	Role     string `gorm:"type:text;default:'user'" json:"role"`
 
-	CPF       string    `json:"cpf"`
-	Phone     string    `json:"phone"`
-	Address   string    `json:"address"`
-	CEP       string    `json:"cep"`
-	Birth     time.Time `json:"birth"`
-	AvatarURL *string   `json:"avatar_url"`
+	CPF     string    `json:"cpf"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
+	CEP     string    `json:"cep"`
+	Birth   time.Time `json:"birth"`
 
 	HasFinancialAid bool `gorm:"default:false" json:"has_financial_aid"`
 

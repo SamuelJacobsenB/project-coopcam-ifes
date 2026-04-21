@@ -4,7 +4,6 @@ import {
   CreatePaymentFeeConfigPage,
   CreateUserPage,
   DashboardPage,
-  DevelopmentPage,
   LoginPage,
   PaymentsPage,
   UsersPage,
@@ -21,8 +20,6 @@ export const routes = [
   { path: "/pagamentos", element: PaymentsPage },
   { path: "/pagamentos/criar", element: CreatePaymentFeeConfigPage },
   { path: "/calendario", element: CalendarPage },
-  { path: "/development", element: DevelopmentPage },
-  { path: "/development/:id", element: DevelopmentPage },
 ];
 
 export const navRoutes = [

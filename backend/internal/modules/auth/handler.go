@@ -19,26 +19,35 @@ func NewAuthHandler(service *AuthService) *AuthHandler {
 func (handler *AuthHandler) Login(ctx *gin.Context) {
 	var loginDTO dtos.LoginDTO
 	if err := ctx.ShouldBindJSON(&loginDTO); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Dados inválidos"})
 		return
 	}
 
 	token, err := handler.service.Login(&loginDTO)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciais inválidas"})
 		return
 	}
 
-	ctx.SetSameSite(http.SameSiteLaxMode)
-	ctx.SetCookie("auth_token", token, 3600*24*30, "/", os.Getenv("DOMAIN"), os.Getenv("SECURE") == "true", true)
+	isProd := os.Getenv("SECURE") == "true"
 
-	ctx.JSON(200, gin.H{"token": "Bearer " + token})
+	ctx.SetSameSite(http.SameSiteStrictMode)
+	ctx.SetCookie(
+		"auth_token",
+		token,
+		3600*24,
+		"/",
+		os.Getenv("DOMAIN"),
+		isProd,
+		true,
+	)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Login realizado com sucesso"})
 }
 
 func (handler *AuthHandler) Logout(ctx *gin.Context) {
-	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("auth_token", "", -1, "/", os.Getenv("DOMAIN"), os.Getenv("SECURE") == "true", true)
-	ctx.JSON(200, nil)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logout realizado"})
 }
 
 func (handler *AuthHandler) VerifyUser(ctx *gin.Context) {
@@ -52,4 +61,3 @@ func (handler *AuthHandler) VerifyCoordinator(ctx *gin.Context) {
 func (handler *AuthHandler) VerifyAdmin(ctx *gin.Context) {
 	ctx.JSON(200, nil)
 }
-

@@ -2,11 +2,13 @@ package monthly_payment
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/payment"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -52,7 +54,7 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 
 	payments, err := h.service.FindByUser(targetUserID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "erro interno"})
 		return
 	}
 
@@ -74,7 +76,7 @@ func (h *MonthlyPaymentHandler) ListByPeriod(ctx *gin.Context) {
 
 	payments, err := h.service.ListByPeriodLight(month, year)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "erro interno"})
 		return
 	}
 
@@ -94,7 +96,7 @@ func (h *MonthlyPaymentHandler) EmitBatch(ctx *gin.Context) {
 
 	err := h.service.EmitBatch(ctx.Request.Context(), req.Month, req.Year)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "erro ao emitir lote de pagamentos"})
 		return
 	}
 
@@ -112,12 +114,12 @@ func (h *MonthlyPaymentHandler) UpdateStatus(ctx *gin.Context) {
 		Status types.PaymentStatus `json:"status" binding:"required"`
 	}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "status é obrigatório"})
 		return
 	}
 
 	if err := h.service.UpdateStatus(id, req.Status); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "erro ao atualizar status"})
 		return
 	}
 
@@ -125,6 +127,15 @@ func (h *MonthlyPaymentHandler) UpdateStatus(ctx *gin.Context) {
 }
 
 func (h *MonthlyPaymentHandler) HandleWebhook(ctx *gin.Context) {
+	signature := ctx.GetHeader("x-signature")
+	requestID := ctx.GetHeader("x-request-id")
+	secret := os.Getenv("MP_WEBHOOK_SECRET")
+
+	if !payment.ValidateMercadoPagoSignature(signature, requestID, secret) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "assinatura inválida"})
+		return
+	}
+
 	var notification struct {
 		Action string `json:"action"`
 		Type   string `json:"type"`
@@ -138,22 +149,16 @@ func (h *MonthlyPaymentHandler) HandleWebhook(ctx *gin.Context) {
 		return
 	}
 
-	// Sempre responda 200 OK para o Mercado Pago rapidamente
-	ctx.Status(http.StatusOK)
+	// Responde para o MP saber que recebemos
+	ctx.Status(http.StatusAccepted)
 
-	isRelevantAction := notification.Action == "payment.updated" || notification.Action == "payment.created"
-	isPaymentType := notification.Type == "payment"
-
-	if isRelevantAction || isPaymentType {
+	if (notification.Action == "payment.updated" || notification.Action == "payment.created") || notification.Type == "payment" {
 		externalID := notification.Data.ID
-
-		// Rodar em background para não prender a resposta ao Mercado Pago
 		go func(id string) {
-			// Cria um contexto vazio pois o ctx do Gin será cancelado ao retornar a resposta
-			bgCtx := context.Background()
-			err := h.service.ProcessWebhook(bgCtx, id)
-			if err != nil {
-				fmt.Printf("Erro ao processar webhook (external_id=%s): %v\n", id, err)
+			bgCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+			if err := h.service.ProcessWebhook(bgCtx, id); err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "erro ao processar webhook"})
 			}
 		}(externalID)
 	}

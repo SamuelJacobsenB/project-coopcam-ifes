@@ -21,7 +21,7 @@ func NewBusTripReportHandler(service *BusTripReportService) *BusTripReportHandle
 func (handler *BusTripReportHandler) FindAll(ctx *gin.Context) {
 	busTripReports, err := handler.service.FindAll()
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
 		return
 	}
 
@@ -42,32 +42,11 @@ func (handler *BusTripReportHandler) FindByID(ctx *gin.Context) {
 
 	busTripReport, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagem"})
 		return
 	}
 
 	ctx.JSON(200, dtos.ToBusTripReportResponseDTO(busTripReport))
-}
-
-func (handler *BusTripReportHandler) FindByUserID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	busTripReports, err := handler.service.FindByUserID(id)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	busTripReportsResponse := make([]dtos.BusTripReportResponseDTO, len(busTripReports))
-	for i, busTripReport := range busTripReports {
-		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
-	}
-
-	ctx.JSON(200, busTripReportsResponse)
 }
 
 func (handler *BusTripReportHandler) FindByDate(ctx *gin.Context) {
@@ -79,7 +58,7 @@ func (handler *BusTripReportHandler) FindByDate(ctx *gin.Context) {
 
 	busTripReports, err := handler.service.FindByDate(date)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
 		return
 	}
 
@@ -100,7 +79,7 @@ func (handler *BusTripReportHandler) FindByNextDate(ctx *gin.Context) {
 
 	busTripReports, err := handler.service.FindByNextDate(date)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
 		return
 	}
 
@@ -127,7 +106,7 @@ func (handler *BusTripReportHandler) FindByUserIDAndDate(ctx *gin.Context) {
 
 	busTripReports, err := handler.service.FindByUserIDAndDate(id, date)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
 		return
 	}
 
@@ -155,7 +134,7 @@ func (handler *BusTripReportHandler) FindByUserIDAndNextDate(ctx *gin.Context) {
 
 	busTripReports, err := handler.service.FindByUserIDNextDate(id, date)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
 		return
 	}
 
@@ -188,7 +167,7 @@ func (handler *BusTripReportHandler) FindByUserAndMonth(ctx *gin.Context) {
 
 	busTripReports, err := handler.service.FindByUserAndMonth(userID, month)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "Erro ao buscar relatórios: " + err.Error()})
+		ctx.JSON(500, gin.H{"error": "Erro ao buscar relatórios"})
 		return
 	}
 
@@ -209,7 +188,7 @@ func (handler *BusTripReportHandler) CreateMany(ctx *gin.Context) {
 
 	var userIDRequests []string
 	if err := ctx.ShouldBindJSON(&userIDRequests); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
 		return
 	}
 
@@ -225,7 +204,7 @@ func (handler *BusTripReportHandler) CreateMany(ctx *gin.Context) {
 	}
 
 	if err := handler.service.CreateMany(tripID, userIDs); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "Erro ao criar relatório"})
 		return
 	}
 
@@ -240,7 +219,7 @@ func (handler *BusTripReportHandler) Delete(ctx *gin.Context) {
 	}
 
 	if err := handler.service.Delete(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao deletar viagem"})
 		return
 	}
 

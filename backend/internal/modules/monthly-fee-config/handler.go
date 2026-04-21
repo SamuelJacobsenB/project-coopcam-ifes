@@ -34,7 +34,7 @@ func (h *MonthlyFeeConfigHandler) FindByID(ctx *gin.Context) {
 
 func (h *MonthlyFeeConfigHandler) FindByYear(ctx *gin.Context) {
 	yearStr := ctx.Param("year")
-	year, err := strconv.Atoi(yearStr) // Importe o pacote "strconv"
+	year, err := strconv.Atoi(yearStr)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "ano inválido"})
 		return
@@ -57,18 +57,18 @@ func (h *MonthlyFeeConfigHandler) FindByYear(ctx *gin.Context) {
 func (h *MonthlyFeeConfigHandler) Create(ctx *gin.Context) {
 	var configRequest dtos.MonthlyFeeConfigRequestDTO
 	if err := ctx.ShouldBindJSON(&configRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	if err := configRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	config := configRequest.ToEntity()
 	if err := h.service.CreateConfigAndDrafts(config); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao criar configuração"})
 		return
 	}
 
@@ -88,7 +88,7 @@ func (h *MonthlyFeeConfigHandler) Delete(ctx *gin.Context) {
 			ctx.JSON(409, gin.H{"error": err.Error()})
 			return
 		}
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao deletar configuração"})
 		return
 	}
 

@@ -37,7 +37,11 @@ async function createWindow() {
     },
   });
 
-  win.loadURL("http://localhost:3000");
+  if (!app.isPackaged) {
+    win.loadURL("http://localhost:3000");
+  } else {
+    win.loadFile("dist/index.html");
+  }
 }
 
 app.whenReady().then(createWindow);

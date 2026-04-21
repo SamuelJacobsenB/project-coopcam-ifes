@@ -59,7 +59,11 @@ func (s *MonthlyPaymentService) EmitBatch(ctx context.Context, month, year int) 
 	}
 
 	for _, p := range drafts {
-		// hama o cliente do Mercado Pago para criar o pagamento PIX
+		if p.ExternalID != nil {
+			continue
+		}
+
+		// Chama o cliente do Mercado Pago para criar o pagamento PIX
 		// Passamos o ID interno como external_reference para conciliação posterior
 		mpRes, err := s.mpClient.CreatePixPayment(
 			ctx,
@@ -94,34 +98,36 @@ func (s *MonthlyPaymentService) ProcessWebhook(ctx context.Context, externalID s
 	payment, err := s.repo.FindByExternalID(externalID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil // Ignora silenciosamente, pode ser de outro sistema
+			return nil
 		}
-		return fmt.Errorf("erro ao buscar pagamento por external_id: %w", err)
+		return err
 	}
 
-	// Consulta o status atualizado
+	// Se já estiver pago, não processa novamente para evitar Race Conditions
+	if payment.PaymentStatus == types.PaymentPaid {
+		return nil
+	}
+
 	mpPayment, err := s.mpClient.GetPayment(ctx, externalID)
 	if err != nil {
-		return fmt.Errorf("erro ao consultar pagamento no gateway: %w", err)
+		return err
 	}
 
 	newStatus := s.mapMPStatusToInternal(mpPayment.Status)
 
 	if payment.PaymentStatus != newStatus {
-		payment.PaymentStatus = newStatus
+		var paidAt *time.Time
 		if newStatus == types.PaymentPaid {
 			now := time.Now()
-			payment.PaidAt = &now
+			paidAt = &now
 		}
-		if err := s.repo.Update(payment); err != nil {
-			return fmt.Errorf("erro ao atualizar status do pagamento: %w", err)
-		}
-	}
 
+		return s.repo.UpdateStatus(payment.ID, newStatus, paidAt)
+	}
 	return nil
 }
 
-// mapMPStatusToInternal converte o status devolvido pelo Mercado Pago.
+// converte o status devolvido pelo Mercado Pago.
 func (s *MonthlyPaymentService) mapMPStatusToInternal(mpStatus string) types.PaymentStatus {
 	switch mpStatus {
 	case "approved":

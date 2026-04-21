@@ -15,15 +15,15 @@ func NewWeeklyPreferenceHandler(service *WeeklyPreferenceService) *WeeklyPrefere
 }
 
 func (handler *WeeklyPreferenceHandler) FindByUserID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
+	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "Id inválido"})
+		ctx.JSON(401, gin.H{"error": "não autorizado"})
 		return
 	}
 
-	weeklyPreference, err := handler.service.FindByUserID(id)
+	weeklyPreference, err := handler.service.FindByUserID(userID)
 	if err != nil {
-		ctx.JSON(404, gin.H{"error": "Preferêcia semanal não encontrada"})
+		ctx.JSON(404, gin.H{"error": "preferência não encontrada"})
 		return
 	}
 
@@ -59,12 +59,6 @@ func (handler *WeeklyPreferenceHandler) Create(ctx *gin.Context) {
 }
 
 func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
 	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
@@ -73,7 +67,7 @@ func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
 
 	var weeklyPreferenceRequest dtos.WeeklyPreferenceRequestDTO
 	if err := ctx.ShouldBindJSON(&weeklyPreferenceRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
@@ -83,10 +77,9 @@ func (handler *WeeklyPreferenceHandler) Update(ctx *gin.Context) {
 	}
 
 	weeklyPreference := weeklyPreferenceRequest.ToEntity()
-	weeklyPreference.ID = id
 	weeklyPreference.UserID = userID
 	if err := handler.service.Update(weeklyPreference); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao atualizar preferência"})
 		return
 	}
 
@@ -107,4 +100,3 @@ func (handler *WeeklyPreferenceHandler) Delete(ctx *gin.Context) {
 
 	ctx.JSON(204, nil)
 }
-

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ func NewBusTripHandler(service *BusTripService) *BusTripHandler {
 func (handler *BusTripHandler) FindAll(ctx *gin.Context) {
 	busTrips, err := handler.service.FindAll()
 	if err != nil {
-		ctx.AbortWithStatusJSON(500, err.Error())
+		ctx.AbortWithStatusJSON(500, "erro ao buscar viagens")
 		return
 	}
 
@@ -35,7 +36,7 @@ func (handler *BusTripHandler) FindByDate(ctx *gin.Context) {
 
 	busTrips, err := handler.service.FindByDate(date)
 	if err != nil {
-		ctx.AbortWithStatusJSON(500, err.Error())
+		ctx.AbortWithStatusJSON(500, "erro ao buscar viagens")
 		return
 	}
 
@@ -52,7 +53,7 @@ func (handler *BusTripHandler) FindByNextDate(ctx *gin.Context) {
 
 	busTrips, err := handler.service.FindByNextDate(date)
 	if err != nil {
-		ctx.AbortWithStatusJSON(500, err.Error())
+		ctx.AbortWithStatusJSON(500, "erro ao buscar viagens")
 		return
 	}
 
@@ -68,7 +69,7 @@ func (handler *BusTripHandler) FindByID(ctx *gin.Context) {
 
 	busTrip, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar viagem"})
 		return
 	}
 
@@ -78,50 +79,43 @@ func (handler *BusTripHandler) FindByID(ctx *gin.Context) {
 func (handler *BusTripHandler) Create(ctx *gin.Context) {
 	var busTripRequest dtos.BusTripRequestDTO
 	if err := ctx.ShouldBindJSON(&busTripRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	if err := busTripRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
 	busTrip := busTripRequest.ToEntity()
 	if err := handler.service.Create(busTrip); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao criar viagem"})
 		return
 	}
 
 	ctx.JSON(201, dtos.ToBusTripResponseDTO(busTrip))
 }
 
-func (handler *BusTripHandler) Update(ctx *gin.Context) {
+func (handler *BusTripHandler) UpdateStatus(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
 		return
 	}
 
-	var busTripRequest dtos.BusTripUpdateDTO
-	if err := ctx.ShouldBindJSON(&busTripRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+	status := types.Status(ctx.Param("status"))
+	if err := types.ValidateStatus(status); err != nil {
+		ctx.JSON(400, gin.H{"error": "status inválido"})
 		return
 	}
 
-	if err := busTripRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+	if err := handler.service.UpdateStatus(id, status); err != nil {
+		ctx.JSON(500, gin.H{"error": "erro ao atualizar viagem"})
 		return
 	}
 
-	busTrip := busTripRequest.ToEntity()
-	busTrip.ID = id
-	if err := handler.service.Update(busTrip); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToBusTripResponseDTO(busTrip))
+	ctx.JSON(200, nil)
 }
 
 func (handler *BusTripHandler) Delete(ctx *gin.Context) {
@@ -132,7 +126,7 @@ func (handler *BusTripHandler) Delete(ctx *gin.Context) {
 	}
 
 	if err := handler.service.Delete(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao deletar viagem"})
 		return
 	}
 

@@ -139,10 +139,6 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 	ctx.JSON(200, dtos.ToUserResponseDTO(user))
 }
 
-func (handler *UserHandler) UpdateAvatar(ctx *gin.Context) {
-	// TODO
-}
-
 func (handler *UserHandler) PromoteToCoordinator(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {

@@ -35,12 +35,6 @@ func (repo *BusReservationRepository) FindByUserIDAndDateAndPeriodAndDirection(u
 	return &busReservations, err
 }
 
-func (repo *BusReservationRepository) FindByUserID(userID uuid.UUID) ([]entities.BusReservation, error) {
-	var busReservations []entities.BusReservation
-	err := repo.db.Where("user_id = ?", userID).Find(&busReservations).Error
-	return busReservations, err
-}
-
 func (repo *BusReservationRepository) FindByID(id uuid.UUID) (*entities.BusReservation, error) {
 	var busReservation entities.BusReservation
 	err := repo.db.First(&busReservation, id).Error
@@ -58,14 +52,10 @@ func (repo *BusReservationRepository) Create(busReservation *entities.BusReserva
 	return repo.db.Create(busReservation).Error
 }
 
-func (repo *BusReservationRepository) Update(busReservation *entities.BusReservation) error {
-	return repo.db.Model(&entities.BusReservation{}).Where("id = ? AND user_id = ?", busReservation.ID, busReservation.UserID).Updates(busReservation).Error
-}
-
 func (repo *BusReservationRepository) DeleteUntilNow() error {
 	return repo.db.Where("date < ?", time.Now()).Delete(&entities.BusReservation{}).Error
 }
 
-func (repo *BusReservationRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&entities.BusReservation{}).Error
+func (repo *BusReservationRepository) Delete(id uuid.UUID, userID uuid.UUID) error {
+	return repo.db.Where("id = ? AND user_id = ?", id, userID).Delete(&entities.BusReservation{}).Error // repo.db.Where("id = ?", id).Delete(&entities.BusReservation{}).Error
 }

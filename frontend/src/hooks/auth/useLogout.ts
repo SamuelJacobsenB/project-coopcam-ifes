@@ -5,6 +5,7 @@ import { api } from "../../services";
 export const fetchLogout = async () => {
   try {
     const res = await api.get("/v1/auth/logout/");
+    localStorage.removeItem("auth_token");
 
     if (res.status !== 200) throw new Error("Erro ao deslogar");
 

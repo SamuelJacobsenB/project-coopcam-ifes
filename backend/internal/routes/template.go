@@ -7,8 +7,8 @@ import (
 )
 
 func SetupTemplateRoutes(rg *gin.RouterGroup, handler *template.TemplateHandler) {
-	rg.GET("/user-id/:id/", middlewares.AuthMiddlewareUser(), handler.FindByUserID)
-	rg.POST("/", middlewares.AuthMiddlewareUser(), handler.Create)
-	rg.PUT("/", middlewares.AuthMiddlewareUser(), handler.Update)
-	rg.DELETE("/", middlewares.AuthMiddlewareUser(), handler.DeleteByUserID)
+	rg.GET("/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByUserID)
+	rg.POST("/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareUser(), handler.Create)
+	rg.PUT("/", middlewares.RateLimiter(10), middlewares.AuthMiddlewareUser(), handler.Update)
+	rg.DELETE("/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareUser(), handler.DeleteByUserID)
 }

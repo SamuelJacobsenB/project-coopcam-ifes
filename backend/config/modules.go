@@ -12,6 +12,7 @@ import (
 	unavailable_day "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/unavailable-day"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	weekly_preference "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/weekly-preference"
+
 	"gorm.io/gorm"
 )
 
@@ -48,7 +49,7 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	weeklyPreferenceService := weekly_preference.NewWeeklyPreferenceService(weeklyPreferenceRepo, userRepo)
 	templateService := template.NewTemplateService(templateRepo, userRepo)
 	busReservationService := bus_reservation.NewBusReservationService(busReservationRepo, userRepo, busTripRepo)
-	busTripReportService := bus_trip_report.NewBusTripReportService(busTripReportRepo, busReservationRepo, userRepo)
+	busTripReportService := bus_trip_report.NewBusTripReportService(busTripReportRepo, busReservationRepo, userRepo, busTripRepo)
 	busTripService := bus_trip.NewBusTripService(busTripRepo)
 	availableOverrideService := available_override.NewAvailableOverrideService(availableOverrideRepo)
 	unavailableDayService := unavailable_day.NewUnavailableDayService(unavailableDayRepo)

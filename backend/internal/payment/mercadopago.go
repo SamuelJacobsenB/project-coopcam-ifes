@@ -47,8 +47,8 @@ func (c *MercadoPagoClient) CreatePixPayment(ctx context.Context, amountCents in
 		"transaction_amount": float64(amountCents) / 100.0,
 		"payment_method_id":  "pix",
 		"description":        "Mensalidade Coopcam",
-		"external_reference": internalID,        // Vincula ao seu banco
-		"notification_url":   c.NotificationURL, // Crucial para o Webhook funcionar
+		"external_reference": internalID, // Vincula ao banco
+		"notification_url":   c.NotificationURL,
 		"date_of_expiration": expiration.Format("2006-01-02T15:04:05.000-07:00"),
 		"payer": map[string]interface{}{
 			"email": email,

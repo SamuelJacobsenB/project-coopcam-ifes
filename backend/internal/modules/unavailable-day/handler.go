@@ -17,7 +17,7 @@ func NewUnavailableDayHandler(service *UnavailableDayService) *UnavailableDayHan
 func (handler *UnavailableDayHandler) FindAll(ctx *gin.Context) {
 	unavailableDays, err := handler.service.FindAll()
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar dias indisponíveis"})
 		return
 	}
 
@@ -38,7 +38,7 @@ func (handler *UnavailableDayHandler) FindByID(ctx *gin.Context) {
 
 	unavailableDay, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar dia indisponível"})
 		return
 	}
 
@@ -48,7 +48,7 @@ func (handler *UnavailableDayHandler) FindByID(ctx *gin.Context) {
 func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
@@ -59,7 +59,7 @@ func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 
 	unavailableDay := unavailableDayRequest.ToEntity()
 	if err := handler.service.Create(unavailableDay); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao criar dia indisponível"})
 		return
 	}
 
@@ -75,7 +75,7 @@ func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
 
 	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "dados inválidos"})
 		return
 	}
 
@@ -87,7 +87,7 @@ func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
 	unavailableDay := unavailableDayRequest.ToEntity()
 	unavailableDay.ID = id
 	if err := handler.service.Update(unavailableDay); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao atualizar dia indisponível"})
 		return
 	}
 
@@ -102,10 +102,9 @@ func (handler *UnavailableDayHandler) Delete(ctx *gin.Context) {
 	}
 
 	if err := handler.service.Delete(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao deletar dia indisponível"})
 		return
 	}
 
 	ctx.JSON(204, nil)
 }
-

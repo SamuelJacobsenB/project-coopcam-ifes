@@ -1,6 +1,8 @@
 package monthly_payment
 
 import (
+	"time"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
@@ -73,7 +75,6 @@ func (r *MonthlyPaymentRepository) ListByPeriodLight(month, year int) ([]entitie
 	return payments, err
 }
 
-// ExistsForPeriod verifica se já existem registros de pagamento para o mês/ano
 func (r *MonthlyPaymentRepository) ExistsForPeriod(month, year int) (bool, error) {
 	var count int64
 	err := r.db.Model(&entities.MonthlyPayment{}).
@@ -88,6 +89,17 @@ func (r *MonthlyPaymentRepository) Create(p *entities.MonthlyPayment) error {
 
 func (r *MonthlyPaymentRepository) CreateMany(payments []entities.MonthlyPayment) error {
 	return r.db.CreateInBatches(payments, 100).Error
+}
+
+func (r *MonthlyPaymentRepository) UpdateStatus(id uuid.UUID, status types.PaymentStatus, paidAt *time.Time) error {
+	updates := map[string]interface{}{
+		"payment_status": status,
+	}
+	if paidAt != nil {
+		updates["paid_at"] = paidAt
+	}
+
+	return r.db.Model(&entities.MonthlyPayment{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func (r *MonthlyPaymentRepository) Update(p *entities.MonthlyPayment) error {

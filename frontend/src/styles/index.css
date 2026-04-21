@@ -13,6 +13,7 @@ body {
   background-color: var(--color-bg-body);
   color: var(--color-text-main);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 li {

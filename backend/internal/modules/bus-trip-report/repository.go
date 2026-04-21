@@ -29,12 +29,6 @@ func (repo *BusTripReportRepository) FindByID(id uuid.UUID) (*entities.BusTripRe
 	return &busTripReport, err
 }
 
-func (repo *BusTripReportRepository) FindByUserID(userID uuid.UUID) ([]entities.BusTripReport, error) {
-	var busTripReports []entities.BusTripReport
-	err := repo.db.Where("user_id = ?", userID).Find(&busTripReports).Error
-	return busTripReports, err
-}
-
 func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
 	var busTripReports []entities.BusTripReport
 	err := repo.db.Where("DATE(date) = ?", date).Find(&busTripReports).Error
@@ -55,7 +49,7 @@ func (repo *BusTripReportRepository) FindByNextDate(date time.Time) ([]entities.
 
 func (repo *BusTripReportRepository) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
 	var busTripReport []entities.BusTripReport
-	err := repo.db.Where("user_id = ? AND date = ?", userID, date).Find(&busTripReport).Error
+	err := repo.db.Where("user_id = ? AND DATE(date) = DATE(?)", userID, date.Format("2006-01-02")).Find(&busTripReport).Error
 	return busTripReport, err
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useMessage } from "../../../../contexts";
-import { useUpdateBusTrip } from "../../../../hooks";
+import { useUpdateBusTripStatus } from "../../../../hooks";
 import type { BusTrip, Status } from "../../../../types";
 
 import styles from "./styles.module.css";
@@ -15,7 +15,7 @@ export function TripStatusControl({
   trip,
   onStatusUpdated,
 }: TripStatusControlProps) {
-  const { updateBusTrip } = useUpdateBusTrip();
+  const { updateBusTripStatus } = useUpdateBusTripStatus();
   const { showMessage } = useMessage();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,14 +30,9 @@ export function TripStatusControl({
 
     setIsLoading(true);
     try {
-      const updated = await updateBusTrip({
+      const updated = await updateBusTripStatus({
         id: trip.id,
-        busTrip: {
-          date: null,
-          period: null,
-          direction: null,
-          status: newStatus,
-        },
+        status: newStatus,
       });
 
       showMessage("Status atualizado com sucesso", "success");

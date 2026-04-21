@@ -105,6 +105,16 @@ export function SelectedUserCard({
 
   const handleUpdate = async () => {
     try {
+      const dateParts = birth.split("-");
+      const adjustedDate = new Date(
+        Number(dateParts[0]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[2]),
+        12,
+        0,
+        0,
+      );
+
       const updatedUser = await updateUserById({
         id: selectedUser.id,
         user: {
@@ -115,13 +125,15 @@ export function SelectedUserCard({
           phone,
           address,
           cep,
-          birth: new Date(birth),
+          birth: adjustedDate,
           has_financial_aid,
         },
       });
+
       setSelectedUser(updatedUser);
 
-      handleFieldChange("editMode", false);
+      dispatch({ type: "fillUser", payload: updatedUser });
+
       showMessage("Usuário atualizado com sucesso", "success");
     } catch {
       handleFieldChange("error", "Erro ao atualizar usuário.");
@@ -234,7 +246,7 @@ export function SelectedUserCard({
               label="Data de Nascimento"
               name="birth"
               type="date"
-              value={birth.split("/").reverse().join("-")}
+              value={birth}
               editMode={editMode}
               onChange={(val) => handleFieldChange("birth", val)}
             />

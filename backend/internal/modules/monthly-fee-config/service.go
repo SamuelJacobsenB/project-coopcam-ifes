@@ -30,56 +30,68 @@ func (s *MonthlyFeeConfigService) FindByYear(year int) ([]entities.MonthlyFeeCon
 }
 
 func (s *MonthlyFeeConfigService) CreateConfigAndDrafts(config *entities.MonthlyFeeConfig) error {
-	existing, err := s.repo.FindByMonthYear(config.Month, config.Year)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
-	}
-	if existing != nil && existing.ID != uuid.Nil {
-		return errors.New("já existe uma configuração para este mês e ano")
-	}
-
-	paymentsExist, _ := s.monthlyPaymentRepo.ExistsForPeriod(config.Month, config.Year)
-	if paymentsExist {
-		return errors.New("já existem pagamentos gerados para este período")
-	}
-
 	return s.repo.db.Transaction(func(tx *gorm.DB) error {
+		var count int64
+		if err := tx.Model(&entities.MonthlyFeeConfig{}).
+			Where("month = ? AND year = ?", config.Month, config.Year).
+			Count(&count).Error; err != nil {
+			return err
+		}
+		if count > 0 {
+			return errors.New("já existe uma configuração para este mês e ano")
+		}
+
+		var paymentCount int64
+		if err := tx.Model(&entities.MonthlyPayment{}).
+			Where("month = ? AND year = ?", config.Month, config.Year).
+			Count(&paymentCount).Error; err != nil {
+			return err
+		}
+		if paymentCount > 0 {
+			return errors.New("já existem pagamentos gerados para este período")
+		}
+
+		// Criar a Configuração
 		if err := tx.Create(config).Error; err != nil {
 			return err
 		}
 
-		users, err := s.userRepo.FindAll()
-		if err != nil {
-			return err
-		}
-
-		var payments []entities.MonthlyPayment
-		for _, user := range users {
-			amount := config.BaseAmount
-			if user.HasFinancialAid {
-				amount = config.FinancialAidAmount
-			}
-
-			payments = append(payments, entities.MonthlyPayment{
-				ID:        uuid.New(),
-				UserID:    user.ID,
-				UserName:  user.Name,
-				Month:     config.Month,
-				Year:      config.Year,
-				AmountDue: amount,
-				DueDate:   config.DueDate,
-				// "Pending" deve ser usado apenas após enviar ao Gateway.
-				PaymentStatus: types.PaymentDraft,
-			})
-		}
-
-		if len(payments) > 0 {
-			if err := tx.CreateInBatches(payments, 100).Error; err != nil {
+		// Processamento em Lotes (FindInBatches)
+		const batchSize = 100
+		err := tx.Model(&entities.User{}).FindInBatches(&[]entities.User{}, batchSize, func(txBatch *gorm.DB, batch int) error {
+			var users []entities.User
+			if err := txBatch.Find(&users).Error; err != nil {
 				return err
 			}
-		}
 
-		return nil
+			payments := make([]entities.MonthlyPayment, 0, len(users))
+			for _, u := range users {
+				amount := config.BaseAmount
+				if u.HasFinancialAid {
+					amount = config.FinancialAidAmount
+				}
+
+				payments = append(payments, entities.MonthlyPayment{
+					ID:            uuid.New(),
+					UserID:        u.ID,
+					UserName:      u.Name,
+					Month:         config.Month,
+					Year:          config.Year,
+					AmountDue:     amount,
+					DueDate:       config.DueDate,
+					PaymentStatus: types.PaymentDraft,
+				})
+			}
+
+			if len(payments) > 0 {
+				if err := tx.Create(&payments).Error; err != nil {
+					return err
+				}
+			}
+			return nil
+		}).Error
+
+		return err
 	})
 }
 

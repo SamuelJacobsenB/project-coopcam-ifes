@@ -8,6 +8,7 @@ import (
 	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type BusReservationService struct {
@@ -28,10 +29,6 @@ func (service *BusReservationService) FindByDate(date time.Time) ([]entities.Bus
 	return service.repo.FindByDate(date)
 }
 
-func (service *BusReservationService) FindByUserID(userID uuid.UUID) ([]entities.BusReservation, error) {
-	return service.repo.FindByUserID(userID)
-}
-
 func (service *BusReservationService) FindByID(id uuid.UUID) (*entities.BusReservation, error) {
 	return service.repo.FindByID(id)
 }
@@ -50,11 +47,11 @@ func (service *BusReservationService) Create(busReservation *entities.BusReserva
 	}
 
 	busReservationExists, err := service.repo.FindByUserIDAndDateAndPeriodAndDirection(busReservation.UserID, busReservation.Date, busReservation.Period, busReservation.Direction)
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
-	if busReservationExists != nil {
-		return errors.New("bus reservation already exists")
+	if busReservationExists != nil && busReservationExists.ID != uuid.Nil {
+		return errors.New("uma reserva já existe para este período")
 	}
 
 	busTripExists, err := service.busTripRepo.FindByDateAndPeriodAndDirection(busReservation.Date, busReservation.Period, busReservation.Direction)
@@ -70,23 +67,6 @@ func (service *BusReservationService) Create(busReservation *entities.BusReserva
 	return service.repo.Create(busReservation)
 }
 
-func (service *BusReservationService) Update(busReservation *entities.BusReservation) error {
-	busRes, err := service.repo.FindByID(busReservation.ID)
-	if err != nil {
-		return err
-	}
-
-	if busReservation.Date.IsZero() || busReservation.Date.Equal(busRes.Date) {
-		busReservation.Date = busRes.Date
-	}
-
-	if busReservation.Period == "" || busReservation.Period == busRes.Period {
-		busRes.Period = busReservation.Period
-	}
-
-	return service.repo.Update(busReservation)
-}
-
-func (service *BusReservationService) Delete(id uuid.UUID) error {
-	return service.repo.Delete(id)
+func (service *BusReservationService) Delete(id uuid.UUID, userID uuid.UUID) error {
+	return service.repo.Delete(id, userID)
 }

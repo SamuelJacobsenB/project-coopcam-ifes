@@ -7,13 +7,11 @@ import (
 )
 
 func SetupBusTripRoutes(rg *gin.RouterGroup, handler *bus_trip.BusTripHandler) {
-	rg.GET("/", middlewares.AuthMiddlewareUser(), handler.FindAll)
-	rg.GET("/date/:date/", middlewares.AuthMiddlewareUser(), handler.FindByDate)
-	rg.GET("/next-date/:date/", middlewares.AuthMiddlewareUser(), handler.FindByNextDate)
-	rg.GET("/:id/", middlewares.AuthMiddlewareUser(), handler.FindByID)
-	rg.POST("/", middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.PUT("/:id/", middlewares.AuthMiddlewareManager(), handler.Update)
-	rg.DELETE("/:id/", middlewares.AuthMiddlewareManager(), handler.Delete)
-
-	rg.POST("/dev/", handler.Create)
+	rg.GET("/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindAll)
+	rg.GET("/date/:date/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByDate)
+	rg.GET("/next-date/:date/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByNextDate)
+	rg.GET("/:id/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByID)
+	rg.POST("/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareManager(), handler.Create)
+	rg.PUT("/:id/status/:status/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareManager(), handler.UpdateStatus)
+	rg.DELETE("/:id/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareManager(), handler.Delete)
 }

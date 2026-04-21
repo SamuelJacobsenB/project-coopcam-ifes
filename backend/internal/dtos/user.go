@@ -230,7 +230,6 @@ func ToUserResponseDTO(entity *entities.User) *UserResponseDTO {
 		Address:         entity.Address,
 		CEP:             entity.CEP,
 		Birth:           entity.Birth.Format("02/01/2006"),
-		AvatarURL:       entity.AvatarURL,
 		HasFinancialAid: entity.HasFinancialAid,
 		CreatedAt:       entity.CreatedAt,
 		UpdatedAt:       entity.UpdatedAt,

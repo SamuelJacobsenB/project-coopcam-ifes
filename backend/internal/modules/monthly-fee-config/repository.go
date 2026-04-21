@@ -42,5 +42,5 @@ func (repo *MonthlyFeeConfigRepository) Update(config *entities.MonthlyFeeConfig
 }
 
 func (repo *MonthlyFeeConfigRepository) Delete(id uuid.UUID) error {
-	return repo.db.Delete(&entities.MonthlyFeeConfig{}, "id = ?", id).Error
+	return repo.db.Where("id = ?", id).Delete(&entities.MonthlyFeeConfig{}).Error
 }

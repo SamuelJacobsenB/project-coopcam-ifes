@@ -5,6 +5,7 @@ import (
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-reservation"
+	bus_trip "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-trip"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
 )
@@ -13,10 +14,11 @@ type BusTripReportService struct {
 	repo            *BusTripReportRepository
 	reservationRepo *bus_reservation.BusReservationRepository
 	userRepo        *user.UserRepository
+	busTripRepo     *bus_trip.BusTripRepository
 }
 
-func NewBusTripReportService(repo *BusTripReportRepository, reservationRepo *bus_reservation.BusReservationRepository, userRepo *user.UserRepository) *BusTripReportService {
-	return &BusTripReportService{repo, reservationRepo, userRepo}
+func NewBusTripReportService(repo *BusTripReportRepository, reservationRepo *bus_reservation.BusReservationRepository, userRepo *user.UserRepository, busTripRepo *bus_trip.BusTripRepository) *BusTripReportService {
+	return &BusTripReportService{repo, reservationRepo, userRepo, busTripRepo}
 }
 
 func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error) {
@@ -25,10 +27,6 @@ func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error)
 
 func (service *BusTripReportService) FindByID(id uuid.UUID) (*entities.BusTripReport, error) {
 	return service.repo.FindByID(id)
-}
-
-func (service *BusTripReportService) FindByUserID(userID uuid.UUID) ([]entities.BusTripReport, error) {
-	return service.repo.FindByUserID(userID)
 }
 
 func (service *BusTripReportService) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
@@ -56,7 +54,7 @@ func (service *BusTripReportService) CreateMany(busTripID uuid.UUID, userIDs []u
 		return nil
 	}
 
-	busTrip, err := service.repo.FindByID(busTripID)
+	busTrip, err := service.busTripRepo.FindByID(busTripID)
 	if err != nil {
 		return err
 	}

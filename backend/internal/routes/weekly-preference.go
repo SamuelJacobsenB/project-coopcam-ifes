@@ -7,8 +7,8 @@ import (
 )
 
 func SetupWeeklyPreferenceRoutes(rg *gin.RouterGroup, handler *weekly_preference.WeeklyPreferenceHandler) {
-	rg.GET("/user/:id/", middlewares.AuthMiddlewareUser(), handler.FindByUserID)
-	rg.POST("/", middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.PUT("/:id/", middlewares.AuthMiddlewareManager(), handler.Update)
-	rg.DELETE("/:id/", middlewares.AuthMiddlewareManager(), handler.Delete)
+	rg.GET("/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByUserID)
+	rg.POST("/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareManager(), handler.Create)
+	rg.PUT("/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareManager(), handler.Update)
+	rg.DELETE("/:id/", middlewares.RateLimiter(3), middlewares.AuthMiddlewareManager(), handler.Delete)
 }

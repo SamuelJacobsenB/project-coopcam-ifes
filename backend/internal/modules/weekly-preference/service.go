@@ -6,6 +6,7 @@ import (
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type WeeklyPreferenceService struct {
@@ -28,19 +29,17 @@ func (service *WeeklyPreferenceService) FindByUserID(userID uuid.UUID) (*entitie
 
 func (service *WeeklyPreferenceService) Create(weeklyPreference *entities.WeeklyPreference) error {
 	userExists, err := service.userRepo.FindByID(weeklyPreference.UserID)
-	if err != nil {
-		return err
-	}
-	if userExists == nil {
-		return errors.New("user not found")
+	if err != nil || userExists == nil {
+		return errors.New("usuário não encontrado")
 	}
 
-	weeklyPreferenceExists, err := service.repo.FindByUserID(weeklyPreference.UserID)
-	if err != nil {
-		return err
+	existing, err := service.repo.FindByUserID(weeklyPreference.UserID)
+	if err == nil && existing != nil {
+		return errors.New("preferência semanal já cadastrada para este usuário")
 	}
-	if weeklyPreferenceExists != nil {
-		return errors.New("weekly preference already exists")
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
 	}
 
 	return service.repo.Create(weeklyPreference)
@@ -53,4 +52,3 @@ func (service *WeeklyPreferenceService) Update(weeklyPreference *entities.Weekly
 func (service *WeeklyPreferenceService) Delete(id uuid.UUID) error {
 	return service.repo.Delete(id)
 }
-

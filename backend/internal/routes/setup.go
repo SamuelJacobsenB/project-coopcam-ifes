@@ -5,12 +5,40 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 )
 
 func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 	router := gin.Default()
+
+	isDev := os.Getenv("ENV") == "development"
+
+	secureMiddleware := secure.New(secure.Options{
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: "default-src 'self'",
+
+		ReferrerPolicy: os.Getenv("SECURE_REFERRER_POLICY"),
+
+		IsDevelopment:        isDev,
+		SSLRedirect:          !isDev,
+		STSSeconds:           31536000, // 1 ano
+		STSIncludeSubdomains: true,
+		STSPreload:           true,
+	})
+
+	router.Use(func(c *gin.Context) {
+		err := secureMiddleware.Process(c.Writer, c.Request)
+		if err != nil {
+			c.Abort()
+			return
+		}
+		c.Next()
+	})
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{os.Getenv("FRONTEND_URL"), os.Getenv("MOBILE_URL")},
@@ -20,6 +48,8 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	router.Use(middlewares.RateLimiter(100))
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
