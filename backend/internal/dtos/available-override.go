@@ -32,37 +32,6 @@ func (dto *AvailableOverrideRequestDTO) ToEntity() *entities.AvailableOverride {
 	}
 }
 
-type AvailableOverrideUpdateDTO struct {
-	Date   *time.Time `json:"date,omitempty"`
-	Reason *string    `json:"reason,omitempty"`
-}
-
-func (dto *AvailableOverrideUpdateDTO) Validate() error {
-	if dto.Date != nil && dto.Date.IsZero() {
-		return errors.New("data deve ser válida")
-	}
-
-	if dto.Reason != nil && *dto.Reason == "" {
-		return errors.New("motivo deve ser válido")
-	}
-
-	return nil
-}
-
-func (dto *AvailableOverrideUpdateDTO) ToEntity() *entities.AvailableOverride {
-	availableOverride := entities.AvailableOverride{}
-
-	if dto.Date != nil {
-		availableOverride.Date = *dto.Date
-	}
-
-	if dto.Reason != nil {
-		availableOverride.Reason = *dto.Reason
-	}
-
-	return &availableOverride
-}
-
 type AvailableOverrideResponseDTO struct {
 	ID uuid.UUID `json:"id"`
 
@@ -84,4 +53,3 @@ func ToAvailableOverrideResponseDTO(entity *entities.AvailableOverride) *Availab
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
-

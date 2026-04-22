@@ -17,24 +17,12 @@ func NewBusTripService(repo *BusTripRepository) *BusTripService {
 	return &BusTripService{repo}
 }
 
-func (service *BusTripService) FindAll() ([]entities.BusTrip, error) {
-	return service.repo.FindAll()
-}
-
 func (service *BusTripService) FindByDate(date time.Time) ([]entities.BusTrip, error) {
 	return service.repo.FindByDate(date)
 }
 
-func (service *BusTripService) FindByNextDate(date time.Time) ([]entities.BusTrip, error) {
-	return service.repo.FindByNextDate(date)
-}
-
 func (service *BusTripService) FindByID(id uuid.UUID) (*entities.BusTrip, error) {
 	return service.repo.FindByID(id)
-}
-
-func (service *BusTripService) Create(busTrip *entities.BusTrip) error {
-	return service.repo.Create(busTrip)
 }
 
 func (service *BusTripService) UpdateStatus(id uuid.UUID, status types.Status) error {
@@ -96,8 +84,4 @@ func (service *BusTripService) UpdateStatus(id uuid.UUID, status types.Status) e
 		}
 		return nil
 	})
-}
-
-func (service *BusTripService) Delete(id uuid.UUID) error {
-	return service.repo.Delete(id)
 }

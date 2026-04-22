@@ -16,22 +16,6 @@ func NewBusReservationHandler(service *BusReservationService) *BusReservationHan
 	return &BusReservationHandler{service}
 }
 
-func (handler *BusReservationHandler) FindAll(ctx *gin.Context) {
-	busReservations, err := handler.service.FindAll()
-
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar reservas"})
-		return
-	}
-
-	busReservationsResponse := make([]dtos.BusReservationResponseDTO, len(busReservations))
-	for i, busReservation := range busReservations {
-		busReservationsResponse[i] = *dtos.ToBusReservationResponseDTO(&busReservation)
-	}
-
-	ctx.JSON(200, busReservationsResponse)
-}
-
 func (handler *BusReservationHandler) FindByDate(ctx *gin.Context) {
 	date, err := time.Parse("02-01-2006", ctx.Param("date"))
 	if err != nil {
@@ -51,22 +35,6 @@ func (handler *BusReservationHandler) FindByDate(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, busReservationsResponse)
-}
-
-func (handler *BusReservationHandler) FindByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	busReservation, err := handler.service.FindByID(id)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar reserva"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToBusReservationResponseDTO(busReservation))
 }
 
 func (handler *BusReservationHandler) FindByTripID(ctx *gin.Context) {

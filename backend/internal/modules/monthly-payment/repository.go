@@ -32,16 +32,6 @@ func (r *MonthlyPaymentRepository) FindByUserID(userID uuid.UUID) ([]entities.Mo
 	return payments, err
 }
 
-func (r *MonthlyPaymentRepository) FindByPeriod(userID uuid.UUID, month, year int) (*entities.MonthlyPayment, error) {
-	var p entities.MonthlyPayment
-	err := r.db.Where("user_id = ? AND month = ? AND year = ?", userID, month, year).First(&p).Error
-	if err != nil {
-		return nil, err
-	}
-	return &p, nil
-}
-
-// FindByExternalID busca pelo external_id (usado no webhook)
 func (r *MonthlyPaymentRepository) FindByExternalID(extID string) (*entities.MonthlyPayment, error) {
 	var p entities.MonthlyPayment
 	err := r.db.Preload("User").First(&p, "external_id = ?", extID).Error
@@ -60,35 +50,11 @@ func (r *MonthlyPaymentRepository) FindDraftsByPeriod(month, year int) ([]entiti
 	return payments, err
 }
 
-func (r *MonthlyPaymentRepository) ListByPeriod(month, year int) ([]entities.MonthlyPayment, error) {
-	var payments []entities.MonthlyPayment
-	err := r.db.Preload("User").
-		Where("month = ? AND year = ?", month, year).
-		Find(&payments).Error
-	return payments, err
-}
-
 func (r *MonthlyPaymentRepository) ListByPeriodLight(month, year int) ([]entities.MonthlyPayment, error) {
 	var payments []entities.MonthlyPayment
 	err := r.db.Where("month = ? AND year = ?", month, year).
 		Find(&payments).Error
 	return payments, err
-}
-
-func (r *MonthlyPaymentRepository) ExistsForPeriod(month, year int) (bool, error) {
-	var count int64
-	err := r.db.Model(&entities.MonthlyPayment{}).
-		Where("month = ? AND year = ?", month, year).
-		Count(&count).Error
-	return count > 0, err
-}
-
-func (r *MonthlyPaymentRepository) Create(p *entities.MonthlyPayment) error {
-	return r.db.Create(p).Error
-}
-
-func (r *MonthlyPaymentRepository) CreateMany(payments []entities.MonthlyPayment) error {
-	return r.db.CreateInBatches(payments, 100).Error
 }
 
 func (r *MonthlyPaymentRepository) UpdateStatus(id uuid.UUID, status types.PaymentStatus, paidAt *time.Time) error {

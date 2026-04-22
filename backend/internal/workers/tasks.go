@@ -158,3 +158,45 @@ func CreateTripsAndWeeklyPreferences(db *gorm.DB) {
 		log.Printf("[Job Error] %v", err)
 	}
 }
+
+func DeleteOldInformation(db *gorm.DB) {
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		log.Printf("[Job Error] Erro ao carregar timezone: %v", err)
+		return
+	}
+
+	now := time.Now().In(loc)
+
+	if now.Month() != time.December || now.Day() != 31 {
+		return
+	}
+
+	err = db.Transaction(func(tx *gorm.DB) error {
+		limitDate := time.Date(now.Year(), time.December, 31, 0, 0, 0, 0, loc)
+
+		entitiesToDelete := []interface{}{
+			&entities.AvailableOverride{},
+			&entities.UnavailableDay{},
+			&entities.BusTripReport{},
+			&entities.BusReservation{},
+			&entities.BusTrip{},
+		}
+
+		for _, entity := range entitiesToDelete {
+			if err := tx.Unscoped().Where("date < ?", limitDate).Delete(entity).Error; err != nil {
+				return err
+			}
+		}
+
+		log.Println("[Job Success] Limpeza anual concluida com sucesso.")
+
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("[Job Error] Falha na transação de limpeza: %v", err)
+	} else {
+		log.Println("[Job Success] Limpeza anual concluída com sucesso.")
+	}
+}

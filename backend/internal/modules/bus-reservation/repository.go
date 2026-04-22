@@ -17,12 +17,6 @@ func NewBusReservationRepository(db *gorm.DB) *BusReservationRepository {
 	return &BusReservationRepository{db}
 }
 
-func (repo *BusReservationRepository) FindAll() ([]entities.BusReservation, error) {
-	var busReservations []entities.BusReservation
-	err := repo.db.Find(&busReservations).Error
-	return busReservations, err
-}
-
 func (repo *BusReservationRepository) FindByDate(date time.Time) ([]entities.BusReservation, error) {
 	var busReservations []entities.BusReservation
 	err := repo.db.Where("date = ?", date).Find(&busReservations).Error
@@ -50,10 +44,6 @@ func (repo *BusReservationRepository) FindByTripID(tripID uuid.UUID) ([]entities
 func (repo *BusReservationRepository) Create(busReservation *entities.BusReservation) error {
 	busReservation.ID = uuid.New()
 	return repo.db.Create(busReservation).Error
-}
-
-func (repo *BusReservationRepository) DeleteUntilNow() error {
-	return repo.db.Where("date < ?", time.Now()).Delete(&entities.BusReservation{}).Error
 }
 
 func (repo *BusReservationRepository) Delete(id uuid.UUID, userID uuid.UUID) error {

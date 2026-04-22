@@ -8,14 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
-// MonthlyPaymentResponseDTO é usado para retornar dados ao frontend.
 type MonthlyPaymentResponseDTO struct {
 	ID            uuid.UUID           `json:"id"`
 	UserID        uuid.UUID           `json:"user_id"`
 	UserName      string              `json:"user_name"`
 	Month         int                 `json:"month"`
 	Year          int                 `json:"year"`
-	Amount        float64             `json:"amount"` // em reais
+	Amount        float64             `json:"amount"`
 	PaymentStatus types.PaymentStatus `json:"payment_status"`
 	DueDate       time.Time           `json:"due_date"`
 	PaymentURL    *string             `json:"payment_url,omitempty"`
@@ -45,25 +44,4 @@ func ToMonthlyPaymentListResponse(payments []entities.MonthlyPayment) []MonthlyP
 		list[i] = ToMonthlyPaymentResponse(p)
 	}
 	return list
-}
-
-// MonthlyPaymentRequestDTO para criação manual (se necessário)
-type MonthlyPaymentRequestDTO struct {
-	UserID  uuid.UUID `json:"user_id" binding:"required"`
-	Month   int       `json:"month" binding:"required,min=1,max=12"`
-	Year    int       `json:"year" binding:"required"`
-	Amount  float64   `json:"amount" binding:"required,gt=0"` // em reais
-	DueDate time.Time `json:"due_date" binding:"required"`
-}
-
-func (dto *MonthlyPaymentRequestDTO) ToEntity() *entities.MonthlyPayment {
-	return &entities.MonthlyPayment{
-		ID:            uuid.New(),
-		UserID:        dto.UserID,
-		Month:         dto.Month,
-		Year:          dto.Year,
-		AmountDue:     int64(dto.Amount * 100), // converte para centavos
-		PaymentStatus: types.PaymentDraft,
-		DueDate:       dto.DueDate,
-	}
 }

@@ -27,6 +27,13 @@ func main() {
 		panic(err)
 	}
 
+	err = scheduler.RegisterTask("0 1 31 12 *", func() {
+		workers.DeleteOldInformation(db.DB)
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	scheduler.Start()
 
 	router := routes.SetupRoutes(handlers)

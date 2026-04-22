@@ -16,22 +16,6 @@ func NewMonthlyFeeConfigHandler(service *MonthlyFeeConfigService) *MonthlyFeeCon
 	return &MonthlyFeeConfigHandler{service}
 }
 
-func (h *MonthlyFeeConfigHandler) FindByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	config, err := h.service.FindByID(id)
-	if err != nil {
-		ctx.JSON(404, gin.H{"error": "configuração não encontrada"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToMonthlyFeeConfigResponseDTO(config))
-}
-
 func (h *MonthlyFeeConfigHandler) FindByYear(ctx *gin.Context) {
 	yearStr := ctx.Param("year")
 	year, err := strconv.Atoi(yearStr)
@@ -83,11 +67,6 @@ func (h *MonthlyFeeConfigHandler) Delete(ctx *gin.Context) {
 	}
 
 	if err := h.service.DeleteConfigAndDrafts(id); err != nil {
-		// Se o erro for de "irreversível", retorna 409 Conflict. Se for outro, 500.
-		if err.Error() == "irreversível: não é possível deletar a configuração pois já existem cobranças emitidas no gateway para este mês" {
-			ctx.JSON(409, gin.H{"error": err.Error()})
-			return
-		}
 		ctx.JSON(500, gin.H{"error": "erro ao deletar configuração"})
 		return
 	}

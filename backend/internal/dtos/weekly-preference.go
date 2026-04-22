@@ -1,48 +1,11 @@
 package dtos
 
 import (
-	"errors"
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/google/uuid"
 )
-
-type WeeklyPreferenceRequestDTO struct {
-	WeekStart time.Time `json:"week_start"`
-}
-
-func (dto *WeeklyPreferenceRequestDTO) Validate() error {
-	if dto.WeekStart.IsZero() {
-		return errors.New("data da semana é obrigatória")
-	}
-
-	return nil
-}
-
-func (dto *WeeklyPreferenceRequestDTO) ToEntity() *entities.WeeklyPreference {
-	return &entities.WeeklyPreference{
-		WeekStart: dto.WeekStart,
-	}
-}
-
-type WeeklyPreferenceUpdateDTO struct {
-	WeekStart time.Time `json:"week_start"`
-}
-
-func (dto *WeeklyPreferenceUpdateDTO) Validate() error {
-	if dto.WeekStart.IsZero() {
-		return errors.New("data da semana é obrigatória")
-	}
-
-	return nil
-}
-
-func (dto *WeeklyPreferenceUpdateDTO) ToEntity() *entities.WeeklyPreference {
-	return &entities.WeeklyPreference{
-		WeekStart: dto.WeekStart,
-	}
-}
 
 type WeeklyPreferenceResponseDTO struct {
 	ID     uuid.UUID `json:"id"`
@@ -73,4 +36,3 @@ func ToWeeklyPreferenceResponseDTO(entity *entities.WeeklyPreference) *WeeklyPre
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
-

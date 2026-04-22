@@ -17,18 +17,6 @@ func NewBusTripReportRepository(db *gorm.DB) *BusTripReportRepository {
 	return &BusTripReportRepository{db}
 }
 
-func (repo *BusTripReportRepository) FindAll() ([]entities.BusTripReport, error) {
-	var busTripReports []entities.BusTripReport
-	err := repo.db.Find(&busTripReports).Error
-	return busTripReports, err
-}
-
-func (repo *BusTripReportRepository) FindByID(id uuid.UUID) (*entities.BusTripReport, error) {
-	var busTripReport entities.BusTripReport
-	err := repo.db.First(&busTripReport, id).Error
-	return &busTripReport, err
-}
-
 func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
 	var busTripReports []entities.BusTripReport
 	err := repo.db.Where("DATE(date) = ?", date).Find(&busTripReports).Error
@@ -38,18 +26,6 @@ func (repo *BusTripReportRepository) FindByDate(date time.Time) ([]entities.BusT
 func (repo *BusTripReportRepository) FindByUserIDAndDateAndPeriod(userID uuid.UUID, date time.Time, period types.Period) ([]entities.BusTripReport, error) {
 	var busTripReport []entities.BusTripReport
 	err := repo.db.Where("user_id = ? AND date = ? AND period = ?", userID, date, period).First(&busTripReport).Error
-	return busTripReport, err
-}
-
-func (repo *BusTripReportRepository) FindByNextDate(date time.Time) ([]entities.BusTripReport, error) {
-	var busTripReport []entities.BusTripReport
-	err := repo.db.Where("date >= ?", date).Find(&busTripReport).Error
-	return busTripReport, err
-}
-
-func (repo *BusTripReportRepository) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
-	var busTripReport []entities.BusTripReport
-	err := repo.db.Where("user_id = ? AND DATE(date) = DATE(?)", userID, date.Format("2006-01-02")).Find(&busTripReport).Error
 	return busTripReport, err
 }
 
@@ -79,12 +55,4 @@ func (repo *BusTripReportRepository) FindByUserAndMonth(userID uuid.UUID, month 
 func (repo *BusTripReportRepository) Create(busTripReport *entities.BusTripReport) error {
 	busTripReport.ID = uuid.New()
 	return repo.db.Create(busTripReport).Error
-}
-
-func (repo *BusTripReportRepository) Update(busTripReport *entities.BusTripReport) error {
-	return repo.db.Model(&entities.BusTripReport{}).Where("id = ? AND user_id = ?", busTripReport.ID, busTripReport.UserID).Updates(busTripReport).Error
-}
-
-func (repo *BusTripReportRepository) Delete(id uuid.UUID) error {
-	return repo.db.Delete(&entities.BusTripReport{}, id).Error
 }

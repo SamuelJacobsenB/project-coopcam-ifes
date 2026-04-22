@@ -21,10 +21,6 @@ func NewMonthlyFeeConfigService(repo *MonthlyFeeConfigRepository, userRepo *user
 	return &MonthlyFeeConfigService{repo: repo, userRepo: userRepo, monthlyPaymentRepo: monthlyPaymentRepo}
 }
 
-func (s *MonthlyFeeConfigService) FindByID(id uuid.UUID) (*entities.MonthlyFeeConfig, error) {
-	return s.repo.FindByID(id)
-}
-
 func (s *MonthlyFeeConfigService) FindByYear(year int) ([]entities.MonthlyFeeConfig, error) {
 	return s.repo.FindByYear(year)
 }

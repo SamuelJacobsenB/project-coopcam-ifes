@@ -32,37 +32,6 @@ func (dto *UnavailableDayRequestDTO) ToEntity() *entities.UnavailableDay {
 	}
 }
 
-type UnavailableDayUpdateDTO struct {
-	Date   *time.Time `json:"date,omitempty"`
-	Reason *string    `json:"reason,omitempty"`
-}
-
-func (dto *UnavailableDayUpdateDTO) Validate() error {
-	if dto.Date != nil && dto.Date.IsZero() {
-		return errors.New("data deve ser válida")
-	}
-
-	if dto.Reason != nil && *dto.Reason == "" {
-		return errors.New("motivo deve ser válido")
-	}
-
-	return nil
-}
-
-func (dto *UnavailableDayUpdateDTO) ToEntity() *entities.UnavailableDay {
-	availableOverride := entities.UnavailableDay{}
-
-	if dto.Date != nil {
-		availableOverride.Date = *dto.Date
-	}
-
-	if dto.Reason != nil {
-		availableOverride.Reason = *dto.Reason
-	}
-
-	return &availableOverride
-}
-
 type UnavailableDayResponseDTO struct {
 	ID uuid.UUID `json:"id"`
 
@@ -84,4 +53,3 @@ func ToUnavailableDayResponseDTO(entity *entities.UnavailableDay) *UnavailableDa
 		UpdatedAt: entity.UpdatedAt,
 	}
 }
-

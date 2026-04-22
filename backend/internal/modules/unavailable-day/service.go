@@ -20,10 +20,6 @@ func (service *UnavailableDayService) FindAll() ([]entities.UnavailableDay, erro
 	return service.repo.FindAll()
 }
 
-func (service *UnavailableDayService) FindByID(id uuid.UUID) (*entities.UnavailableDay, error) {
-	return service.repo.FindByID(id)
-}
-
 func (service *UnavailableDayService) Create(unavailableDay *entities.UnavailableDay) error {
 	normalizedDate := time.Date(unavailableDay.Date.Year(), unavailableDay.Date.Month(), unavailableDay.Date.Day(), 0, 0, 0, 0, time.Local)
 	unavailableDay.Date = normalizedDate
@@ -37,14 +33,6 @@ func (service *UnavailableDayService) Create(unavailableDay *entities.Unavailabl
 	}
 
 	return service.repo.Create(unavailableDay)
-}
-
-func (service *UnavailableDayService) Update(unavailableDay *entities.UnavailableDay) error {
-	return service.repo.Update(unavailableDay)
-}
-
-func (service *UnavailableDayService) DeleteUntilNow() error {
-	return service.repo.DeleteUntilNow()
 }
 
 func (service *UnavailableDayService) Delete(id uuid.UUID) error {

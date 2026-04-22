@@ -19,16 +19,3 @@ func (repo *WeeklyPreferenceRepository) FindByUserID(userID uuid.UUID) (*entitie
 	err := repo.db.Where("user_id = ?", userID).Preload("Overrides").First(&weeklyPreference).Error
 	return &weeklyPreference, err
 }
-
-func (repo *WeeklyPreferenceRepository) Create(weeklyPreference *entities.WeeklyPreference) error {
-	weeklyPreference.ID = uuid.New()
-	return repo.db.Create(weeklyPreference).Error
-}
-
-func (repo *WeeklyPreferenceRepository) Update(weeklyPreference *entities.WeeklyPreference) error {
-	return repo.db.Model(&entities.WeeklyPreference{}).Where("user_id = ?", weeklyPreference.UserID).Updates(weeklyPreference).Error
-}
-
-func (repo *WeeklyPreferenceRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&entities.WeeklyPreference{}).Error
-}

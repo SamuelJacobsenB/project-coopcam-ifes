@@ -29,22 +29,6 @@ func (handler *UnavailableDayHandler) FindAll(ctx *gin.Context) {
 	ctx.JSON(200, unavailableDaysResponse)
 }
 
-func (handler *UnavailableDayHandler) FindByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	unavailableDay, err := handler.service.FindByID(id)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar dia indisponível"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToUnavailableDayResponseDTO(unavailableDay))
-}
-
 func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
@@ -64,34 +48,6 @@ func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, dtos.ToUnavailableDayResponseDTO(unavailableDay))
-}
-
-func (handler *UnavailableDayHandler) Update(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	var unavailableDayRequest dtos.UnavailableDayRequestDTO
-	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": "dados inválidos"})
-		return
-	}
-
-	if err := unavailableDayRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	unavailableDay := unavailableDayRequest.ToEntity()
-	unavailableDay.ID = id
-	if err := handler.service.Update(unavailableDay); err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao atualizar dia indisponível"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToUnavailableDayResponseDTO(unavailableDay))
 }
 
 func (handler *UnavailableDayHandler) Delete(ctx *gin.Context) {

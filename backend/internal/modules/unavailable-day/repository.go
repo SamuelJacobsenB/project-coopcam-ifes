@@ -23,12 +23,6 @@ func (repo *UnavailableDayRepository) FindAll() ([]entities.UnavailableDay, erro
 	return unavailableDays, err
 }
 
-func (repo *UnavailableDayRepository) FindByID(id uuid.UUID) (*entities.UnavailableDay, error) {
-	var unavailableDay entities.UnavailableDay
-	err := repo.db.First(&unavailableDay, id).Error
-	return &unavailableDay, err
-}
-
 func (repo *UnavailableDayRepository) OtherEventExists(date time.Time) (bool, error) {
 	var unavailableDay entities.UnavailableDay
 	err1 := repo.db.Where("DATE(date) = DATE(?)", date.Format("2006-01-02")).First(&unavailableDay).Error
@@ -49,14 +43,6 @@ func (repo *UnavailableDayRepository) OtherEventExists(date time.Time) (bool, er
 func (repo *UnavailableDayRepository) Create(unavailableDay *entities.UnavailableDay) error {
 	unavailableDay.ID = uuid.New()
 	return repo.db.Create(unavailableDay).Error
-}
-
-func (repo *UnavailableDayRepository) Update(unavailableDay *entities.UnavailableDay) error {
-	return repo.db.Model(&entities.UnavailableDay{}).Where("id = ?", unavailableDay.ID).Updates(unavailableDay).Error
-}
-
-func (repo *UnavailableDayRepository) DeleteUntilNow() error {
-	return repo.db.Where("date < ?", time.Now()).Delete(&entities.UnavailableDay{}).Error
 }
 
 func (repo *UnavailableDayRepository) Delete(id uuid.UUID) error {

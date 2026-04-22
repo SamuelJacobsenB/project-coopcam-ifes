@@ -54,12 +54,8 @@ func (repo *UserRepository) Create(user *entities.User) error {
 func (repo *UserRepository) Update(user *entities.User) error {
 	return repo.db.Model(&entities.User{}).
 		Where("id = ?", user.ID).
-		Select("Name", "Email", "Phone", "Address", "CPF","CEP", "Birth", "HasFinancialAid", "Password").
+		Select("Name", "Email", "Phone", "Address", "CPF", "CEP", "Birth", "HasFinancialAid", "Password").
 		Updates(user).Error
-}
-
-func (repo *UserRepository) UpdateAvatarURL(avatarURL string, id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("avatar_url", avatarURL).Error
 }
 
 func (repo *UserRepository) PromoteToCoordinator(id uuid.UUID) error {
@@ -79,5 +75,27 @@ func (repo *UserRepository) DemoteFromAdmin(id uuid.UUID) error {
 }
 
 func (repo *UserRepository) Delete(id uuid.UUID) error {
-	return repo.db.Where("id = ?", id).Delete(&entities.User{}).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("user_id = ?", id).Delete(&entities.BusTripReport{}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("user_id = ?", id).Delete(&entities.BusReservation{}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("user_id = ?", id).Delete(&entities.Template{}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("user_id = ?", id).Delete(&entities.MonthlyPayment{}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("user_id = ?", id).Delete(&entities.User{}).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }

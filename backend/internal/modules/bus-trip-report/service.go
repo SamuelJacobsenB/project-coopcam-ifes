@@ -21,28 +21,8 @@ func NewBusTripReportService(repo *BusTripReportRepository, reservationRepo *bus
 	return &BusTripReportService{repo, reservationRepo, userRepo, busTripRepo}
 }
 
-func (service *BusTripReportService) FindAll() ([]entities.BusTripReport, error) {
-	return service.repo.FindAll()
-}
-
-func (service *BusTripReportService) FindByID(id uuid.UUID) (*entities.BusTripReport, error) {
-	return service.repo.FindByID(id)
-}
-
 func (service *BusTripReportService) FindByDate(date time.Time) ([]entities.BusTripReport, error) {
 	return service.repo.FindByDate(date)
-}
-
-func (service *BusTripReportService) FindByNextDate(date time.Time) ([]entities.BusTripReport, error) {
-	return service.repo.FindByNextDate(date)
-}
-
-func (service *BusTripReportService) FindByUserIDAndDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
-	return service.repo.FindByUserIDAndDate(userID, date)
-}
-
-func (service *BusTripReportService) FindByUserIDNextDate(userID uuid.UUID, date time.Time) ([]entities.BusTripReport, error) {
-	return service.repo.FindByUserIDNextDate(userID, date)
 }
 
 func (service *BusTripReportService) FindByUserAndMonth(userID uuid.UUID, month int) ([]entities.BusTripReport, error) {
@@ -117,8 +97,4 @@ func (service *BusTripReportService) CreateMany(busTripID uuid.UUID, userIDs []u
 	}
 
 	return nil
-}
-
-func (service *BusTripReportService) Delete(id uuid.UUID) error {
-	return service.repo.Delete(id)
 }

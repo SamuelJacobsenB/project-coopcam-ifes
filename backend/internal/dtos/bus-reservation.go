@@ -47,44 +47,6 @@ func (dto *BusReservationRequestDTO) ToEntity() *entities.BusReservation {
 	}
 }
 
-type BusReservationUpdateDTO struct {
-	Date     *time.Time `json:"date,omitempty"`
-	Period   *string    `json:"period,omitempty"`
-	Attended *bool      `json:"attended,omitempty"`
-}
-
-func (dto *BusReservationUpdateDTO) Validate() error {
-	if dto.Date != nil && dto.Date.IsZero() {
-		return errors.New("data é obrigatória")
-	}
-
-	if dto.Period != nil {
-		if *dto.Period == "" {
-			return errors.New("período é obrigatório")
-		}
-
-		if err := types.ValidatePeriod(types.Period(*dto.Period)); err != nil {
-			return errors.New(err.Error())
-		}
-	}
-
-	return nil
-}
-
-func (dto *BusReservationUpdateDTO) ToEntity() *entities.BusReservation {
-	busReservation := entities.BusReservation{}
-
-	if dto.Date != nil {
-		busReservation.Date = *dto.Date
-	}
-
-	if dto.Period != nil {
-		busReservation.Period = types.Period(*dto.Period)
-	}
-
-	return &busReservation
-}
-
 type BusReservationResponseDTO struct {
 	ID                 uuid.UUID `json:"id"`
 	WeeklyPreferenceID uuid.UUID `json:"weekly_preference_id"`

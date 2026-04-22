@@ -1,30 +1,36 @@
-import { useRouter } from "expo-router";
-import React from "react";
+import React, { useCallback } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 
-import { DayCard, ReservationSection, Title } from "@/components";
+import { DayCard, LoadPage, ReservationSection, Title } from "@/components";
 import { weekDays } from "@/constants";
-import { useWeeklyPreferenceByUserId } from "@/hooks";
+import { useAllAvailableOverrides, useAllUnavailableDays, useWeeklyPreferenceByUserId } from "@/hooks";
 import { colors } from "@/styles";
 import { BusReservation, Direction, Period } from "@/types";
 import { filterReservations, getDateOfWeekDay, getWeekDay } from "@/utils";
+
+const isSameDay = (d1: Date, d2: Date) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
 
 const DayListItem = React.memo(
   ({
     day,
     index,
     overrides,
+    isAvailable,
     onPress,
   }: {
     day: string;
     index: number;
     overrides: BusReservation[];
+    isAvailable: boolean;
     onPress: (day: string, date: Date) => void;
   }) => {
     const currentDate = getDateOfWeekDay(index);
@@ -37,6 +43,8 @@ const DayListItem = React.memo(
         filterReservations(dayReservations, period, direction).length === 1
       );
     };
+
+    if (!isAvailable) return null;
 
     return (
       <DayCard
@@ -65,13 +73,24 @@ export default function HomePage() {
   const router = useRouter();
   const { weeklyPreference, isLoading, error } = useWeeklyPreferenceByUserId();
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, styles.centerContainer]}>
-        <ActivityIndicator color="black" />
-      </View>
-    );
-  }
+  const { availableOverrides } = useAllAvailableOverrides();
+  const { unavailableDays } = useAllUnavailableDays();
+
+  const checkIsAvailable = useCallback((date: Date) => {
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+    if (isWeekend) {
+      return availableOverrides?.some((override: any) =>
+        isSameDay(new Date(override.date), date)
+      ) ?? false;
+    } else {
+      return !(unavailableDays?.some((unav: any) =>
+        isSameDay(new Date(unav.date), date)
+      ) ?? false);
+    }
+  }, [availableOverrides, unavailableDays]);
+
+  if (isLoading) return <LoadPage />
 
   return (
     <View style={styles.container}>
@@ -90,14 +109,20 @@ export default function HomePage() {
           contentContainerStyle={styles.list}
           data={weekDays}
           keyExtractor={(day) => day}
-          renderItem={({ item: day, index }) => (
-            <DayListItem
-              day={day}
-              index={index}
-              overrides={weeklyPreference.overrides}
-              onPress={() => router.push(`/${index}`)}
-            />
-          )}
+          renderItem={({ item: day, index }) => {
+            const currentDate = getDateOfWeekDay(index);
+            const isAvailable = checkIsAvailable(currentDate);
+
+            return (
+              <DayListItem
+                day={day}
+                index={index}
+                overrides={weeklyPreference.overrides}
+                isAvailable={isAvailable}
+                onPress={() => router.push(`/${index}`)}
+              />
+            );
+          }}
         />
       )}
     </View>

@@ -26,19 +26,9 @@ func (repo *MonthlyFeeConfigRepository) FindByYear(year int) ([]entities.Monthly
 	return configs, err
 }
 
-func (repo *MonthlyFeeConfigRepository) FindByMonthYear(month, year int) (*entities.MonthlyFeeConfig, error) {
-	var config entities.MonthlyFeeConfig
-	err := repo.db.Where("month = ? AND year = ?", month, year).First(&config).Error
-	return &config, err
-}
-
 func (repo *MonthlyFeeConfigRepository) Create(config *entities.MonthlyFeeConfig) error {
 	config.ID = uuid.New()
 	return repo.db.Create(config).Error
-}
-
-func (repo *MonthlyFeeConfigRepository) Update(config *entities.MonthlyFeeConfig) error {
-	return repo.db.Model(&entities.MonthlyFeeConfig{}).Where("id = ?", config.ID).Updates(config).Error
 }
 
 func (repo *MonthlyFeeConfigRepository) Delete(id uuid.UUID) error {

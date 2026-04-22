@@ -22,16 +22,8 @@ func NewBusReservationService(repo *BusReservationRepository, userRepo *user.Use
 	return &BusReservationService{repo, userRepo, busTripRepo}
 }
 
-func (service *BusReservationService) FindAll() ([]entities.BusReservation, error) {
-	return service.repo.FindAll()
-}
-
 func (service *BusReservationService) FindByDate(date time.Time) ([]entities.BusReservation, error) {
 	return service.repo.FindByDate(date)
-}
-
-func (service *BusReservationService) FindByID(id uuid.UUID) (*entities.BusReservation, error) {
-	return service.repo.FindByID(id)
 }
 
 func (service *BusReservationService) FindByTripID(tripID uuid.UUID) ([]entities.BusReservation, error) {

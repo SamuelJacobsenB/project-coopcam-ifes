@@ -29,22 +29,6 @@ func (handler *AvailableOverrideHandler) FindAll(ctx *gin.Context) {
 	ctx.JSON(200, availableOverridesResponse)
 }
 
-func (handler *AvailableOverrideHandler) FindByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	availableOverride, err := handler.service.FindByID(id)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar dia disponível"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToAvailableOverrideResponseDTO(availableOverride))
-}
-
 func (handler *AvailableOverrideHandler) Create(ctx *gin.Context) {
 	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
 	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
@@ -64,34 +48,6 @@ func (handler *AvailableOverrideHandler) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, dtos.ToAvailableOverrideResponseDTO(availableOverride))
-}
-
-func (handler *AvailableOverrideHandler) Update(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	var availableOverrideRequest dtos.AvailableOverrideRequestDTO
-	if err := ctx.ShouldBindJSON(&availableOverrideRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": "dados inválidos"})
-		return
-	}
-
-	if err := availableOverrideRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": "dados inválidos"})
-		return
-	}
-
-	availableOverride := availableOverrideRequest.ToEntity()
-	availableOverride.ID = id
-	if err := handler.service.Update(availableOverride); err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao atualizar dia disponível"})
-		return
-	}
-
-	ctx.JSON(200, dtos.ToAvailableOverrideResponseDTO(availableOverride))
 }
 
 func (handler *AvailableOverrideHandler) Delete(ctx *gin.Context) {

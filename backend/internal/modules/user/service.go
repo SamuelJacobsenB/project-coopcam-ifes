@@ -50,11 +50,6 @@ func (service *UserService) Update(user *entities.User) error {
 	return service.repo.Update(user)
 }
 
-// Add Logic
-func (service *UserService) UpdateAvatarURL(avatarURL string, id uuid.UUID) error {
-	return service.repo.UpdateAvatarURL(avatarURL, id)
-}
-
 func (service *UserService) PromoteToCoordinator(id uuid.UUID) error {
 	return service.repo.PromoteToCoordinator(id)
 }
