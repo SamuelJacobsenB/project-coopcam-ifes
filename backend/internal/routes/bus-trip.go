@@ -9,5 +9,5 @@ import (
 func SetupBusTripRoutes(rg *gin.RouterGroup, handler *bus_trip.BusTripHandler) {
 	rg.GET("/date/:date/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByDate)
 	rg.GET("/:id/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareUser(), handler.FindByID)
-	rg.PUT("/:id/status/:status/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareManager(), handler.UpdateStatus)
+	rg.PUT("/:id/status/:status/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareDriver(), handler.UpdateStatus)
 }

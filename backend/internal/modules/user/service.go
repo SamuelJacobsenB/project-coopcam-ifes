@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/google/uuid"
@@ -38,6 +40,14 @@ func (service *UserService) Create(user *entities.User) error {
 }
 
 func (service *UserService) Update(user *entities.User) error {
+	oldUser, err := service.repo.FindByID(user.ID)
+	if err != nil {
+		return err
+	}
+	if oldUser == nil {
+		return errors.New("user not found")
+	}
+
 	if user.Password != "" {
 		hashedPassword, err := utils.HashPassword(user.Password)
 		if err != nil {
@@ -45,25 +55,23 @@ func (service *UserService) Update(user *entities.User) error {
 		}
 
 		user.Password = hashedPassword
+	} else {
+		user.Password = oldUser.Password
 	}
 
 	return service.repo.Update(user)
 }
 
-func (service *UserService) PromoteToCoordinator(id uuid.UUID) error {
-	return service.repo.PromoteToCoordinator(id)
-}
-
-func (service *UserService) DemoteFromCoordinator(id uuid.UUID) error {
-	return service.repo.DemoteFromCoordinator(id)
+func (service *UserService) PromoteToDriver(id uuid.UUID) error {
+	return service.repo.PromoteToDriver(id)
 }
 
 func (service *UserService) PromoteToAdmin(id uuid.UUID) error {
 	return service.repo.PromoteToAdmin(id)
 }
 
-func (service *UserService) DemoteFromAdmin(id uuid.UUID) error {
-	return service.repo.DemoteFromAdmin(id)
+func (service *UserService) DemoteToUser(id uuid.UUID) error {
+	return service.repo.DemoteToUser(id)
 }
 
 func (service *UserService) Delete(id uuid.UUID) error {

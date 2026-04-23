@@ -13,7 +13,7 @@ type BusTrip struct {
 	Date      time.Time       `json:"date"`
 	Period    types.Period    `gorm:"type:text" json:"period"`
 	Direction types.Direction `gorm:"type:text" json:"direction"`
-	Status    types.Status    `gorm:"type:text,default:'unstarted'" json:"status"`
+	Status    types.Status    `gorm:"type:text;default:'unstarted'" json:"status"`
 
 	Reports []BusTripReport `gorm:"foreignKey:BusTripID" json:"reports"`
 

@@ -41,7 +41,6 @@ export function UsersPage() {
     useManyBusTripReportsByUserAndMonth();
   const { getMonthlyPaymentByUserId } = useManyMonthlyPaymentByUserId();
 
-  // Callbacks memoizados para os componentes filhos
   const handleFetchReports = useCallback(
     async (month: number) => {
       if (!selectedUser) return [];
@@ -58,7 +57,6 @@ export function UsersPage() {
     return await getMonthlyPaymentByUserId(selectedUser.id);
   }, [selectedUser, getMonthlyPaymentByUserId]);
 
-  // Efeito para carregar usuário via URL
   useEffect(() => {
     let isMounted = true;
 

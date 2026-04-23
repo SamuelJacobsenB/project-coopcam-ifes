@@ -13,8 +13,7 @@ export interface User {
   phone: string;
   address: string;
   cep: string;
-  birth: string;
-  avatar_url: string | null;
+  birth: Date;
 
   has_financial_aid: boolean;
 

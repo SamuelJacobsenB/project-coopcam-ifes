@@ -7,7 +7,7 @@ import (
 )
 
 func SetupMonthlyFeeConfigRoutes(rg *gin.RouterGroup, handler *monthly_fee_config.MonthlyFeeConfigHandler) {
-	rg.GET("/year/:year/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareManager(), handler.FindByYear)
-	rg.POST("/", middlewares.RateLimiter(10), middlewares.AuthMiddlewareManager(), handler.Create)
-	rg.DELETE("/:id/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareManager(), handler.Delete)
+	rg.GET("/year/:year/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareDriver(), handler.FindByYear)
+	rg.POST("/", middlewares.RateLimiter(10), middlewares.AuthMiddlewareDriver(), handler.Create)
+	rg.DELETE("/:id/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareDriver(), handler.Delete)
 }

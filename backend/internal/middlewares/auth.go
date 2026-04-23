@@ -63,11 +63,11 @@ func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 }
 
 func AuthMiddlewareUser() gin.HandlerFunc {
-	return AuthMiddleware(types.RoleUser, types.RoleCoordinator, types.RoleAdmin)
+	return AuthMiddleware(types.RoleUser, types.RoleDriver, types.RoleAdmin)
 }
 
-func AuthMiddlewareManager() gin.HandlerFunc {
-	return AuthMiddleware(types.RoleCoordinator, types.RoleAdmin)
+func AuthMiddlewareDriver() gin.HandlerFunc {
+	return AuthMiddleware(types.RoleDriver, types.RoleAdmin)
 }
 
 func AuthMiddlewareAdmin() gin.HandlerFunc {

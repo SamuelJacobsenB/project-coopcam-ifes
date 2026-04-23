@@ -1,24 +1,19 @@
 import { useEffect, useReducer } from "react";
 
-import { Card, ConfirmModal, Error, I, Input } from "../../../../components";
-import { useMessage } from "../../../../contexts";
-import { useDeleteUserById, useUpdateUserById } from "../../../../hooks";
+import { Card, Checkbox, Error, I, Input } from "../../../../components";
 import type { User } from "../../../../types";
-
+import { formatCEP, formatCPF } from "../../../../utils";
 import { EditableField, UserActions } from "./components";
 
-import { Checkbox } from "../../../../components/shared/checkbox";
-import { formatCEP, formatCPF } from "../../../../utils";
 import styles from "./styles.module.css";
 
 interface SelectedUserCardProps {
   selectedUser: User;
-  setSelectedUser: (user: User) => void;
+  setSelectedUser: (user: User | null) => void;
 }
 
 interface State {
   editMode: boolean;
-  isDeleteModalOpen: boolean;
   name: string;
   email: string;
   password: string;
@@ -37,7 +32,6 @@ type Action =
 
 const initialState: State = {
   editMode: false,
-  isDeleteModalOpen: false,
   name: "",
   email: "",
   password: "",
@@ -58,6 +52,7 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         ...action.payload,
+        birth: action.payload.birth.toString(),
         editMode: false,
         password: "",
         error: "",
@@ -71,16 +66,10 @@ export function SelectedUserCard({
   selectedUser,
   setSelectedUser,
 }: SelectedUserCardProps) {
-  const { updateUserById } = useUpdateUserById();
-  const { deleteUserById } = useDeleteUserById();
-
-  const { showMessage } = useMessage();
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     editMode,
-    isDeleteModalOpen,
     name,
     email,
     password,
@@ -103,63 +92,23 @@ export function SelectedUserCard({
     dispatch({ type: "field", payload: { field, value } });
   };
 
-  const handleUpdate = async () => {
-    try {
-      const dateParts = birth.split("-");
-      const adjustedDate = new Date(
-        Number(dateParts[0]),
-        Number(dateParts[1]) - 1,
-        Number(dateParts[2]),
-        12,
-        0,
-        0,
-      );
-
-      const updatedUser = await updateUserById({
-        id: selectedUser.id,
-        user: {
+  return (
+    <Card className={styles.selectedUserBox}>
+      <UserActions
+        editMode={editMode}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        currentUserData={{
           name,
           email,
-          password: password || null,
+          password: password || "",
           cpf,
           phone,
           address,
           cep,
-          birth: adjustedDate,
+          birth: new Date(birth),
           has_financial_aid,
-        },
-      });
-
-      setSelectedUser(updatedUser);
-
-      dispatch({ type: "fillUser", payload: updatedUser });
-
-      showMessage("Usuário atualizado com sucesso", "success");
-    } catch {
-      handleFieldChange("error", "Erro ao atualizar usuário.");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteUserById(selectedUser.id);
-      handleFieldChange("isDeleteModalOpen", false);
-      showMessage("Usuário deletado com sucesso", "success");
-    } catch {
-      handleFieldChange("error", "Erro ao deletar usuário.");
-    }
-  };
-
-  return (
-    <Card className={styles.selectedUserBox}>
-      <ConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => handleFieldChange("isDeleteModalOpen", false)}
-        onConfirm={handleDelete}
-      />
-
-      <UserActions
-        editMode={editMode}
+        }}
         onToggleEdit={() => {
           if (editMode) {
             dispatch({ type: "fillUser", payload: selectedUser });
@@ -167,21 +116,17 @@ export function SelectedUserCard({
             handleFieldChange("editMode", true);
           }
         }}
-        onConfirmEdit={handleUpdate}
-        onOpenDeleteModal={() => handleFieldChange("isDeleteModalOpen", true)}
       />
 
       <header className={styles.userHeader}>
         <div className={styles.userPicture}>
           <I.user size={80} color="#64748b" />
         </div>
-
         <div className={styles.userTitleInfo}>
           {editMode ? (
             <Input
               label="Nome Completo"
               name="name"
-              type="text"
               value={name}
               onChange={(e) => handleFieldChange("name", e.target.value)}
               required
@@ -212,7 +157,7 @@ export function SelectedUserCard({
               value={formatCPF(cpf)}
               editMode={editMode}
               onChange={(val) =>
-                handleFieldChange("cpf", val.replace(".", "").replace("-", ""))
+                handleFieldChange("cpf", val.replace(/\D/g, ""))
               }
             />
             <EditableField
@@ -240,7 +185,9 @@ export function SelectedUserCard({
               type="text"
               value={formatCEP(cep)}
               editMode={editMode}
-              onChange={(val) => handleFieldChange("cep", val.replace("-", ""))}
+              onChange={(val) =>
+                handleFieldChange("cep", val.replace(/\D/g, ""))
+              }
             />
             <EditableField
               label="Data de Nascimento"
@@ -251,7 +198,7 @@ export function SelectedUserCard({
               onChange={(val) => handleFieldChange("birth", val)}
             />
             <Checkbox
-              label="Recebe auxílio financeiro"
+              label="Recebe auxílio"
               checked={has_financial_aid}
               disabled={!editMode}
               onChange={(e) =>

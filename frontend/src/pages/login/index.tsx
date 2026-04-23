@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Error, FormPage, Input, PageHeader } from "../../components";
@@ -73,7 +73,9 @@ export function LoginPage() {
     }
   }
 
-  if (user) navigate("/");
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
 
   return (
     <FormPage>

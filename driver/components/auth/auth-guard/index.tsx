@@ -1,20 +1,22 @@
 import { Redirect, useSegments } from "expo-router";
 
-import { useUser } from "@/contexts";
+import { useVerifyDriver } from "@/hooks";
+
 import { LoadPage } from "../../layout/load-page";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const segments = useSegments();
-  const { user, isLoading } = useUser();
   const isAuthRoute = segments[0] === "(auth)";
+
+  const { isVerified, isLoading } = useVerifyDriver();
 
   if (isLoading) return <LoadPage />;
 
-  if (!user && !isAuthRoute) {
+  if (!isVerified && !isAuthRoute) {
     return <Redirect href="/(auth)/login" />;
   }
 
-  if (user && isAuthRoute) {
+  if (isVerified && isAuthRoute) {
     return <Redirect href="/" />;
   }
 

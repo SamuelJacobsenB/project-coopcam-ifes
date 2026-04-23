@@ -117,7 +117,7 @@ func (dto *UserUpdateDTO) Validate() error {
 	}
 
 	if dto.Password != nil && *dto.Password == "" {
-		return errors.New("senha é obrigatória")
+		dto.Password = nil
 	}
 
 	if dto.Password != nil {
@@ -204,14 +204,13 @@ type UserResponseDTO struct {
 
 	Name  string `json:"name"`
 	Email string `json:"email"`
-	Role  string `json:"roles"`
+	Role  string `json:"role"`
 
 	CPF       string  `json:"cpf"`
 	Phone     string  `json:"phone"`
 	Address   string  `json:"address"`
 	CEP       string  `json:"cep"`
 	Birth     string  `json:"birth"`
-	AvatarURL *string `json:"avatar_url"`
 
 	HasFinancialAid bool `json:"has_financial_aid"`
 

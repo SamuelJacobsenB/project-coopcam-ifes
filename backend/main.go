@@ -6,6 +6,7 @@ import (
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/db"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dev"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/routes"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/workers"
 )
@@ -35,6 +36,10 @@ func main() {
 	}
 
 	scheduler.Start()
+
+	if os.Getenv("ENV") == "development" {
+		dev.CreateAdminUser(db.DB)
+	}
 
 	router := routes.SetupRoutes(handlers)
 	if err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {

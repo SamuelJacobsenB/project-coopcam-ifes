@@ -1,20 +1,20 @@
 import React, { useEffect, useReducer } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
-  StyleSheet,
-  Image,
+  View,
 } from "react-native";
 
 import { router } from "expo-router";
 
-import { useLogin, useVerifyUser } from "@/hooks";
 import { Error, Input, Line } from "@/components";
-import { validateLoginDTO } from "@/utils";
-import { LoginDTO } from "@/types";
+import { useLogin, useVerifyUser } from "@/hooks";
 import { btnStyles, colors } from "@/styles";
+import { LoginDTO } from "@/types";
+import { validateLoginDTO } from "@/utils";
 
 interface State {
   email: string;
@@ -53,20 +53,16 @@ export default function LoginPage() {
 
     dispatch({ type: "error", payload: "" });
 
-    const loginDTO: LoginDTO = {
-      email,
-      password,
-    };
+    const loginDTO: LoginDTO = { email, password };
+    const valError = validateLoginDTO(loginDTO);
 
-    const error = validateLoginDTO(loginDTO);
-    if (error) {
-      dispatch({ type: "error", payload: error });
+    if (valError) {
+      dispatch({ type: "error", payload: valError });
       return;
     }
 
     try {
       await login(loginDTO);
-      router.push("/");
     } catch {
       dispatch({ type: "error", payload: "Email ou senha incorretos" });
     }

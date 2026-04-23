@@ -1,4 +1,4 @@
 export * from "./useLogin";
 export * from "./useLogout";
 
-export * from "./useVerifyCoordinator";
+export * from "./useVerifyAdmin";

@@ -42,7 +42,7 @@ func (handler *AuthHandler) Login(ctx *gin.Context) {
 		true,
 	)
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Login realizado com sucesso"})
+	ctx.JSON(http.StatusOK, gin.H{"token": "Bearer " + token})
 }
 
 func (handler *AuthHandler) Logout(ctx *gin.Context) {
@@ -54,7 +54,7 @@ func (handler *AuthHandler) VerifyUser(ctx *gin.Context) {
 	ctx.JSON(200, nil)
 }
 
-func (handler *AuthHandler) VerifyCoordinator(ctx *gin.Context) {
+func (handler *AuthHandler) VerifyDriver(ctx *gin.Context) {
 	ctx.JSON(200, nil)
 }
 

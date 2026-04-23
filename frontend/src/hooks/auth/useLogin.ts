@@ -1,28 +1,24 @@
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { LoginDTO } from "../../types";
-import { fetchLogout, fetchVerifyCoordinator } from "./";
+import { fetchLogout, fetchVerifyAdmin } from "./";
 
 export const fetchLogin = async (loginDTO: LoginDTO) => {
   try {
     const res = await api.post("/v1/auth/login/", loginDTO);
+    if (res.status !== 200) throw new Error("Credenciais inválidas");
 
-    if (res.status === 200) {
-      localStorage.setItem("auth_token", res.data.token);
+    localStorage.setItem("auth_token", res.data.token);
 
-      const verified = await fetchVerifyCoordinator();
-
-      if (!verified) {
-        await fetchLogout();
-        throw new Error("Usuário não é coordenador");
-      }
-
-      return "Login realizado com sucesso";
+    const verified = await fetchVerifyAdmin();
+    if (!verified) {
+      await fetchLogout();
+      throw new Error("Usuário não é administrador");
     }
 
-    throw new Error("Credenciais inválidas");
+    return "Login realizado com sucesso";
   } catch {
-    throw new Error("Credenciais inválidas");
+    throw new Error("Erro ao realizar login");
   }
 };
 

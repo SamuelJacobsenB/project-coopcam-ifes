@@ -12,10 +12,9 @@ import {
 import { useMessage } from "../../../contexts";
 import { useCreateUser } from "../../../hooks";
 import type { UserRequestDTO } from "../../../types";
-import { validateUserRequestDTO } from "../../../utils";
+import { formatCEP, formatCPF, validateUserRequestDTO } from "../../../utils";
 import styles from "./styles.module.css";
 
-// Tipagem rigorosa para as ações do reducer
 type Action = { type: "field"; payload: { field: string; value: unknown } };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +44,6 @@ export function CreateUserPage() {
   const { showMessage } = useMessage();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Função auxiliar para simplificar a atualização de campos
   const handleChange =
     (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const value =
@@ -55,7 +53,17 @@ export function CreateUserPage() {
 
   async function handleCreateUser(e: FormEvent) {
     e.preventDefault();
-    const { ...userData } = state;
+    const userData = {
+      name: state.name,
+      email: state.email,
+      password: state.password,
+      cpf: state.cpf,
+      phone: state.phone,
+      address: state.address,
+      cep: state.cep,
+      birth: new Date(state.birth),
+      has_financial_aid: state.has_financial_aid,
+    };
 
     const validationError = validateUserRequestDTO(userData as UserRequestDTO);
     if (validationError) {
@@ -68,10 +76,10 @@ export function CreateUserPage() {
 
     try {
       await createUser(userData as UserRequestDTO);
-      showMessage("Utilizador criado com sucesso!", "success");
+      showMessage("Usuário criado com sucesso!", "success");
       navigate("/usuarios");
     } catch {
-      showMessage("Erro ao criar utilizador", "error");
+      showMessage("Erro ao criar usuário", "error");
     }
   }
 
@@ -133,7 +141,7 @@ export function CreateUserPage() {
               label="CPF"
               placeholder="00000000000"
               required
-              value={state.cpf}
+              value={formatCPF(state.cpf)}
               onChange={handleChange("cpf")}
             />
 
@@ -165,7 +173,7 @@ export function CreateUserPage() {
               label="CEP"
               placeholder="00000000"
               required
-              value={state.cep}
+              value={formatCEP(state.cep)}
               onChange={handleChange("cep")}
             />
 

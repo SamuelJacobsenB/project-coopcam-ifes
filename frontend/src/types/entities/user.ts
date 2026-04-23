@@ -1,4 +1,4 @@
-import type { Role, Template, WeeklyPreference } from "../";
+import type { Role } from "../";
 
 export interface User {
   id: string;
@@ -13,13 +13,9 @@ export interface User {
   phone: string;
   address: string;
   cep: string;
-  birth: string;
-  avatar_url: string | null;
+  birth: Date;
 
   has_financial_aid: boolean;
-
-  template: Template | null;
-  weekly_preference: WeeklyPreference | null;
 
   created_at: Date;
   updated_at: Date;

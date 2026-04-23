@@ -19,6 +19,11 @@ export function EditableField({
   placeholder,
   onChange,
 }: EditableFieldProps) {
+  const displayValue =
+    type === "date" && value && value.includes("-")
+      ? value.split("-").reverse().join("/")
+      : value;
+
   return editMode ? (
     <Input
       label={label}
@@ -31,7 +36,7 @@ export function EditableField({
     />
   ) : (
     <p>
-      {label}: {value}
+      <strong>{label}:</strong> {displayValue || "Não informado"}
     </p>
   );
 }

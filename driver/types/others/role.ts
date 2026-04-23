@@ -1,1 +1,1 @@
-export type Role = "user" | "coordinator" | "admin";
+export type Role = "user" | "driver" | "admin";

@@ -11,7 +11,7 @@ import {
 import { router } from "expo-router";
 
 import { Error, Input, Line } from "@/components";
-import { useLogin, useVerifyUser } from "@/hooks";
+import { useLogin, useVerifyDriver } from "@/hooks";
 import { btnStyles, colors } from "@/styles";
 import { LoginDTO } from "@/types";
 import { validateLoginDTO } from "@/utils";
@@ -41,7 +41,7 @@ const initialState: State = {
 };
 
 export default function LoginPage() {
-  const { isVerified } = useVerifyUser();
+  const { isVerified } = useVerifyDriver();
 
   const { login, isPending } = useLogin();
 
@@ -53,10 +53,7 @@ export default function LoginPage() {
 
     dispatch({ type: "error", payload: "" });
 
-    const loginDTO: LoginDTO = {
-      email,
-      password,
-    };
+    const loginDTO: LoginDTO = { email, password };
 
     const error = validateLoginDTO(loginDTO);
     if (error) {
@@ -66,7 +63,6 @@ export default function LoginPage() {
 
     try {
       await login(loginDTO);
-      router.push("/");
     } catch {
       dispatch({ type: "error", payload: "Email ou senha incorretos" });
     }

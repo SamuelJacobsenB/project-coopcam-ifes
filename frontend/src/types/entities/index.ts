@@ -4,7 +4,5 @@ export * from "./bus-trip";
 export * from "./bus-trip-report";
 export * from "./monthly-fee-config";
 export * from "./monthly-payment";
-export * from "./template";
 export * from "./unavailable-day";
 export * from "./user";
-export * from "./weekly-preference";

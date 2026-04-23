@@ -47,7 +47,7 @@ func (h *MonthlyPaymentHandler) FindByUser(ctx *gin.Context) {
 	}
 	userRole := role.(string)
 
-	if userRole != types.RoleAdmin && userRole != types.RoleCoordinator && loggedUserID != targetUserID {
+	if userRole != types.RoleAdmin && userRole != types.RoleDriver && loggedUserID != targetUserID {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "você não tem permissão para ver pagamentos de outro usuário"})
 		return
 	}

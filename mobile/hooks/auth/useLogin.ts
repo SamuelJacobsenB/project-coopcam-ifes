@@ -1,7 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useUser } from "@/contexts";
 import { api } from "@/services";
 import type { LoginDTO } from "@/types";
 
@@ -20,8 +20,14 @@ export const fetchLogin = async (loginDTO: LoginDTO) => {
 };
 
 export const useLogin = () => {
+  const { findUser } = useUser();
+
   const { mutateAsync: login, isPending } = useMutation({
     mutationFn: (loginDTO: LoginDTO) => fetchLogin(loginDTO),
+
+    onSuccess: async () => {
+      await findUser();
+    },
     retry: false,
   });
 

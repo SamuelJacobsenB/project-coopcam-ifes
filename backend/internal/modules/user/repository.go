@@ -58,20 +58,16 @@ func (repo *UserRepository) Update(user *entities.User) error {
 		Updates(user).Error
 }
 
-func (repo *UserRepository) PromoteToCoordinator(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleCoordinator).Error
-}
-
-func (repo *UserRepository) DemoteFromCoordinator(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleUser).Error
+func (repo *UserRepository) PromoteToDriver(id uuid.UUID) error {
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleDriver).Error
 }
 
 func (repo *UserRepository) PromoteToAdmin(id uuid.UUID) error {
 	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleAdmin).Error
 }
 
-func (repo *UserRepository) DemoteFromAdmin(id uuid.UUID) error {
-	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleCoordinator).Error
+func (repo *UserRepository) DemoteToUser(id uuid.UUID) error {
+	return repo.db.Model(&entities.User{}).Where("id = ?", id).Update("role", types.RoleUser).Error
 }
 
 func (repo *UserRepository) Delete(id uuid.UUID) error {

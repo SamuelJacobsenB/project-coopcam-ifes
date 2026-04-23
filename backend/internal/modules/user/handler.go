@@ -2,6 +2,7 @@ package user
 
 import (
 	"strconv"
+	"fmt"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
@@ -32,7 +33,7 @@ func (handler *UserHandler) FindAll(ctx *gin.Context) {
 
 	users, err := handler.service.FindPaginated(offset, limit, namePrefix)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar usuários"})
 		return
 	}
 
@@ -53,7 +54,7 @@ func (handler *UserHandler) FindOwn(ctx *gin.Context) {
 
 	user, err := handler.service.FindByID(userID)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar usuário"})
 		return
 	}
 
@@ -75,7 +76,7 @@ func (handler *UserHandler) FindByID(ctx *gin.Context) {
 
 	if id != userID {
 		ifUserIsAdmin, err := handler.service.FindByID(userID)
-		if !types.HasRole(ifUserIsAdmin.Role, []string{types.RoleAdmin, types.RoleCoordinator}) || err != nil {
+		if !types.HasRole(ifUserIsAdmin.Role, []string{types.RoleAdmin, types.RoleDriver}) || err != nil {
 			ctx.JSON(403, gin.H{"error": "usuário não autorizado"})
 			return
 		}
@@ -83,7 +84,7 @@ func (handler *UserHandler) FindByID(ctx *gin.Context) {
 
 	user, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao buscar usuário"})
 		return
 	}
 
@@ -93,18 +94,19 @@ func (handler *UserHandler) FindByID(ctx *gin.Context) {
 func (handler *UserHandler) Create(ctx *gin.Context) {
 	var userRequest dtos.UserRequestDTO
 	if err := ctx.ShouldBindJSON(&userRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		fmt.Println(err)
+		ctx.JSON(400, gin.H{"error": "erro ao criar usuário"})
 		return
 	}
 
 	if err := userRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "erro ao criar usuário"})
 		return
 	}
 
 	user := userRequest.ToEntity()
 	if err := handler.service.Create(user); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao criar usuário"})
 		return
 	}
 
@@ -120,49 +122,34 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 
 	var userRequest dtos.UserUpdateDTO
 	if err := ctx.ShouldBindJSON(&userRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "erro ao atualizar usuário"})
 		return
 	}
 
 	if err := userRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "erro ao atualizar usuário"})
 		return
 	}
 
 	user := userRequest.ToEntity()
 	user.ID = id
 	if err := handler.service.Update(user); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao atualizar usuário"})
 		return
 	}
 
 	ctx.JSON(200, dtos.ToUserResponseDTO(user))
 }
 
-func (handler *UserHandler) PromoteToCoordinator(ctx *gin.Context) {
+func (handler *UserHandler) PromoteToDriver(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
 		return
 	}
 
-	if err := handler.service.PromoteToCoordinator(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(200, nil)
-}
-
-func (handler *UserHandler) DemoteFromCoordinator(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
-		return
-	}
-
-	if err := handler.service.DemoteFromCoordinator(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+	if err := handler.service.PromoteToDriver(id); err != nil {
+		ctx.JSON(500, gin.H{"error": "erro ao promover para motorista"})
 		return
 	}
 
@@ -177,22 +164,22 @@ func (handler *UserHandler) PromoteToAdmin(ctx *gin.Context) {
 	}
 
 	if err := handler.service.PromoteToAdmin(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": "erro ao promover para admin"})
 		return
 	}
 
 	ctx.JSON(200, nil)
 }
 
-func (handler *UserHandler) DemoteFromAdmin(ctx *gin.Context) {
+func (handler *UserHandler) DemoteToUser(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id inválido"})
 		return
 	}
 
-	if err := handler.service.DemoteFromAdmin(id); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+	if err := handler.service.DemoteToUser(id); err != nil {
+		ctx.JSON(500, gin.H{"error": "erro ao rebaixar para usuário"})
 		return
 	}
 

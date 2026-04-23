@@ -1,4 +1,4 @@
 export * from "./useLogin";
 export * from "./useLogout";
 
-export * from "./useVerifyUser";
+export * from "./useVerifyDriver";
