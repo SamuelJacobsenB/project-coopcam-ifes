@@ -16,12 +16,8 @@ func NewUserService(repo *UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (service *UserService) FindAll() ([]entities.User, error) {
-	return service.repo.FindAll()
-}
-
-func (service *UserService) FindPaginated(offset, limit int, namePrefix string) ([]entities.User, error) {
-	return service.repo.FindPaginated(offset, limit, namePrefix)
+func (service *UserService) FindMany(namePrefix string) ([]entities.User, error) {
+	return service.repo.FindMany(namePrefix)
 }
 
 func (service *UserService) FindByID(id uuid.UUID) (*entities.User, error) {

@@ -12,14 +12,21 @@ import (
 )
 
 type MPPaymentResponse struct {
-	ID                 int64  `json:"id"`
-	Status             string `json:"status"`
+	ID     int64  `json:"id"`
+	Status string `json:"status"`
+
 	PointOfInteraction struct {
 		TransactionData struct {
 			TicketURL string `json:"ticket_url"`
 			QRCode    string `json:"qr_code"`
 		} `json:"transaction_data"`
 	} `json:"point_of_interaction"`
+
+	TransactionDetails struct {
+		ReceiptURL        string `json:"receipt_url"`
+		NetReceivedAmount int64  `json:"net_received_amount"`
+		TotalPaidAmount   int64  `json:"total_paid_amount"`
+	} `json:"transaction_details"`
 }
 
 type MercadoPagoClient struct {

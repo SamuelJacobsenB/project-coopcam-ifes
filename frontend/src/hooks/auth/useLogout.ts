@@ -1,5 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { useUser } from "../../contexts";
 import { api } from "../../services";
 
 export const fetchLogout = async () => {
@@ -16,8 +17,15 @@ export const fetchLogout = async () => {
 };
 
 export const useLogout = () => {
+  const { setUser } = useUser();
+  const queryClient = useQueryClient();
+
   const { mutateAsync: logout } = useMutation({
     mutationFn: fetchLogout,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      setUser(null);
+    },
     retry: false,
   });
 

@@ -16,5 +16,6 @@ export interface MonthlyPayment {
   payment_url: string | null;
   pix_qr_code: string | null;
 
+  receipt_url: string | null;
   paid_at: Date | null;
 }

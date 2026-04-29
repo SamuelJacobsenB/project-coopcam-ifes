@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
@@ -149,6 +150,8 @@ func (dto *UserUpdateDTO) Validate() error {
 	if err := utils.ValidateCEP(*dto.CEP); err != nil {
 		return err
 	}
+
+	fmt.Println(dto.Birth)
 
 	if dto.Birth != nil && dto.Birth.IsZero() {
 		return errors.New("data de nascimento é obrigatória")

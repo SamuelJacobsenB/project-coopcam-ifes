@@ -84,7 +84,10 @@ export function SelectedUserCard({
 
   useEffect(() => {
     if (selectedUser) {
-      dispatch({ type: "fillUser", payload: selectedUser });
+      dispatch({
+        type: "fillUser",
+        payload: selectedUser,
+      });
     }
   }, [selectedUser]);
 

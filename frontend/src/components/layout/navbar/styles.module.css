@@ -62,7 +62,6 @@
   font-weight: 600;
 }
 
-/* Animação de sublinhado elegante */
 .link::after {
   content: "";
   position: absolute;
@@ -82,7 +81,6 @@
   width: 100%;
 }
 
-/* Botão de Perfil */
 .logoutBtn {
   display: flex;
   align-items: center;
@@ -121,15 +119,13 @@
   display: block;
 }
 
-/* Menu Hamburguer */
 .menuBurguer {
   display: none;
 }
 
-/* Responsividade básica */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
   .links {
-    display: none; /* Idealmente, aqui entraria um menu hambúrguer */
+    display: none;
   }
 
   .menuBurguer {

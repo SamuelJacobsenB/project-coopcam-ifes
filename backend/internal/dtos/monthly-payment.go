@@ -19,6 +19,7 @@ type MonthlyPaymentResponseDTO struct {
 	DueDate       time.Time           `json:"due_date"`
 	PaymentURL    *string             `json:"payment_url,omitempty"`
 	PixQRCode     *string             `json:"pix_qr_code,omitempty"`
+	ReceiptURL    *string             `json:"receipt_url,omitempty"`
 	PaidAt        *time.Time          `json:"paid_at,omitempty"`
 }
 
@@ -34,6 +35,7 @@ func ToMonthlyPaymentResponse(p entities.MonthlyPayment) MonthlyPaymentResponseD
 		DueDate:       p.DueDate,
 		PaymentURL:    p.PaymentURL,
 		PixQRCode:     p.PixQRCode,
+		ReceiptURL:    p.ReceiptURL,
 		PaidAt:        p.PaidAt,
 	}
 }

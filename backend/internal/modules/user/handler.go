@@ -1,7 +1,6 @@
 package user
 
 import (
-	"strconv"
 	"fmt"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
@@ -18,20 +17,10 @@ func NewUserHandler(service *UserService) *UserHandler {
 	return &UserHandler{service}
 }
 
-func (handler *UserHandler) FindAll(ctx *gin.Context) {
-	page := ctx.DefaultQuery("page", "1")
+func (handler *UserHandler) FindMany(ctx *gin.Context) {
 	namePrefix := ctx.Query("name")
 
-	pageInt, err := strconv.Atoi(page)
-	if err != nil || pageInt < 1 {
-		ctx.JSON(400, gin.H{"error": "page inválido"})
-		return
-	}
-
-	const limit = 10
-	offset := (pageInt - 1) * limit
-
-	users, err := handler.service.FindPaginated(offset, limit, namePrefix)
+	users, err := handler.service.FindMany(namePrefix)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "erro ao buscar usuários"})
 		return

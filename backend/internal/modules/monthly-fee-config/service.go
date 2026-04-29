@@ -62,6 +62,10 @@ func (s *MonthlyFeeConfigService) CreateConfigAndDrafts(config *entities.Monthly
 
 			payments := make([]entities.MonthlyPayment, 0, len(users))
 			for _, u := range users {
+				if u.Role == types.RoleAdmin || u.Role == types.RoleDriver {
+					continue
+				}
+
 				amount := config.BaseAmount
 				if u.HasFinancialAid {
 					amount = config.FinancialAidAmount

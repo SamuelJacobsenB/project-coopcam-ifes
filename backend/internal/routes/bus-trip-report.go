@@ -7,7 +7,7 @@ import (
 )
 
 func SetupBusTripReportRoutes(rg *gin.RouterGroup, handler *bus_trip_report.BusTripReportHandler) {
-	rg.GET("/date/:date/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareDriver(), handler.FindByDate)
-	rg.GET("/user/:user_id/month/:month/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareDriver(), handler.FindByUserAndMonth)
+	rg.GET("/date/:date/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareAdmin(), handler.FindByDate)
+	rg.GET("/user/:user_id/month/:month/", middlewares.RateLimiter(30), middlewares.AuthMiddlewareAdmin(), handler.FindByUserAndMonth)
 	rg.POST("/trip/:trip_id/", middlewares.RateLimiter(5), middlewares.AuthMiddlewareDriver(), handler.CreateMany)
 }

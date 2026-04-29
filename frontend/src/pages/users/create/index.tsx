@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useReducer, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -40,6 +41,9 @@ const initialState = {
 
 export function CreateUserPage() {
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
   const { createUser } = useCreateUser();
   const { showMessage } = useMessage();
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -53,6 +57,10 @@ export function CreateUserPage() {
 
   async function handleCreateUser(e: FormEvent) {
     e.preventDefault();
+
+    const [year, month, day] = state.birth.split("-");
+    const birth = new Date(Number(year), Number(month) - 1, Number(day), 12);
+
     const userData = {
       name: state.name,
       email: state.email,
@@ -61,11 +69,11 @@ export function CreateUserPage() {
       phone: state.phone,
       address: state.address,
       cep: state.cep,
-      birth: new Date(state.birth),
+      birth,
       has_financial_aid: state.has_financial_aid,
-    };
+    } as UserRequestDTO;
 
-    const validationError = validateUserRequestDTO(userData as UserRequestDTO);
+    const validationError = validateUserRequestDTO(userData);
     if (validationError) {
       dispatch({
         type: "field",
@@ -75,7 +83,8 @@ export function CreateUserPage() {
     }
 
     try {
-      await createUser(userData as UserRequestDTO);
+      await createUser(userData);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       showMessage("Usuário criado com sucesso!", "success");
       navigate("/usuarios");
     } catch {

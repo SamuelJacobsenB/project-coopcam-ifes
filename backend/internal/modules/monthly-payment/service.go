@@ -94,36 +94,53 @@ func (s *MonthlyPaymentService) EmitBatch(ctx context.Context, month, year int) 
 	return nil
 }
 
+// ProcessWebhook é chamado quando o Mercado Pago notifica sobre uma atualização de pagamento.
 func (s *MonthlyPaymentService) ProcessWebhook(ctx context.Context, externalID string) error {
 	payment, err := s.repo.FindByExternalID(externalID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil
+			return nil // pagamento desconhecido, ignorar
 		}
 		return err
 	}
 
-	// Se já estiver pago, não processa novamente para evitar Race Conditions
+	// Evita processar duplicado se já estiver pago
 	if payment.PaymentStatus == types.PaymentPaid {
 		return nil
 	}
 
+	// Busca os dados atualizados no Mercado Pago
 	mpPayment, err := s.mpClient.GetPayment(ctx, externalID)
 	if err != nil {
-		return err
+		return fmt.Errorf("falha ao obter pagamento do MP: %w", err)
 	}
 
 	newStatus := s.mapMPStatusToInternal(mpPayment.Status)
 
+	// Se o status mudou, atualiza o registro
 	if payment.PaymentStatus != newStatus {
 		var paidAt *time.Time
 		if newStatus == types.PaymentPaid {
 			now := time.Now()
 			paidAt = &now
+
+			// Se houver comprovante, salva o URL
+			if mpPayment.TransactionDetails.ReceiptURL != "" {
+				receiptURL := mpPayment.TransactionDetails.ReceiptURL
+				payment.ReceiptURL = &receiptURL
+			}
 		}
 
-		return s.repo.UpdateStatus(payment.ID, newStatus, paidAt)
+		// Atualiza status e, se pago, também a data de pagamento e o comprovante
+		payment.PaymentStatus = newStatus
+		payment.PaidAt = paidAt
+
+		// Salva todas as alterações de uma vez
+		if err := s.repo.Update(payment); err != nil {
+			return fmt.Errorf("falha ao salvar atualização do pagamento: %w", err)
+		}
 	}
+
 	return nil
 }
 

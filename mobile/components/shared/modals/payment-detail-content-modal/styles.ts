@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     padding: 4,
     width: "100%",
@@ -12,8 +12,6 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: "center",
   },
-
-  // --- Estilos do QR Code ---
   qrContainer: {
     alignItems: "center",
     marginBottom: 24,
@@ -24,7 +22,6 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#f1f5f9",
-    // Sombras leves
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -37,8 +34,6 @@ export const styles = StyleSheet.create({
     color: "#64748b",
     fontWeight: "500",
   },
-
-  // --- Info Card ---
   infoContainer: {
     backgroundColor: "#f8fafc",
     borderRadius: 16,
@@ -63,13 +58,11 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
-
-  // --- Botões ---
   actions: {
     gap: 12,
   },
   pixButton: {
-    backgroundColor: "#16a34a", // Verde PIX mais sóbrio
+    backgroundColor: "#16a34a",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -98,8 +91,6 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 15,
   },
-
-  // --- Estado de Pago ---
   paidMessage: {
     alignItems: "center",
     paddingVertical: 10,
@@ -118,5 +109,46 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     paddingHorizontal: 20,
+  },
+  paidDate: {
+    color: "#16a34a",
+  },
+  paidContainer: {
+    alignItems: "center",
+    paddingVertical: 10,
+    gap: 16,
+  },
+  receiptButton: {
+    backgroundColor: "#3b82f6",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    gap: 8,
+    marginTop: 8,
+    width: "100%",
+  },
+  receiptButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  warningContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#fef9c3",
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 8,
+    width: "100%",
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 13,
+    color: "#854d0e",
+    textAlign: "center",
   },
 });

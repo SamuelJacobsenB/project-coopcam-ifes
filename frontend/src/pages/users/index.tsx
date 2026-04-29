@@ -35,7 +35,7 @@ export function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const { getUserById } = useUserById();
-  const { users, isLoading, error } = useManyUsers(1, activeSearch);
+  const { users, isLoading, error } = useManyUsers(activeSearch);
 
   const { getManyBusTripReportsByUserAndMonth } =
     useManyBusTripReportsByUserAndMonth();
@@ -73,6 +73,8 @@ export function UsersPage() {
       isMounted = false;
     };
   }, [id, getUserById]);
+
+  console.log(selectedUser?.birth);
 
   return (
     <Private>
@@ -119,9 +121,8 @@ export function UsersPage() {
                 users?.map((user) => (
                   <li key={user.id}>
                     <Card
-                      className={`${styles.userItem} ${
-                        selectedUser?.id === user.id ? styles.selectedUser : ""
-                      }`}
+                      className={`${styles.userItem} ${selectedUser?.id === user.id ? styles.selectedUser : ""
+                        }`}
                       onClick={() => setSelectedUser(user)}
                       tabIndex={0}
                       role="button"

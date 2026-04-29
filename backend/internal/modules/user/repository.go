@@ -15,15 +15,11 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (repo *UserRepository) FindAll() ([]entities.User, error) {
+func (repo *UserRepository) FindMany(namePrefix string) ([]entities.User, error) {
 	var users []entities.User
-	err := repo.db.Find(&users).Error
-	return users, err
-}
 
-func (repo *UserRepository) FindPaginated(offset int, limit int, namePrefix string) ([]entities.User, error) {
-	var users []entities.User
-	query := repo.db.Model(&entities.User{}).Limit(limit).Offset(offset)
+	// Procura apenas os primeiros 20 resultados
+	query := repo.db.Model(&entities.User{}).Limit(20)
 	if namePrefix != "" {
 		query = query.Where("name ILIKE ?", namePrefix+"%")
 	}
@@ -88,7 +84,7 @@ func (repo *UserRepository) Delete(id uuid.UUID) error {
 			return err
 		}
 
-		if err := tx.Where("user_id = ?", id).Delete(&entities.User{}).Error; err != nil {
+		if err := tx.Where("id = ?", id).Delete(&entities.User{}).Error; err != nil {
 			return err
 		}
 

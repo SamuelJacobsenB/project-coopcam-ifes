@@ -19,11 +19,6 @@ export function EditableField({
   placeholder,
   onChange,
 }: EditableFieldProps) {
-  const displayValue =
-    type === "date" && value && value.includes("-")
-      ? value.split("-").reverse().join("/")
-      : value;
-
   return editMode ? (
     <Input
       label={label}
@@ -31,12 +26,31 @@ export function EditableField({
       type={type}
       placeholder={placeholder}
       required
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      value={
+        type === "date"
+          ? value.includes("T")
+            ? value.split("T")[0]
+            : value.split("/").reverse().join("-")
+          : value
+      }
+      onChange={(e) => {
+        let value;
+        if (type === "date") {
+          const [year, month, day] = e.target.value.split("-");
+          value = new Date(
+            Number(year),
+            Number(month) - 1,
+            Number(day),
+            12,
+          ).toISOString();
+        } else value = e.target.value;
+
+        onChange(value);
+      }}
     />
   ) : (
     <p>
-      <strong>{label}:</strong> {displayValue || "Não informado"}
+      <strong>{label}:</strong> {value}
     </p>
   );
 }

@@ -9,35 +9,34 @@ export default StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     margin: 8,
-    // Sombra mais destacada para todos os cards (ativo por padrão)
-    shadowColor: colors.primary + "40", // Cor primária com transparência
+    shadowColor: colors.primary + "40",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
-    // Sombra para Android
+
     elevation: 8,
     borderWidth: 2.5,
-    borderColor: colors.primary, // Todos com borda primária
+    borderColor: colors.primary,
   },
   header: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 20,
-    backgroundColor: colors.primary, // Todos com fundo primário
+    backgroundColor: colors.primary,
     borderBottomWidth: 1.5,
-    borderBottomColor: colors.primary + "80", // Borda inferior sutil
+    borderBottomColor: colors.primary + "80",
   },
   weekDayText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "white", // Sempre branco
+    color: "white",
     letterSpacing: 0.8,
     opacity: 0.95,
   },
   dateText: {
     fontSize: 28,
     fontWeight: "900",
-    color: "white", // Sempre branco
+    color: "white",
     marginTop: 6,
   },
   dayCardBody: {
@@ -51,12 +50,12 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: 4,
-    backgroundColor: "#f9fafb", // Fundo sutil para o rodapé
+    backgroundColor: "#f9fafb",
   },
   indicator: {
     width: 36,
     height: 5,
-    backgroundColor: colors.primary + "80", // Indicador na cor primária com transparência
+    backgroundColor: colors.primary + "80",
     borderRadius: 3,
   },
 });

@@ -1,0 +1,77 @@
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    font-size: 0.95rem;
+}
+
+.label {
+    font-weight: 600;
+    color: #475569;
+    min-width: 85px;
+}
+
+.amount {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.paidDate {
+    color: #166534;
+    font-weight: 500;
+}
+
+.receiptArea {
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
+.viewReceiptButton {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.viewReceiptButton:hover {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+.receiptHint {
+    display: block;
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.warning {
+    background-color: #fef9c3;
+    color: #854d0e;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-align: center;
+}

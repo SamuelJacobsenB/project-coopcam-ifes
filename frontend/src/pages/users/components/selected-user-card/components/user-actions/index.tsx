@@ -52,21 +52,9 @@ export function UserActions({
     try {
       if (!selectedUser) return;
 
-      let dateToSave: Date | null = null;
-      if (currentUserData.birth) {
-        const [year, month, day] = currentUserData.birth
-          .toString()
-          .split("/")
-          .map(Number);
-        dateToSave = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-      }
-
       const updatedUser = await updateUserById({
         id: selectedUser.id,
-        user: {
-          ...currentUserData,
-          birth: dateToSave,
-        },
+        user: currentUserData,
       });
 
       queryClient.invalidateQueries({ queryKey: ["users"] });

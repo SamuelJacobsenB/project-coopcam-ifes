@@ -24,6 +24,7 @@ import {
   IoIosWarning,
 } from "react-icons/io";
 import { LuLoaderCircle } from "react-icons/lu";
+import { PiMicrosoftExcelLogoBold } from "react-icons/pi";
 
 export const I = {
   alert_circle: IoIosAlert,
@@ -36,6 +37,7 @@ export const I = {
   clock: IoIosClock,
   close: IoIosClose,
   error: BiSolidError,
+  excel: PiMicrosoftExcelLogoBold,
   info: IoIosInformation,
   loader: LuLoaderCircle,
   logout: BiLogOutCircle,

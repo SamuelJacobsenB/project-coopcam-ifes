@@ -24,7 +24,8 @@ type MonthlyPayment struct {
 	PaymentURL *string `gorm:"type:text" json:"payment_url"`
 	PixQRCode  *string `gorm:"type:text" json:"pix_qr_code"`
 
-	PaidAt *time.Time `json:"paid_at"`
+	ReceiptURL *string    `gorm:"type:text" json:"receipt_url"`
+	PaidAt     *time.Time `json:"paid_at"`
 
 	User *User `gorm:"foreignKey:UserID" json:"user,omitempty"`
 }

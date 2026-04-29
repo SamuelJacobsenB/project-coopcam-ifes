@@ -54,12 +54,15 @@ export function CreatePaymentFeeConfigPage() {
   async function handleCreateMonthlyFeeConfig(e: FormEvent) {
     e.preventDefault();
 
+    const [year, month, day] = state.due_date.split("-");
+    const dueDate = new Date(Number(year), Number(month) - 1, Number(day), 12);
+
     const monthlyFeeConfig: MonthlyFeeConfigRequestDTO = {
       month: Number(state.month),
       year: Number(state.year),
       base_amount: Number(state.base_amount) * 100,
       financial_aid_amount: Number(state.financial_aid_amount) * 100,
-      due_date: new Date(state.due_date),
+      due_date: dueDate,
     };
 
     const validationError =
