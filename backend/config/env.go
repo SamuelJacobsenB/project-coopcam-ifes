@@ -7,8 +7,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() {
+func LoadEnv() error {
 	env := os.Getenv("ENV")
+	if env == "" {
+		env = "development"
+	}
 
 	var envFile string
 	if env == "production" {
@@ -17,9 +20,9 @@ func LoadEnv() {
 		envFile = ".env.dev"
 	}
 
-	err := godotenv.Load(envFile)
-	if err != nil {
-		log.Fatalf("Erro ao carregar %s: %v", envFile, err)
+	if err := godotenv.Load(envFile); err != nil {
+		log.Printf("Warning: Could not load %s: %v", envFile, err)
 	}
-}
 
+	return nil
+}
