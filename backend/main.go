@@ -7,31 +7,34 @@ import (
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/db"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dev"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/routes"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/workers"
 )
 
 func main() {
-	config.LoadEnv()
-
-	db.ConnectDB()
-	db.MigrateDB()
-
-	handlers := config.SetupModules(db.DB)
-
-	scheduler := workers.NewScheduler()
-
-	err := scheduler.RegisterTask("0 1 * * 0", func() {
-		workers.CreateTripsAndWeeklyPreferences(db.DB)
-	})
-	if err != nil {
+	if err := config.LoadEnv(); err != nil {
 		panic(err)
 	}
 
-	err = scheduler.RegisterTask("0 1 31 12 *", func() {
-		workers.DeleteOldInformation(db.DB)
-	})
-	if err != nil {
+	if err := db.ConnectDB(); err != nil {
+		panic(err)
+	}
+
+	if err := db.MigrateDB(); err != nil {
+		panic(err)
+	}
+
+	if err := security.InitJWT(); err != nil {
+		panic(err)
+	}
+
+	handlers := modules.SetupModules(db.DB)
+
+	scheduler := workers.NewScheduler()
+
+	if err := workers.SetupTasks(scheduler, db.DB); err != nil {
 		panic(err)
 	}
 

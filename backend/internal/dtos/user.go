@@ -2,75 +2,62 @@ package dtos
 
 import (
 	"errors"
-	"strings"
 	"time"
-	"fmt"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 	"github.com/google/uuid"
 )
 
 type UserRequestDTO struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-
-	CPF     string    `json:"cpf"`
-	Phone   string    `json:"phone"`
-	Address string    `json:"address"`
-	CEP     string    `json:"cep"`
-	Birth   time.Time `json:"birth"`
-
-	HasFinancialAid bool `json:"has_financial_aid"`
+	Name            string    `json:"name" binding:"required"`
+	Email           string    `json:"email" binding:"required,email"`
+	Password        string    `json:"password" binding:"required"`
+	CPF             string    `json:"cpf" binding:"required"`
+	Phone           string    `json:"phone" binding:"required"`
+	Address         string    `json:"address" binding:"required"`
+	CEP             string    `json:"cep" binding:"required"`
+	Birth           time.Time `json:"birth" binding:"required"`
+	HasFinancialAid bool      `json:"has_financial_aid"`
 }
 
 func (dto *UserRequestDTO) Validate() error {
-	if dto.Name == "" {
-		return errors.New("nome é obrigatório")
-	}
-
-	if dto.Email == "" {
-		return errors.New("email é obrigatório")
-	}
-	if !strings.Contains(dto.Email, "@") {
-		return errors.New("email inválido")
-	}
-
-	if dto.Password == "" {
-		return errors.New("senha é obrigatória")
-	}
-
-	if err := utils.ValidatePassword(dto.Password); err != nil {
+	if err := security.ValidateName(dto.Name); err != nil {
 		return err
 	}
 
-	if dto.CPF == "" {
-		return errors.New("cpf é obrigatório")
-	}
-
-	if err := utils.ValidateCPF(dto.CPF); err != nil {
+	if err := security.ValidateEmail(dto.Email); err != nil {
 		return err
 	}
 
-	if dto.Phone == "" {
-		return errors.New("telefone é obrigatório")
+	if err := security.ValidatePassword(dto.Password); err != nil {
+		return err
 	}
 
-	if dto.Address == "" {
-		return errors.New("endereço é obrigatório")
+	if err := security.ValidateCPF(dto.CPF); err != nil {
+		return err
 	}
 
-	if dto.CEP == "" {
-		return errors.New("cep é obrigatório")
+	if err := security.ValidatePhone(dto.Phone); err != nil {
+		return err
 	}
 
-	if err := utils.ValidateCEP(dto.CEP); err != nil {
+	if dto.Address == "" || len(dto.Address) < 3 || len(dto.Address) > 128 {
+		return errors.New("invalid address")
+	}
+
+	if err := security.ValidateCEP(dto.CEP); err != nil {
 		return err
 	}
 
 	if dto.Birth.IsZero() {
-		return errors.New("data de nascimento é obrigatória")
+		return errors.New("birth date is required")
+	}
+
+	now := time.Now()
+	age := now.Year() - dto.Birth.Year()
+	if age < 18 {
+		return errors.New("user must be at least 18 years old")
 	}
 
 	return nil
@@ -80,7 +67,7 @@ func (dto *UserRequestDTO) ToEntity() *entities.User {
 	return &entities.User{
 		Name:            dto.Name,
 		Email:           dto.Email,
-		Password:        dto.Password,
+		Password:        dto.Password, // Será feito hash no service
 		CPF:             dto.CPF,
 		Phone:           dto.Phone,
 		Address:         dto.Address,
@@ -91,67 +78,59 @@ func (dto *UserRequestDTO) ToEntity() *entities.User {
 }
 
 type UserUpdateDTO struct {
-	Name     *string `json:"name"`
-	Email    *string `json:"email"`
-	Password *string `json:"password"`
-
-	CPF     *string    `json:"cpf"`
-	Phone   *string    `json:"phone"`
-	Address *string    `json:"address"`
-	CEP     *string    `json:"cep"`
-	Birth   *time.Time `json:"birth"`
-
-	HasFinancialAid *bool `json:"has_financial_aid"`
+	Name            *string    `json:"name"`
+	Email           *string    `json:"email"`
+	Password        *string    `json:"password"`
+	CPF             *string    `json:"cpf"`
+	Phone           *string    `json:"phone"`
+	Address         *string    `json:"address"`
+	CEP             *string    `json:"cep"`
+	Birth           *time.Time `json:"birth"`
+	HasFinancialAid *bool      `json:"has_financial_aid"`
 }
 
 func (dto *UserUpdateDTO) Validate() error {
-	if dto.Name != nil && *dto.Name == "" {
-		return errors.New("nome é obrigatório")
-	}
-
-	if dto.Email != nil && *dto.Email == "" {
-		return errors.New("email é obrigatório")
-	}
-
-	if dto.Email != nil && !strings.Contains(*dto.Email, "@") {
-		return errors.New("email inválido")
-	}
-
-	if dto.Password != nil && *dto.Password == "" {
-		dto.Password = nil
-	}
-
-	if dto.Password != nil {
-		if err := utils.ValidatePassword(*dto.Password); err != nil {
+	if dto.Name != nil && *dto.Name != "" {
+		if err := security.ValidateName(*dto.Name); err != nil {
 			return err
 		}
 	}
 
-	if dto.CPF != nil && *dto.CPF == "" {
-		return errors.New("cpf é obrigatório")
+	if dto.Email != nil && *dto.Email != "" {
+		if err := security.ValidateEmail(*dto.Email); err != nil {
+			return err
+		}
 	}
 
-	if err := utils.ValidateCPF(*dto.CPF); err != nil {
-		return err
+	if dto.Password != nil && *dto.Password != "" {
+		if err := security.ValidatePassword(*dto.Password); err != nil {
+			return err
+		}
 	}
 
-	if dto.Phone != nil && *dto.Phone == "" {
-		return errors.New("telefone é obrigatório")
+	if dto.CPF != nil && *dto.CPF != "" {
+		if err := security.ValidateCPF(*dto.CPF); err != nil {
+			return err
+		}
 	}
 
-	if dto.Address != nil && *dto.Address == "" {
-		return errors.New("endereço é obrigatório")
+	if dto.Phone != nil && *dto.Phone != "" {
+		if err := security.ValidatePhone(*dto.Phone); err != nil {
+			return err
+		}
 	}
 
-	if dto.CEP != nil && *dto.CEP == "" {
-		return errors.New("cep é obrigatório")
+	if dto.Address != nil && *dto.Address != "" {
+		if len(*dto.Address) < 3 {
+			return errors.New("endereço inválido")
+		}
 	}
 
-	if err := utils.ValidateCEP(*dto.CEP); err != nil {
-		return err
+	if dto.CEP != nil && *dto.CEP != "" {
+		if err := security.ValidateCEP(*dto.CEP); err != nil {
+			return err
+		}
 	}
-
-	fmt.Println(dto.Birth)
 
 	if dto.Birth != nil && dto.Birth.IsZero() {
 		return errors.New("data de nascimento é obrigatória")
@@ -166,35 +145,27 @@ func (dto *UserUpdateDTO) ToEntity() *entities.User {
 	if dto.Name != nil {
 		user.Name = *dto.Name
 	}
-
 	if dto.Email != nil {
 		user.Email = *dto.Email
 	}
-
 	if dto.Password != nil {
 		user.Password = *dto.Password
 	}
-
 	if dto.CPF != nil {
 		user.CPF = *dto.CPF
 	}
-
 	if dto.Phone != nil {
 		user.Phone = *dto.Phone
 	}
-
 	if dto.Address != nil {
 		user.Address = *dto.Address
 	}
-
 	if dto.CEP != nil {
 		user.CEP = *dto.CEP
 	}
-
 	if dto.Birth != nil {
 		user.Birth = *dto.Birth
 	}
-
 	if dto.HasFinancialAid != nil {
 		user.HasFinancialAid = *dto.HasFinancialAid
 	}
@@ -209,11 +180,11 @@ type UserResponseDTO struct {
 	Email string `json:"email"`
 	Role  string `json:"role"`
 
-	CPF       string  `json:"cpf"`
-	Phone     string  `json:"phone"`
-	Address   string  `json:"address"`
-	CEP       string  `json:"cep"`
-	Birth     string  `json:"birth"`
+	CPF     string `json:"cpf"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
+	CEP     string `json:"cep"`
+	Birth   string `json:"birth"`
 
 	HasFinancialAid bool `json:"has_financial_aid"`
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -17,7 +17,7 @@ func CreateAdminUser(db *gorm.DB) {
 		return
 	}
 
-	hashedPassword, err := utils.HashPassword("Admin#123")
+	hashedPassword, err := security.HashPassword("Admin#123")
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ func CreateAdminUser(db *gorm.DB) {
 		Email:           "admin@email.com",
 		Password:        hashedPassword,
 		CPF:             "00000000000",
-		Phone:           "(00) 00000-0000",
+		Phone:           "27000000000",
 		Address:         "Admin Address",
 		CEP:             "00000000",
 		Birth:           time.Date(2000, time.January, 25, 0, 0, 0, 0, time.UTC),

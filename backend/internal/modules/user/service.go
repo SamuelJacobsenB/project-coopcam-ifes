@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 	"github.com/google/uuid"
 )
 
@@ -25,7 +25,7 @@ func (service *UserService) FindByID(id uuid.UUID) (*entities.User, error) {
 }
 
 func (service *UserService) Create(user *entities.User) error {
-	hashedPassword, err := utils.HashPassword(user.Password)
+	hashedPassword, err := security.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (service *UserService) Update(user *entities.User) error {
 	}
 
 	if user.Password != "" {
-		hashedPassword, err := utils.HashPassword(user.Password)
+		hashedPassword, err := security.HashPassword(user.Password)
 		if err != nil {
 			return err
 		}

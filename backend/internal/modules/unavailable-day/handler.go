@@ -1,6 +1,10 @@
 package unavailable_day
 
 import (
+	"errors"
+	"net/http"
+
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/api"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -17,7 +21,7 @@ func NewUnavailableDayHandler(service *UnavailableDayService) *UnavailableDayHan
 func (handler *UnavailableDayHandler) FindAll(ctx *gin.Context) {
 	unavailableDays, err := handler.service.FindAll()
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar dias indisponíveis"})
+		api.InternalError(ctx, errors.New("erro interno ao buscar dias indisponíveis"))
 		return
 	}
 
@@ -26,41 +30,41 @@ func (handler *UnavailableDayHandler) FindAll(ctx *gin.Context) {
 		unavailableDaysResponse[i] = *dtos.ToUnavailableDayResponseDTO(&unavailableDay)
 	}
 
-	ctx.JSON(200, unavailableDaysResponse)
+	api.RespondWithSuccess(ctx, http.StatusOK, unavailableDaysResponse)
 }
 
 func (handler *UnavailableDayHandler) Create(ctx *gin.Context) {
 	var unavailableDayRequest dtos.UnavailableDayRequestDTO
 	if err := ctx.ShouldBindJSON(&unavailableDayRequest); err != nil {
-		ctx.JSON(400, gin.H{"error": "dados inválidos"})
+		api.BadRequest(ctx, "corpo da requisição inválido")
 		return
 	}
 
 	if err := unavailableDayRequest.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		api.BadRequest(ctx, err.Error())
 		return
 	}
 
 	unavailableDay := unavailableDayRequest.ToEntity()
 	if err := handler.service.Create(unavailableDay); err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao criar dia indisponível"})
+		api.InternalError(ctx, errors.New("erro interno ao criar dia indisponível"))
 		return
 	}
 
-	ctx.JSON(201, dtos.ToUnavailableDayResponseDTO(unavailableDay))
+	api.RespondWithSuccess(ctx, http.StatusCreated, dtos.ToUnavailableDayResponseDTO(unavailableDay))
 }
 
 func (handler *UnavailableDayHandler) Delete(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
+		api.BadRequest(ctx, "ID em formato inválido")
 		return
 	}
 
 	if err := handler.service.Delete(id); err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao deletar dia indisponível"})
+		api.InternalError(ctx, errors.New("erro interno ao deletar dia indisponível"))
 		return
 	}
 
-	ctx.JSON(204, nil)
+	api.RespondWithSuccess(ctx, http.StatusNoContent, nil)
 }

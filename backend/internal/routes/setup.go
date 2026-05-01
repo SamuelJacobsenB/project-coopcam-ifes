@@ -6,12 +6,13 @@ import (
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/middlewares"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/unrolled/secure"
 )
 
-func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
+func SetupRoutes(handlers *modules.ModuleHandlers) *gin.Engine {
 	router := gin.Default()
 
 	isDev := os.Getenv("ENV") == "development"
@@ -49,7 +50,8 @@ func SetupRoutes(handlers *config.ModuleHandlers) *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	router.Use(middlewares.RateLimiter(100))
+	router.Use(middlewares.CSRFProtection())
+	router.Use(middlewares.RateLimiter(config.RateLimitPerMinute))
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")

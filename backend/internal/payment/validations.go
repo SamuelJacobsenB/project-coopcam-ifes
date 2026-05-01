@@ -5,9 +5,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 )
 
+// ✅ SEGURANÇA: Valida assinatura do Mercado Pago com proteção contra replay
 func ValidateMercadoPagoSignature(signatureHeader, requestID, secret string) bool {
 	// Separar o timestamp (ts) e o hash (v1) do header
 	parts := strings.Split(signatureHeader, ",")
@@ -29,9 +32,23 @@ func ValidateMercadoPagoSignature(signatureHeader, requestID, secret string) boo
 		return false
 	}
 
+	// ✅ NOVO: Validar timestamp para proteção contra replay
+	// Rejeitar webhooks com mais de 5 minutos de idade
+	timestamp, err := strconv.ParseInt(ts, 10, 64)
+	if err != nil {
+		return false
+	}
+
+	nowUnix := time.Now().Unix()
+	if nowUnix-timestamp > 300 { // 5 minutos em segundos
+		return false // Webhook expirado
+	}
+	if timestamp > nowUnix+60 { // Permitir até 1 minuto de clock skew
+		return false // Timestamp no futuro (suspeito)
+	}
+
 	// Montar a string de manifesto conforme regra do MP:
 	// "id:[ID-DA-REQUISICAO];request-id:[X-REQUEST-ID];ts:[TIMESTAMP];"
-	// No caso de notificações v2, o formato é:
 	manifest := fmt.Sprintf("id:%s;request-id:%s;ts:%s;", requestID, requestID, ts)
 
 	// Gerar o HMAC-SHA256 usando secret

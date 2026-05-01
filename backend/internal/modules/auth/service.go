@@ -5,7 +5,7 @@ import (
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/user"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 )
 
 type AuthService struct {
@@ -22,9 +22,9 @@ func (service *AuthService) Login(loginDTO *dtos.LoginDTO) (string, error) {
 		return "", errors.New("credenciais inválidas")
 	}
 
-	if !utils.CheckPasswordHash(loginDTO.Password, user.Password) {
+	if !security.CheckPasswordHash(loginDTO.Password, user.Password) {
 		return "", errors.New("credenciais inválidas")
 	}
 
-	return utils.GenerateJWT(user.ID, user.Role)
+	return security.GenerateJWT(user.ID, user.Email, user.Role)
 }

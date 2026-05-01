@@ -1,8 +1,11 @@
 package bus_trip
 
 import (
+	"errors"
+	"net/http"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/api"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,53 +22,52 @@ func NewBusTripHandler(service *BusTripService) *BusTripHandler {
 func (handler *BusTripHandler) FindByDate(ctx *gin.Context) {
 	date, err := time.Parse("2006-01-02", ctx.Param("date"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "data inválida"})
+		api.BadRequest(ctx, "formato de data inválido (esperado: AAAA-MM-DD)")
 		return
 	}
 
 	busTrips, err := handler.service.FindByDate(date)
 	if err != nil {
-		ctx.AbortWithStatusJSON(500, "erro ao buscar viagens")
+		api.InternalError(ctx, err)
 		return
 	}
 
-	ctx.JSON(200, busTrips)
-
+	api.RespondWithSuccess(ctx, http.StatusOK, busTrips)
 }
 
 func (handler *BusTripHandler) FindByID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
+		api.BadRequest(ctx, "ID da viagem em formato inválido")
 		return
 	}
 
 	busTrip, err := handler.service.FindByID(id)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar viagem"})
+		api.InternalError(ctx, errors.New("erro interno ao buscar viagem"))
 		return
 	}
 
-	ctx.JSON(200, busTrip)
+	api.RespondWithSuccess(ctx, http.StatusOK, busTrip)
 }
 
 func (handler *BusTripHandler) UpdateStatus(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id inválido"})
+		api.BadRequest(ctx, "ID da viagem inválido")
 		return
 	}
 
 	status := types.Status(ctx.Param("status"))
 	if err := types.ValidateStatus(status); err != nil {
-		ctx.JSON(400, gin.H{"error": "status inválido"})
+		api.BadRequest(ctx, "o status fornecido é inválido")
 		return
 	}
 
 	if err := handler.service.UpdateStatus(id, status); err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao atualizar viagem"})
+		api.InternalError(ctx, errors.New("erro interno ao atualizar status"))
 		return
 	}
 
-	ctx.JSON(200, nil)
+	api.RespondWithSuccess(ctx, http.StatusOK, nil)
 }

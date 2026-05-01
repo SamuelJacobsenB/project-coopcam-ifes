@@ -1,6 +1,7 @@
-package config
+package modules
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/audit"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/auth"
 	available_override "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/available-override"
 	bus_reservation "github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/modules/bus-reservation"
@@ -31,6 +32,9 @@ type ModuleHandlers struct {
 }
 
 func SetupModules(db *gorm.DB) *ModuleHandlers {
+	// Audit Logger
+	auditLogger := audit.NewAuditLogger(db)
+
 	// Repositories
 	userRepo := user.NewUserRepository(db)
 	weeklyPreferenceRepo := weekly_preference.NewWeeklyPreferenceRepository(db)
@@ -57,8 +61,8 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	monthlyPaymentService := monthly_payment.NewMonthlyPaymentService(monthlyPaymentRepo)
 
 	// Handlers
-	authHandler := auth.NewAuthHandler(authService)
-	userHandler := user.NewUserHandler(userService)
+	authHandler := auth.NewAuthHandler(authService, auditLogger)
+	userHandler := user.NewUserHandler(userService, auditLogger)
 	weeklyPreferenceHandler := weekly_preference.NewWeeklyPreferenceHandler(weeklyPreferenceService)
 	templateHandler := template.NewTemplateHandler(templateService)
 	busReservationHandler := bus_reservation.NewBusReservationHandler(busReservationService)
@@ -66,8 +70,8 @@ func SetupModules(db *gorm.DB) *ModuleHandlers {
 	busTripReportHandler := bus_trip_report.NewBusTripReportHandler(busTripReportService)
 	availableOverrideHandler := available_override.NewAvailableOverrideHandler(availableOverrideService)
 	unavailableDayHandler := unavailable_day.NewUnavailableDayHandler(unavailableDayService)
-	monthlyFeeConfigHandler := monthly_fee_config.NewMonthlyFeeConfigHandler(monthlyFeeConfigService)
-	monthlyPaymentHandler := monthly_payment.NewMonthlyPaymentHandler(monthlyPaymentService)
+	monthlyFeeConfigHandler := monthly_fee_config.NewMonthlyFeeConfigHandler(monthlyFeeConfigService, auditLogger)
+	monthlyPaymentHandler := monthly_payment.NewMonthlyPaymentHandler(monthlyPaymentService, auditLogger)
 
 	return &ModuleHandlers{
 		AuthHandler:              authHandler,

@@ -45,6 +45,10 @@ export function validateUserRequestDTO(user: UserRequestDTO): string {
     return "O telefone deve ser preenchido";
   }
 
+  if (user.phone.length !== 10 && user.phone.length !== 11) {
+    return "O telefone deve ter 10 ou 11 caracteres";
+  }
+
   if (!user.address) {
     return "O endereço deve ser preenchido";
   }

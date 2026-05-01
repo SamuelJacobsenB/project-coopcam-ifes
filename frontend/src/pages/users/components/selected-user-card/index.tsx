@@ -2,7 +2,7 @@ import { useEffect, useReducer } from "react";
 
 import { Card, Checkbox, Error, I, Input } from "../../../../components";
 import type { User } from "../../../../types";
-import { formatCEP, formatCPF } from "../../../../utils";
+import { formatCEP, formatCPF, formatPhone } from "../../../../utils";
 import { EditableField, UserActions } from "./components";
 
 import styles from "./styles.module.css";
@@ -167,7 +167,7 @@ export function SelectedUserCard({
               label="Telefone"
               name="phone"
               type="text"
-              value={phone}
+              value={formatPhone(phone)}
               editMode={editMode}
               onChange={(val) => handleFieldChange("phone", val)}
             />

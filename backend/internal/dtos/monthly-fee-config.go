@@ -29,6 +29,10 @@ func (dto *MonthlyFeeConfigRequestDTO) Validate() error {
 		return errors.New("valor base deve ser maior que zero")
 	}
 
+	if dto.FinancialAidAmount < 0 {
+		return errors.New("valor de auxilio financeiro deve ser maior ou igual a zero")
+	}
+
 	if dto.DueDate.IsZero() {
 		return errors.New("data de vencimento é obrigatória")
 	}

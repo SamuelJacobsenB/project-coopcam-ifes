@@ -1,13 +1,10 @@
 package db
 
 import (
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/audit"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 )
 
-func MigrateDB() {
-	err := DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{}, &entities.MonthlyFeeConfig{}, &entities.MonthlyPayment{}, &entities.BusReservation{}, &entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{})
-
-	if err != nil {
-		panic("Falha na migração do banco de dados: " + err.Error())
-	}
+func MigrateDB() error {
+	return DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{}, &entities.MonthlyFeeConfig{}, &entities.MonthlyPayment{}, &entities.BusReservation{}, &entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{}, &audit.AuditEvent{})
 }

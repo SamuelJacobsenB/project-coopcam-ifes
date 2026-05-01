@@ -11,7 +11,7 @@ type User struct {
 	TemplateID         *uuid.UUID `gorm:"type:uuid" json:"template_id"`
 	WeeklyPreferenceID *uuid.UUID `gorm:"type:uuid" json:"weekly_preference_id"`
 
-	Name     string `gorm:"uniqueIndex;not null" json:"name"`
+	Name     string `gorm:"not null;index" json:"name"`
 	Email    string `gorm:"uniqueIndex;not null" json:"email"`
 	Password string `json:"-"`
 	Role     string `gorm:"type:text;default:'user'" json:"role"`

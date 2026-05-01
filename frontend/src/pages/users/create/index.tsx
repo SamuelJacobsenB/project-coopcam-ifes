@@ -13,7 +13,7 @@ import {
 import { useMessage } from "../../../contexts";
 import { useCreateUser } from "../../../hooks";
 import type { UserRequestDTO } from "../../../types";
-import { formatCEP, formatCPF, validateUserRequestDTO } from "../../../utils";
+import { formatCEP, formatCPF, formatPhone, validateUserRequestDTO } from "../../../utils";
 import styles from "./styles.module.css";
 
 type Action = { type: "field"; payload: { field: string; value: unknown } };
@@ -124,6 +124,8 @@ export function CreateUserPage() {
               label="Nome Completo"
               placeholder="Nome completo do usuário"
               required
+              min={3}
+              max={64}
               value={state.name}
               onChange={handleChange("name")}
             />
@@ -133,6 +135,7 @@ export function CreateUserPage() {
               type="email"
               placeholder="teste@exemplo.com"
               required
+              max={256}
               value={state.email}
               onChange={handleChange("email")}
             />
@@ -142,6 +145,8 @@ export function CreateUserPage() {
               type="password"
               placeholder="••••••••"
               required
+              min={8}
+              max={15}
               value={state.password}
               onChange={handleChange("password")}
             />
@@ -150,15 +155,19 @@ export function CreateUserPage() {
               label="CPF"
               placeholder="00000000000"
               required
+              min={11}
+              max={11}
               value={formatCPF(state.cpf)}
               onChange={handleChange("cpf")}
             />
 
             <Input
               label="Número de Telefone"
-              placeholder="(00) 00000-0000"
+              placeholder="00000000000"
               required
-              value={state.phone}
+              min={10}
+              max={11}
+              value={formatPhone(state.phone)}
               onChange={handleChange("phone")}
             />
 
@@ -174,6 +183,7 @@ export function CreateUserPage() {
               label="Endereço"
               placeholder="Rua, Número, Bairro..."
               required
+              max={128}
               value={state.address}
               onChange={handleChange("address")}
             />
@@ -182,6 +192,8 @@ export function CreateUserPage() {
               label="CEP"
               placeholder="00000000"
               required
+              min={8}
+              max={8}
               value={formatCEP(state.cep)}
               onChange={handleChange("cep")}
             />

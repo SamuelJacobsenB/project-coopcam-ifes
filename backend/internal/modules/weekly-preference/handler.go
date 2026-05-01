@@ -1,6 +1,10 @@
 package weekly_preference
 
 import (
+	"errors"
+	"net/http"
+
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/api"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -17,15 +21,15 @@ func NewWeeklyPreferenceHandler(service *WeeklyPreferenceService) *WeeklyPrefere
 func (handler *WeeklyPreferenceHandler) FindByUserID(ctx *gin.Context) {
 	userID, err := uuid.Parse(ctx.GetString("user_id"))
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": "não autorizado"})
+		api.BadRequest(ctx, "id de usuário inválido")
 		return
 	}
 
 	weeklyPreference, err := handler.service.FindByUserID(userID)
 	if err != nil {
-		ctx.JSON(404, gin.H{"error": "preferência não encontrada"})
+		api.InternalError(ctx, errors.New("erro ao buscar preferência semanal"))
 		return
 	}
 
-	ctx.JSON(200, dtos.ToWeeklyPreferenceResponseDTO(weeklyPreference))
+	api.RespondWithSuccess(ctx, http.StatusOK, dtos.ToWeeklyPreferenceResponseDTO(weeklyPreference))
 }

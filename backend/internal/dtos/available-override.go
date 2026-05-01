@@ -18,7 +18,7 @@ func (dto *AvailableOverrideRequestDTO) Validate() error {
 		return errors.New("data é obrigatória")
 	}
 
-	if dto.Reason == "" {
+	if dto.Reason == "" || len(dto.Reason) > 128 {
 		return errors.New("motivo é obrigatório")
 	}
 

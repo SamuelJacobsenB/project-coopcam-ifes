@@ -1,11 +1,13 @@
 package bus_trip_report
 
 import (
+	"errors"
+	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/api"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/dtos"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -21,13 +23,13 @@ func NewBusTripReportHandler(service *BusTripReportService) *BusTripReportHandle
 func (handler *BusTripReportHandler) FindByDate(ctx *gin.Context) {
 	date, err := time.Parse("02-01-2006", ctx.Param("date"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "data inválida"})
+		api.BadRequest(ctx, "formato de data inválido (esperado: DD-MM-AAAA)")
 		return
 	}
 
 	busTripReports, err := handler.service.FindByDate(date)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "erro ao buscar viagens"})
+		api.InternalError(ctx, errors.New("erro interno ao buscar relatórios"))
 		return
 	}
 
@@ -36,31 +38,31 @@ func (handler *BusTripReportHandler) FindByDate(ctx *gin.Context) {
 		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
-	ctx.JSON(200, busTripReportsResponse)
+	api.RespondWithSuccess(ctx, http.StatusOK, busTripReportsResponse)
 }
 
 func (handler *BusTripReportHandler) FindByUserAndMonth(ctx *gin.Context) {
 	userID, err := uuid.Parse(ctx.Param("user_id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
+		api.BadRequest(ctx, "id de usuário em formato inválido")
 		return
 	}
 
 	monthStr := ctx.Param("month")
 	month, err := strconv.Atoi(monthStr)
 	if err != nil || month < 1 || month > 12 {
-		ctx.JSON(400, gin.H{"error": "Mês inválido. Deve ser um número entre 1 e 12"})
+		api.BadRequest(ctx, "mês inválido (deve ser um número entre 1 e 12)")
 		return
 	}
 
-	if !utils.ValidateMonth(month) {
-		ctx.JSON(400, gin.H{"error": "Mês inválido. Deve ser um número entre 1 e 12"})
+	if month < 1 || month > 12 {
+		api.BadRequest(ctx, "mês inválido (deve ser um número entre 1 e 12)")
 		return
 	}
 
 	busTripReports, err := handler.service.FindByUserAndMonth(userID, month)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "Erro ao buscar relatórios"})
+		api.InternalError(ctx, errors.New("erro interno ao buscar relatórios"))
 		return
 	}
 
@@ -69,19 +71,19 @@ func (handler *BusTripReportHandler) FindByUserAndMonth(ctx *gin.Context) {
 		busTripReportsResponse[i] = *dtos.ToBusTripReportResponseDTO(&busTripReport)
 	}
 
-	ctx.JSON(200, busTripReportsResponse)
+	api.RespondWithSuccess(ctx, http.StatusOK, busTripReportsResponse)
 }
 
 func (handler *BusTripReportHandler) CreateMany(ctx *gin.Context) {
 	tripID, err := uuid.Parse(ctx.Param("trip_id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": "id de viagem inválido"})
+		api.BadRequest(ctx, "id de viagem inválido")
 		return
 	}
 
 	var userIDRequests []string
 	if err := ctx.ShouldBindJSON(&userIDRequests); err != nil {
-		ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
+		api.BadRequest(ctx, "corpo da requisição deve ser uma lista de IDs")
 		return
 	}
 
@@ -89,17 +91,16 @@ func (handler *BusTripReportHandler) CreateMany(ctx *gin.Context) {
 	for _, userIDRequest := range userIDRequests {
 		userID, err := uuid.Parse(userIDRequest)
 		if err != nil {
-			ctx.JSON(400, gin.H{"error": "ID de usuário inválido"})
+			api.BadRequest(ctx, "um dos IDs de usuário fornecidos é inválido: "+userIDRequest)
 			return
 		}
-
 		userIDs = append(userIDs, userID)
 	}
 
 	if err := handler.service.CreateMany(tripID, userIDs); err != nil {
-		ctx.JSON(500, gin.H{"error": "Erro ao criar relatório"})
+		api.InternalError(ctx, errors.New("erro interno ao criar relatório"))
 		return
 	}
 
-	ctx.JSON(201, nil)
+	api.RespondWithSuccess(ctx, http.StatusCreated, nil)
 }

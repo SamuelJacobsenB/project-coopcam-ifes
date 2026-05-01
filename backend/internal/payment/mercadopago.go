@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -80,8 +80,8 @@ func (c *MercadoPagoClient) CreatePixPayment(ctx context.Context, amountCents in
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		errorBody, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("erro %d no Mercado Pago: %s", resp.StatusCode, string(errorBody))
+		log.Printf("[MP_ERROR] Status: %d, Response: %v", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("erro ao processar pagamento com Mercado Pago (código: %d)", resp.StatusCode)
 	}
 
 	var result MPPaymentResponse

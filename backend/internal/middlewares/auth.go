@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/security"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
-	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/utils"
 	"github.com/gin-gonic/gin"
-	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
@@ -27,37 +26,19 @@ func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 			}
 		}
 
-		token, err := utils.ParseJWT(tokenStr)
-		if err != nil || !token.Valid {
+		claims, err := security.ValidateToken(tokenStr)
+		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			return
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
-			return
-		}
-
-		userID, ok := claims["user_id"].(string)
-		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing user_id in token"})
-			return
-		}
-
-		userRole, ok := claims["role"].(string)
-		if !ok {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing role in token"})
-			return
-		}
-
-		if !types.HasRole(userRole, []string(allowedRoles)) {
+		if !types.HasRole(claims.Role, []string(allowedRoles)) {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden: insufficient role"})
 			return
 		}
 
-		ctx.Set("user_id", userID)
-		ctx.Set("user_role", userRole)
+		ctx.Set("user_id", claims.UserID)
+		ctx.Set("user_role", claims.Role)
 		ctx.Next()
 	}
 }

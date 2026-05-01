@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/audit"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/entities"
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/types"
 	"github.com/google/uuid"
@@ -168,10 +169,6 @@ func DeleteOldInformation(db *gorm.DB) {
 
 	now := time.Now().In(loc)
 
-	if now.Month() != time.December || now.Day() != 31 {
-		return
-	}
-
 	err = db.Transaction(func(tx *gorm.DB) error {
 		limitDate := time.Date(now.Year(), time.December, 31, 0, 0, 0, 0, loc)
 
@@ -199,4 +196,47 @@ func DeleteOldInformation(db *gorm.DB) {
 	} else {
 		log.Println("[Job Success] Limpeza anual concluída com sucesso.")
 	}
+}
+
+func DeleteAuditLogs(db *gorm.DB) {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Unscoped().Delete(&audit.AuditEvent{}).Error; err != nil {
+			return err
+		}
+
+		log.Println("[Job Success] Limpeza de logs concluida com sucesso.")
+
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("[Job Error] Falha na transação de limpeza: %v", err)
+	} else {
+		log.Println("[Job Success] Limpeza de logs concluida com sucesso.")
+	}
+}
+
+func SetupTasks(scheduler *Scheduler, db *gorm.DB) error {
+	err := scheduler.RegisterTask("0 1 * * 0", func() {
+		CreateTripsAndWeeklyPreferences(db)
+	})
+	if err != nil {
+		return err
+	}
+
+	err = scheduler.RegisterTask("0 1 1 1 *", func() {
+		DeleteOldInformation(db)
+	})
+	if err != nil {
+		return err
+	}
+
+	err = scheduler.RegisterTask("0 1 1 1 *", func() {
+		DeleteAuditLogs(db)
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

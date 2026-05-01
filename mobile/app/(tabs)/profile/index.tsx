@@ -17,6 +17,7 @@ import { ConfirmModal, LoadPage, UserAccessCard } from "@/components";
 import { useMessage, useUser } from "@/contexts";
 import { useLogout } from "@/hooks";
 import { colors } from "@/styles";
+import { formatCEP, formatCPF, formatPhone } from "@/utils";
 
 const InfoRow = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.infoRow}>
@@ -37,7 +38,6 @@ export default function ProfilePage() {
 
   if (!user) return <LoadPage />;
 
-  const userNameFormatted = user.name.split(" ").slice(0, 2).join(" ");
   const qrCodeValue = `${user.id}:${user.name.replaceAll(" ", "-")}`;
 
   const handleDownloadCard = async () => {
@@ -78,26 +78,23 @@ export default function ProfilePage() {
             <Ionicons name="log-out-outline" size={24} color={colors.error} />
           </TouchableOpacity>
           <Ionicons name="person-circle" size={160} color={colors.primary} />
-          <Text style={styles.name}>{userNameFormatted}</Text>
+          <Text style={styles.name}>{user.name}</Text>
           <Text style={styles.email}>{user.email}</Text>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Dados do Usuário</Text>
-          <InfoRow label="Telefone" value={user.phone} />
+          <InfoRow label="Telefone" value={formatPhone(user.phone)} />
           <InfoRow label="Endereço" value={user.address} />
           <InfoRow
             label="CEP"
-            value={user.cep.slice(0, 5) + "-" + user.cep.slice(5, 8)}
+            value={formatCEP(user.cep)}
           />
           <InfoRow
             label="CPF"
-            value={user.cpf.replace(
-              /(\d{3})(\d{3})(\d{3})(\d{2})/,
-              "$1.$2.$3-$4",
-            )}
+            value={formatCPF(user.cpf)}
           />
-          <InfoRow label="Nascimento" value={user.birth} />
+          <InfoRow label="Nascimento" value={user.birth.toString()} />
         </View>
 
         <View style={styles.card}>
@@ -128,7 +125,7 @@ export default function ProfilePage() {
       </ScrollView>
 
       <UserAccessCard
-        name={userNameFormatted}
+        name={user.name}
         qrCodeValue={qrCodeValue}
         ref={cardToCaptureRef}
       />

@@ -5,13 +5,14 @@ import (
 	"log"
 	"os"
 
+	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func ConnectDB() {
+func ConnectDB() error {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		os.Getenv("DB_HOST"),
@@ -24,8 +25,23 @@ func ConnectDB() {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Erro ao conectar ao banco: %v", err)
+		return fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get database connection: %w", err)
+	}
+
+	sqlDB.SetMaxOpenConns(config.DBMaxOpenConns)
+	sqlDB.SetMaxIdleConns(config.DBMaxIdleConns)
+	sqlDB.SetConnMaxLifetime(config.DBConnMaxLifetime)
+
+	if err := sqlDB.Ping(); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
 	DB = db
+	log.Println("Database connected successfully")
+	return nil
 }
