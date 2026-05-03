@@ -25,8 +25,10 @@ func NewUserHandler(service *UserService, logger *audit.AuditLogger) *UserHandle
 func (handler *UserHandler) FindMany(ctx *gin.Context) {
 	namePrefix := ctx.Query("name")
 
-	if len(namePrefix) > 50 || !regexp.MustCompile(`^[a-zA-Z0-9\s\-]*$`).MatchString(namePrefix) {
+	// Validar parâmetro de busca
+	if len(namePrefix) > 50 || (namePrefix != "" && !regexp.MustCompile(`^[a-zA-Z0-9\s\-]*$`).MatchString(namePrefix)) {
 		api.BadRequest(ctx, "parâmetros de busca inválidos")
+		return
 	}
 
 	users, err := handler.service.FindMany(namePrefix)

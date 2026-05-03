@@ -4,16 +4,13 @@ import { api } from "@/services";
 import { TemplateUpdateDTO } from "@/types";
 
 export const fetchUpdateTemplate = async (dto: TemplateUpdateDTO) => {
-  try {
-    const res = await api.put("/v1/template/", dto);
+  const res = await api.put("/v1/template/", dto);
 
-    if (res.status !== 200)
-      throw new Error("Ocorreu um erro ao atualizar o template");
-
-    return res.data;
-  } catch {
-    throw new Error("Ocorreu um erro ao atualizar o template");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Ocorreu um erro ao atualizar o template");
   }
+
+  return res.data;
 };
 
 export const useUpdateTemplate = () => {

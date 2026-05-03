@@ -4,16 +4,13 @@ import { api } from "@/services";
 import type { UnavailableDay } from "@/types";
 
 export const fetchAllUnavailableDays = async () => {
-  try {
-    const res = await api.get<UnavailableDay[]>(`/v1/unavailable-day/`);
+  const res = await api.get<UnavailableDay[]>(`/v1/unavailable-day/`);
 
-    if (res.status !== 200)
-      throw new Error("Erro ao buscar dias indisponíveis");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao buscar dias indisponíveis");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar dias indisponíveis");
   }
+
+  return res.data;
 };
 
 export const useAllUnavailableDays = () => {

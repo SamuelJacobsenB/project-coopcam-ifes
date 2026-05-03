@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { api } from "../../services";
 
-export const fetchVerifyAdmin = async () => {
+export const fetchVerifyAdmin = async (): Promise<true> => {
   const res = await api.get("/v1/auth/verify/admin/");
 
-  if (res.status != 200) throw new Error("Usuário não autorizado");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Usuário não autorizado");
+  }
 
   return true;
 };
@@ -19,6 +21,7 @@ export const useVerifyAdmin = () => {
   } = useQuery({
     queryKey: ["verify-admin"],
     queryFn: fetchVerifyAdmin,
+    retry: false,
   });
 
   return { isVerified, error, isLoading, refetch };

@@ -4,16 +4,13 @@ import { api } from "@/services";
 import { Template } from "@/types";
 
 export const fetchTemplateByUserId = async () => {
-  try {
-    const res = await api.get<Template>(`/v1/template/`);
+  const res = await api.get<Template>(`/v1/template/`);
 
-    if (res.status !== 200)
-      throw new Error("Ocorreu um erro ao buscar o template");
-
-    return res.data;
-  } catch {
-    throw new Error("Ocorreu um erro ao buscar o template");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Ocorreu um erro ao buscar o template");
   }
+
+  return res.data;
 };
 
 export const useTemplateByUserId = () => {

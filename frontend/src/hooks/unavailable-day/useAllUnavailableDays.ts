@@ -3,17 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { UnavailableDay } from "../../types";
 
-export const fetchAllUnavailableDays = async () => {
-  try {
-    const res = await api.get<UnavailableDay[]>(`/v1/unavailable-day/`);
+export const fetchAllUnavailableDays = async (): Promise<UnavailableDay[]> => {
+  const res = await api.get<UnavailableDay[]>("/v1/unavailable-day/");
 
-    if (res.status !== 200)
-      throw new Error("Erro ao buscar dias indisponíveis");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao buscar dias indisponíveis");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar dias indisponíveis");
   }
+
+  return res.data;
 };
 
 export const useAllUnavailableDays = () => {
@@ -25,6 +22,7 @@ export const useAllUnavailableDays = () => {
   } = useQuery({
     queryKey: ["unavailable-days"],
     queryFn: fetchAllUnavailableDays,
+    retry: false,
   });
 
   return { unavailableDays, isLoading, error, refetch };

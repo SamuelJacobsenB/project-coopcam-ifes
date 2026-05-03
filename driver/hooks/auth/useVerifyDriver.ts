@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/services/";
 
-const fetchVerifyDriver = async () => {
+export const fetchVerifyDriver = async () => {
   const res = await api.get("/v1/auth/verify/driver/");
 
-  if (res.status !== 200) throw new Error("Credenciais inválidas");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Credenciais inválidas");
+  }
 
   return true;
 };

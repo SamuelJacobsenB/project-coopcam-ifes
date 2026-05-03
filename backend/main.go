@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/config"
@@ -15,19 +16,19 @@ import (
 
 func main() {
 	if err := config.LoadEnv(); err != nil {
-		panic(err)
+		log.Fatalf("Failed to load environment configuration: %v", err)
 	}
 
 	if err := db.ConnectDB(); err != nil {
-		panic(err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	if err := db.MigrateDB(); err != nil {
-		panic(err)
+		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
 	if err := security.InitJWT(); err != nil {
-		panic(err)
+		log.Fatalf("Failed to initialize JWT: %v", err)
 	}
 
 	handlers := modules.SetupModules(db.DB)
@@ -35,7 +36,7 @@ func main() {
 	scheduler := workers.NewScheduler()
 
 	if err := workers.SetupTasks(scheduler, db.DB); err != nil {
-		panic(err)
+		log.Fatalf("Failed to setup scheduler tasks: %v", err)
 	}
 
 	scheduler.Start()
@@ -46,6 +47,6 @@ func main() {
 
 	router := routes.SetupRoutes(handlers)
 	if err := router.Run(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {
-		panic(err)
+		log.Fatalf("Failed to start router: %v", err)
 	}
 }

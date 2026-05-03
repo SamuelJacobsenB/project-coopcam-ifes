@@ -17,24 +17,38 @@ import { months, validateMonthlyFeeConfigRequestDTO } from "../../../utils";
 
 import styles from "./styles.module.css";
 
-type Action = { type: "field"; payload: { field: string; value: unknown } };
+interface FeeConfigFormState {
+  month: number;
+  year: number;
+  base_amount: number;
+  financial_aid_amount: number;
+  due_date: string;
+  error: string;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: any, action: Action) => {
+type FeeConfigAction = {
+  type: "field";
+  payload: { field: keyof FeeConfigFormState; value: number | string };
+};
+
+const reducer = (
+  state: FeeConfigFormState,
+  action: FeeConfigAction,
+): FeeConfigFormState => {
   if (action.type === "field") {
     return { ...state, [action.payload.field]: action.payload.value };
   }
   return state;
 };
 
-const initialState = {
+const initialState: FeeConfigFormState = {
   month: new Date().getMonth() + 1,
   year: new Date().getFullYear(),
   base_amount: 0,
   financial_aid_amount: 0,
   due_date: new Date(new Date().setMonth(new Date().getMonth() + 1))
     .toISOString()
-    .split("T")[0], // Simplificado para string no estado
+    .split("T")[0],
   error: "",
 };
 
@@ -46,9 +60,16 @@ export function CreatePaymentFeeConfigPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleChange =
-    (field: string) =>
+    (field: keyof FeeConfigFormState) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      dispatch({ type: "field", payload: { field, value: e.target.value } });
+      const { value, type } = e.target;
+
+      const processedValue = type === "number" ? Number(value) : value;
+
+      dispatch({
+        type: "field",
+        payload: { field, value: processedValue },
+      });
     };
 
   async function handleCreateMonthlyFeeConfig(e: FormEvent) {

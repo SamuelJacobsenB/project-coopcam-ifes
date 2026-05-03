@@ -3,21 +3,29 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { BusTrip, Status } from "../../types";
 
+interface UpdateBusTripStatusParams {
+  id: string;
+  status: Status;
+}
+
 export const fetchUpdateBusTripStatus = async (
   id: string,
-  status: Status
-) => {
+  status: Status,
+): Promise<BusTrip> => {
   const res = await api.put<BusTrip>(`/v1/bus-trip/${id}/status/${status}/`);
 
-  if (res.status !== 200) throw new Error("Erro ao atualizar viagem");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao atualizar viagem");
+  }
 
   return res.data;
 };
 
 export const useUpdateBusTripStatus = () => {
   const { mutateAsync: updateBusTripStatus } = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: Status }) =>
+    mutationFn: ({ id, status }: UpdateBusTripStatusParams) =>
       fetchUpdateBusTripStatus(id, status),
+    retry: false,
   });
 
   return { updateBusTripStatus };

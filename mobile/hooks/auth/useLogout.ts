@@ -1,21 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useUser } from "@/contexts";
 import { api } from "@/services";
 
-export const fetchLogout = async () => {
+export const fetchLogout = async (): Promise<void> => {
   try {
     const res = await api.get("/v1/auth/logout/");
 
-    if (res.status !== 200) throw new Error("Erro ao realizar logout");
-
+    if (res.code !== "SUCCESS") {
+      throw new Error(res.message || "Erro ao deslogar");
+    }
+  } finally {
     await AsyncStorage.removeItem("auth_token");
-
-    return "Deslogado com sucesso";
-  } catch {
-    throw new Error("Erro ao deslogar");
   }
 };
 
@@ -24,7 +21,7 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: logout } = useMutation({
-    mutationFn: () => fetchLogout(),
+    mutationFn: fetchLogout,
     onSuccess: () => {
       setUser(null);
       queryClient.clear();

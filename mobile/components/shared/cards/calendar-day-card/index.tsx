@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
-import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import React, { useMemo } from "react";
+import { Text, View } from "react-native";
 
-import { Line } from "../../line";
-import { AvailableOverride, UnavailableDay } from "@/types";
 import { colors } from "@/styles";
+import { AvailableOverride, UnavailableDay } from "@/types";
+import { Line } from "../../line";
 
 import styles from "./styles";
 
@@ -14,12 +14,21 @@ interface DayInfoCardProps {
   override: AvailableOverride | null;
 }
 
+interface CardState {
+  status: string;
+  reason: string;
+  color: string;
+  bgColor: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  isAvailable: boolean;
+}
+
 export function CalendarDayCard({
   date,
   unavailable,
   override,
 }: DayInfoCardProps) {
-  const cardState = useMemo(() => {
+  const cardState = useMemo((): CardState => {
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
 
@@ -115,11 +124,7 @@ export function CalendarDayCard({
           <View
             style={[styles.statusBadge, { backgroundColor: cardState.bgColor }]}
           >
-            <Ionicons
-              name={cardState.icon as any}
-              size={16}
-              color={cardState.color}
-            />
+            <Ionicons name={cardState.icon} size={16} color={cardState.color} />
             <Text style={[styles.statusText, { color: cardState.color }]}>
               {cardState.status}
             </Text>

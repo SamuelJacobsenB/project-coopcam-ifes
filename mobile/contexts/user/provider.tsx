@@ -1,6 +1,8 @@
+import React, { useEffect, useState } from "react";
+
 import { useOwnUser } from "@/hooks/user/useOwnUser";
 import type { User } from "@/types";
-import React, { useEffect, useState } from "react";
+
 import { UserContext } from "./context";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -8,17 +10,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (userData) {
-      setUser(userData);
-    } else {
-      setUser(null);
-    }
+    setUser(userData ?? null);
   }, [userData]);
 
   const findUser = async () => {
     const { data, isError } = await refetch();
+
     if (!isError) {
-      setUser(data);
+      setUser(data ?? null);
     }
   };
 

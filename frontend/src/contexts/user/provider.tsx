@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { UserContext } from "./context";
-
-import { useOwnUser } from "../../hooks/";
+import { useOwnUser } from "../../hooks";
 import type { User } from "../../types";
+import { UserContext } from "./context";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { user: userData, refetch } = useOwnUser();
@@ -15,8 +14,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const findUser = async () => {
     const { data, isError } = await refetch();
+
     if (!isError) {
-      setUser(data);
+      setUser(data ?? null);
     }
   };
 

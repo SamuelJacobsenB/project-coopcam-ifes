@@ -2,21 +2,18 @@ import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
 
-export const fetchDeleteUserById = async (id: string) => {
-  try {
-    const res = await api.delete(`/v1/user/${id}/`);
+export const fetchDeleteUserById = async (id: string): Promise<void> => {
+  const res = await api.delete(`/v1/user/${id}/`);
 
-    if (res.status !== 204) throw new Error("Erro ao deletar usuário");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao deletar usuário");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao deletar usuário");
   }
 };
 
 export const useDeleteUserById = () => {
   const { mutateAsync: deleteUserById } = useMutation({
-    mutationFn: async (id: string) => fetchDeleteUserById(id),
+    mutationFn: (id: string) => fetchDeleteUserById(id),
+    retry: false,
   });
 
   return { deleteUserById };

@@ -17,7 +17,9 @@ export const fetchCreateManyBusTripReports = async (id: string) => {
     userIds,
   });
 
-  if (res.status !== 201) throw new Error("Erro ao criar relatórios de viagem");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao criar relatórios de viagem");
+  }
 
   await setScannedUsersByTripId(id, []);
   await setReservationsByTripId(id, []);

@@ -1,17 +1,13 @@
 import React, { useMemo } from "react";
 import { View } from "react-native";
-import {
-  Calendar as RNCalendar,
-  DateData,
-  LocaleConfig,
-} from "react-native-calendars";
+import { DateData, Calendar as RNCalendar } from "react-native-calendars";
 import { MarkingProps } from "react-native-calendars/src/calendar/day/marking";
 
-import type { AvailableOverride, UnavailableDay } from "@/types";
 import { colors } from "@/styles";
+import type { AvailableOverride, UnavailableDay } from "@/types";
 import styles from "./styles";
 
-function toDateId(dateInput: any): string {
+function toDateId(dateInput: Date | string | undefined): string {
   if (!dateInput) return "";
 
   const date = new Date(dateInput);
@@ -37,7 +33,6 @@ export function Calendar({
   availableOverrides = [],
   unavailableDays = [],
 }: CalendarProps) {
-
   const today = useMemo(() => new Date(), []);
   const todayId = toDateId(today);
 
@@ -45,7 +40,7 @@ export function Calendar({
     const markings: Record<string, MarkingProps> = {};
 
     const overrideSet = new Set(
-      availableOverrides.map((o) => toDateId(o.date))
+      availableOverrides.map((o) => toDateId(o.date)),
     );
 
     for (let i = 0; i <= 365; i++) {

@@ -3,15 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 
 export const fetchOwnUser = async () => {
-  try {
-    const res = await api.get("/v1/user/own/");
+  const res = await api.get("/v1/user/own/");
 
-    if (res.status !== 200) throw new Error("Faça seu login");
-
-    return res.data;
-  } catch {
-    throw new Error("Faça seu login");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Faça seu login");
   }
+
+  return res.data;
 };
 
 export const useOwnUser = () => {

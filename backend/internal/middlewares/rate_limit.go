@@ -1,57 +1,42 @@
 package middlewares
 
 import (
-	"context"
-	"fmt"
 	"net/http"
-	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
+	"github.com/ulule/limiter/v3"
+	"github.com/ulule/limiter/v3/drivers/store/memory"
 )
 
-var rdb *redis.Client
-var ctx = context.Background()
+var commonStore = memory.NewStore()
 
-func getRedis() *redis.Client {
-	if rdb == nil {
-		addr := os.Getenv("REDIS_URL")
-		rdb = redis.NewClient(&redis.Options{
-			Addr: addr,
-		})
+func RateLimiter(requests int64) gin.HandlerFunc {
+	rate := limiter.Rate{
+		Period: time.Minute,
+		Limit:  requests,
 	}
-	return rdb
-}
 
-func RateLimiter(limit int) gin.HandlerFunc {
-	client := getRedis()
+	instance := limiter.New(commonStore, rate)
 
 	return func(c *gin.Context) {
-		if client == nil {
-			c.Next()
-			return
-		}
+		key := c.ClientIP() + ":" + c.FullPath()
 
-		key := fmt.Sprintf("rate_limit:%s:%s:%s", c.ClientIP(), c.Request.Method, c.Request.URL.Path)
-
-		// Executa INCR. Se a chave não existir, o Redis cria com valor 1.
-		count, err := client.Incr(ctx, key).Result()
+		context, err := instance.Get(c, key)
 		if err != nil {
 			c.Next()
 			return
 		}
 
-		// Se for a primeira requisição desse ciclo, define o tempo de expiração
-		if count == 1 {
-			client.Expire(ctx, key, time.Minute)
-		}
+		c.Header("X-RateLimit-Limit", strconv.FormatInt(context.Limit, 10))
+		c.Header("X-RateLimit-Remaining", strconv.FormatInt(context.Remaining, 10))
+		c.Header("X-RateLimit-Reset", strconv.FormatInt(context.Reset, 10))
 
-		if int(count) > limit {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"error": "Muitas requisições. Tente novamente mais tarde.",
+		if context.Reached {
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"error": "Muitas requisições para esta rota. Tente novamente mais tarde.",
 			})
-			c.Abort()
 			return
 		}
 

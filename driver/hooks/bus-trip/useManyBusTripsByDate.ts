@@ -6,7 +6,9 @@ import type { BusTrip } from "../../types";
 export const fetchManyBusTripsByDate = async (date: string) => {
   const res = await api.get<BusTrip[]>(`/v1/bus-trip/date/${date}/`);
 
-  if (res.status !== 200) throw new Error("Erro ao buscar viagens");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar viagens");
+  }
 
   return res.data;
 };

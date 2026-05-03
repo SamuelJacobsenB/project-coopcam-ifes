@@ -50,7 +50,9 @@ func SetupRoutes(handlers *modules.ModuleHandlers) *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	router.Use(middlewares.CSRFProtection())
+	csrfConfg := middlewares.NewCSRFConfig()
+	router.Use(middlewares.CSRFProtection(csrfConfg))
+
 	router.Use(middlewares.RateLimiter(config.RateLimitPerMinute))
 
 	api := router.Group("/api")

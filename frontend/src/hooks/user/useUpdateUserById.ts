@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { User, UserUpdateDTO } from "../../types";
 
-interface UpdateUserByIdProps {
+interface UpdateUserByIdParams {
   id: string;
   user: UserUpdateDTO;
 }
@@ -11,22 +11,20 @@ interface UpdateUserByIdProps {
 export const fetchUpdateUserById = async ({
   id,
   user,
-}: UpdateUserByIdProps) => {
-  try {
-    const res = await api.put<User>(`/v1/user/${id}/`, user);
+}: UpdateUserByIdParams): Promise<User> => {
+  const res = await api.put<User>(`/v1/user/${id}/`, user);
 
-    if (res.status !== 200) throw new Error("Erro ao atualizar usuário");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao atualizar usuário");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao atualizar usuário");
   }
+
+  return res.data;
 };
 
 export const useUpdateUserById = () => {
   const { mutateAsync: updateUserById } = useMutation({
-    mutationFn: async ({ id, user }: UpdateUserByIdProps) =>
-      fetchUpdateUserById({ id, user }),
+    mutationFn: (params: UpdateUserByIdParams) => fetchUpdateUserById(params),
+    retry: false,
   });
 
   return { updateUserById };

@@ -4,16 +4,13 @@ import { api } from "@/services";
 import { TemplateRequestDTO } from "@/types";
 
 export const fetchCreateTemplate = async (dto: TemplateRequestDTO) => {
-  try {
-    const res = await api.post("/v1/template/", dto);
+  const res = await api.post("/v1/template/", dto);
 
-    if (res.status !== 201)
-      throw new Error("Ocorreu um erro ao criar o template");
-
-    return res.data;
-  } catch {
-    throw new Error("Ocorreu um erro ao criar o template");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Ocorreu um erro ao criar o template");
   }
+
+  return res.data;
 };
 
 export const useCreateTemplate = () => {

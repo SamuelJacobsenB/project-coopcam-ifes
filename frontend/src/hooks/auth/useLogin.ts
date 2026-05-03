@@ -1,30 +1,37 @@
 import { useMutation } from "@tanstack/react-query";
+
+import { useUser } from "../../contexts";
 import { api } from "../../services";
 import type { LoginDTO } from "../../types";
 import { fetchLogout, fetchVerifyAdmin } from "./";
 
-export const fetchLogin = async (loginDTO: LoginDTO) => {
-  try {
-    const res = await api.post("/v1/auth/login/", loginDTO);
-    if (res.status !== 200) throw new Error("Credenciais inválidas");
+export const fetchLogin = async (loginDTO: LoginDTO): Promise<string> => {
+  const res = await api.post("/v1/auth/login/", loginDTO);
 
-    localStorage.setItem("auth_token", res.data.token);
-
-    const verified = await fetchVerifyAdmin();
-    if (!verified) {
-      await fetchLogout();
-      throw new Error("Usuário não é administrador");
-    }
-
-    return "Login realizado com sucesso";
-  } catch {
-    throw new Error("Erro ao realizar login");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Credenciais inválidas");
   }
+
+  localStorage.setItem("auth_token", res.data.token);
+
+  try {
+    await fetchVerifyAdmin();
+  } catch {
+    await fetchLogout();
+    throw new Error("Usuário não é administrador");
+  }
+
+  return "Login realizado com sucesso";
 };
 
 export const useLogin = () => {
+  const { findUser } = useUser();
+
   const { mutateAsync: login } = useMutation({
     mutationFn: (loginDTO: LoginDTO) => fetchLogin(loginDTO),
+    onSuccess: async () => {
+      await findUser();
+    },
     retry: false,
   });
 

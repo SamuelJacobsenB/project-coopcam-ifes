@@ -3,16 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { AvailableOverride } from "../../types";
 
-export const fetchAllAvailableOverrides = async () => {
-  try {
-    const res = await api.get<AvailableOverride[]>(`/v1/available-override/`);
+export const fetchAllAvailableOverrides = async (): Promise<
+  AvailableOverride[]
+> => {
+  const res = await api.get<AvailableOverride[]>("/v1/available-override/");
 
-    if (res.status !== 200) throw new Error("Erro ao buscar dias disponíveis");
-
-    return res.data || [];
-  } catch {
-    throw new Error("Erro ao buscar dias disponíveis");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar dias disponíveis");
   }
+
+  return res.data;
 };
 
 export const useAllAvailableOverrides = () => {
@@ -24,6 +24,7 @@ export const useAllAvailableOverrides = () => {
   } = useQuery({
     queryKey: ["available-overrides"],
     queryFn: fetchAllAvailableOverrides,
+    retry: false,
   });
 
   return { availableOverrides, isLoading, error, refetch };

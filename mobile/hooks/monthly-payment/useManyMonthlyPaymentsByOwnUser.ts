@@ -8,6 +8,11 @@ export const fetchManyMonthlyPaymentsByOwnUser = async (user_id: string) => {
   const res = await api.get<MonthlyPayment[]>(
     `/v1/monthly-payment/user/${user_id}/`,
   );
+
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar pagamentos");
+  }
+
   return res.data;
 };
 

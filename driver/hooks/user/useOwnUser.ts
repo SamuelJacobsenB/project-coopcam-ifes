@@ -9,7 +9,9 @@ const USER_STORAGE_KEY = "@auth_user";
 export const fetchOwnUser = async () => {
   try {
     const res = await api.get("/v1/user/own/");
-    if (res.status !== 200) throw new Error("Não autorizado");
+    if (res.code !== "SUCCESS") {
+      throw new Error(res.message || "Não autorizado");
+    }
 
     await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(res.data));
 

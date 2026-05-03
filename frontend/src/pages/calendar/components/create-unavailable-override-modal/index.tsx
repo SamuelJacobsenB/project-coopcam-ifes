@@ -1,10 +1,10 @@
 import { useEffect, useReducer } from "react";
 
+import { Error, Input, Modal } from "../../../../components";
 import { useMessage } from "../../../../contexts";
 import { useCreateUnavailableDay } from "../../../../hooks";
-import { Error, Input, Modal } from "../../../../components";
-import { validateUnavailableDayRequestDTO } from "../../../../utils";
 import type { UnavailableDayRequestDTO } from "../../../../types";
+import { validateUnavailableDayRequestDTO } from "../../../../utils";
 
 import styles from "./styles.module.css";
 
@@ -15,24 +15,41 @@ interface CreateUnavailableDayModalProps {
   onCreated: () => Promise<void>;
 }
 
-type State = {
+interface UnavailableFormState {
   date: Date;
   reason: string;
   error: string;
-};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
+}
+
+type UnavailableFormAction =
+  | {
+      type: "field";
+      payload: { field: keyof UnavailableFormState; value: string | Date };
+    }
+  | { type: "reset" };
+
+const reducer = (
+  state: UnavailableFormState,
+  action: UnavailableFormAction,
+): UnavailableFormState => {
   switch (action.type) {
     case "field":
       return {
         ...state,
-        [action.payload.field as string]: action.payload.value,
+        [action.payload.field]: action.payload.value,
+      };
+    case "reset":
+      return {
+        date: new Date(),
+        reason: "",
+        error: "",
       };
     default:
       return state;
   }
 };
-const initialState = {
+
+const initialState: UnavailableFormState = {
   date: new Date(),
   reason: "",
   error: "",
@@ -52,7 +69,7 @@ export function CreateUnavailableDayModal({
   const { date, reason, error } = state;
 
   async function handleCreateUnavailableDay(
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
 

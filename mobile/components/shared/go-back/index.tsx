@@ -2,19 +2,19 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 
 import styles from "./styles";
 
 interface GoBackProps {
-  path: string;
+  path: Href;
 }
 
 export function GoBack({ path }: GoBackProps) {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => router.push(path as any)}
+      onPress={() => router.push(path)}
       activeOpacity={0.7}
     >
       <Ionicons name="chevron-back" size={20} color="#666" />

@@ -4,18 +4,15 @@ import { api } from "@/services";
 import { WeeklyPreference } from "@/types";
 
 export const fetchWeeklyPreferenceByUserId = async () => {
-  try {
-    const res = await api.get<WeeklyPreference>(
-      `/v1/weekly-preference/`,
+  const res = await api.get<WeeklyPreference>(`/v1/weekly-preference/`);
+
+  if (res.code !== "SUCCESS") {
+    throw new Error(
+      res.message || "Ocorreu um erro ao buscar a preferência semanal",
     );
-
-    if (res.status !== 200)
-      throw new Error("Ocorreu um erro ao buscar a preferência semanal");
-
-    return res.data;
-  } catch {
-    throw new Error("Ocorreu um erro ao buscar a preferência semanal");
   }
+
+  return res.data;
 };
 
 export const useWeeklyPreferenceByUserId = () => {

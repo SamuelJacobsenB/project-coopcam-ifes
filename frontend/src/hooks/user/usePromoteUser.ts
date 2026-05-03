@@ -1,26 +1,32 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
+import type { User } from "../../types";
 
-interface PromoteUserProps {
-  user_id: string;
+interface PromoteUserParams {
+  userId: string;
   targetRole: "driver" | "admin";
 }
 
 export const fetchPromoteUser = async ({
-  user_id,
+  userId,
   targetRole,
-}: PromoteUserProps) => {
-  const res = await api.post(`/v1/user/promote-to-${targetRole}/${user_id}/`);
+}: PromoteUserParams): Promise<User> => {
+  const res = await api.post<User>(
+    `/v1/user/promote-to-${targetRole}/${userId}/`,
+  );
 
-  if (res.status != 200) throw new Error("Erro ao promover usuário");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao promover usuário");
+  }
 
   return res.data;
 };
 
 export const usePromoteUser = () => {
   const { mutateAsync: promoteUser } = useMutation({
-    mutationFn: (props: PromoteUserProps) => fetchPromoteUser(props),
+    mutationFn: (params: PromoteUserParams) => fetchPromoteUser(params),
+    retry: false,
   });
 
   return { promoteUser };

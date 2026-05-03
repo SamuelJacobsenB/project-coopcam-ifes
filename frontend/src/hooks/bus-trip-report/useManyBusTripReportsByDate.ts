@@ -1,22 +1,26 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
+import type { BusTripReport } from "../../types";
 
-export const fetchManyBusTripReportsByDate = async (date: string) => {
-  try {
-    const res = await api.get(`/v1/bus-trip-report/date/${date}/`);
+export const fetchManyBusTripReportsByDate = async (
+  date: string,
+): Promise<BusTripReport[]> => {
+  const res = await api.get<BusTripReport[]>(
+    `/v1/bus-trip-report/date/${date}/`,
+  );
 
-    if (res.status !== 200) throw new Error("Erro ao buscar relatórios");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao buscar relatórios");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar relatórios");
   }
+
+  return res.data;
 };
 
 export const useManyBusTripReportsByDate = () => {
   const { mutateAsync: getManyBusTripReportsByDate } = useMutation({
     mutationFn: (date: string) => fetchManyBusTripReportsByDate(date),
+    retry: false,
   });
 
   return { getManyBusTripReportsByDate };

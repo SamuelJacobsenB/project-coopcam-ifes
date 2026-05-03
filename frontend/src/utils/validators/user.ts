@@ -18,19 +18,19 @@ export function validateUserRequestDTO(user: UserRequestDTO): string {
   }
 
   if (user.password.length < 8) {
-    return "A senha deve ter no mínimo 8 caracteres";
+    return "A senha deve ter no mínimo 8 caracteres";
   }
 
   if (user.password.length > 15) {
-    return "A senha deve ter no máximo 15 caracteres";
+    return "A senha deve ter no máximo 15 caracteres";
   }
 
   if (user.password.includes(" ")) {
     return "A senha não pode conter espaços em branco";
   }
 
-  if (!/^(?=.*[A-Za-z])(?=.*\d)[^\s]{8,15}$/.test(user.password)) {
-    return "A senha deve conter no mínimo um número e uma letra";
+  if (!/^(?=.*[A-Za-z])(?=.*\d)[^\s]{12,128}$/.test(user.password)) {
+    return "A senha deve conter no mínimo uma letra e um número";
   }
 
   if (!user.cpf) {

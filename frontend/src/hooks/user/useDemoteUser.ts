@@ -1,18 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
+import type { User } from "../../types";
 
-export const fetchDemoteUser = async (user_id: string) => {
-  const res = await api.post(`/v1/user/demote/${user_id}/`);
+export const fetchDemoteUser = async (userId: string): Promise<User> => {
+  const res = await api.post<User>(`/v1/user/demote/${userId}/`);
 
-  if (res.status != 200) throw new Error("Erro ao rebaixar usuário");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao rebaixar usuário");
+  }
 
   return res.data;
 };
 
 export const useDemoteUser = () => {
   const { mutateAsync: demoteUser } = useMutation({
-    mutationFn: (user_id: string) => fetchDemoteUser(user_id),
+    mutationFn: (userId: string) => fetchDemoteUser(userId),
+    retry: false,
   });
 
   return { demoteUser };

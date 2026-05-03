@@ -13,20 +13,43 @@ import {
 import { useMessage } from "../../../contexts";
 import { useCreateUser } from "../../../hooks";
 import type { UserRequestDTO } from "../../../types";
-import { formatCEP, formatCPF, formatPhone, validateUserRequestDTO } from "../../../utils";
+import {
+  formatCEP,
+  formatCPF,
+  formatPhone,
+  validateUserRequestDTO,
+} from "../../../utils";
 import styles from "./styles.module.css";
 
-type Action = { type: "field"; payload: { field: string; value: unknown } };
+interface UserFormState {
+  name: string;
+  email: string;
+  password: string;
+  cpf: string;
+  phone: string;
+  address: string;
+  cep: string;
+  birth: string;
+  has_financial_aid: boolean;
+  error: string;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: any, action: Action) => {
+type UserFormAction = {
+  type: "field";
+  payload: { field: keyof UserFormState; value: string | boolean };
+};
+
+const reducer = (
+  state: UserFormState,
+  action: UserFormAction,
+): UserFormState => {
   if (action.type === "field") {
     return { ...state, [action.payload.field]: action.payload.value };
   }
   return state;
 };
 
-const initialState = {
+const initialState: UserFormState = {
   name: "",
   email: "",
   password: "",
@@ -49,10 +72,14 @@ export function CreateUserPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleChange =
-    (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof UserFormState) => (e: ChangeEvent<HTMLInputElement>) => {
       const value =
         e.target.type === "checkbox" ? e.target.checked : e.target.value;
-      dispatch({ type: "field", payload: { field, value } });
+
+      dispatch({
+        type: "field",
+        payload: { field, value },
+      });
     };
 
   async function handleCreateUser(e: FormEvent) {
@@ -145,8 +172,8 @@ export function CreateUserPage() {
               type="password"
               placeholder="••••••••"
               required
-              min={8}
-              max={15}
+              min={12}
+              max={128}
               value={state.password}
               onChange={handleChange("password")}
             />

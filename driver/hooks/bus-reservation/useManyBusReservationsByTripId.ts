@@ -8,7 +8,9 @@ export const fetchManyBusReservationsByTripId = async (tripId: string) => {
     `/v1/bus-reservation/trip/${tripId}/`,
   );
 
-  if (res.status !== 200) throw new Error("Erro ao buscar reservas");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar reservas");
+  }
 
   return res.data;
 };

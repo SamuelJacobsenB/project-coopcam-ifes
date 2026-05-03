@@ -16,8 +16,8 @@ var (
 
 // PASSWORD REQUIREMENTS
 const (
-	PasswordMinLength  = 12
-	PasswordMaxLength  = 128
+	PasswordMinLength  = 8
+	PasswordMaxLength  = 15
 	PasswordMinEntropy = 50 // bits
 )
 

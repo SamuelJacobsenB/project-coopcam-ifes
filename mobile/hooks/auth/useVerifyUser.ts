@@ -1,16 +1,15 @@
-import { api } from "@/services";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchVerifyUser = async () => {
-  try {
-    const res = await api.get("/v1/auth/verify/user/");
+import { api } from "@/services";
 
-    if (res.status !== 200) throw new Error("Credenciais inválidas");
+export const fetchVerifyUser = async (): Promise<true> => {
+  const res = await api.get("/v1/auth/verify/user/");
 
-    return true;
-  } catch {
-    throw new Error("Credenciais inválidas");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Credenciais inválidas");
   }
+
+  return true;
 };
 
 export const useVerifyUser = () => {

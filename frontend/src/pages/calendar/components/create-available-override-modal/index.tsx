@@ -1,10 +1,10 @@
 import { useEffect, useReducer } from "react";
 
+import { Error, Input, Modal } from "../../../../components";
 import { useMessage } from "../../../../contexts";
 import { useCreateAvailableOverride } from "../../../../hooks";
-import { Error, Input, Modal } from "../../../../components";
-import { validateAvailableOverrideRequestDTO } from "../../../../utils";
 import type { AvailableOverrideRequestDTO } from "../../../../types";
+import { validateAvailableOverrideRequestDTO } from "../../../../utils";
 
 import styles from "./styles.module.css";
 
@@ -15,24 +15,41 @@ interface CreateAvailableOverrideModalProps {
   onCreated: () => Promise<void>;
 }
 
-type State = {
+interface OverrideFormState {
   date: Date;
   reason: string;
   error: string;
-};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
+}
+
+type OverrideFormAction =
+  | {
+      type: "field";
+      payload: { field: keyof OverrideFormState; value: string | Date };
+    }
+  | { type: "reset" };
+
+const reducer = (
+  state: OverrideFormState,
+  action: OverrideFormAction,
+): OverrideFormState => {
   switch (action.type) {
     case "field":
       return {
         ...state,
-        [action.payload.field as string]: action.payload.value,
+        [action.payload.field]: action.payload.value,
+      };
+    case "reset":
+      return {
+        date: new Date(),
+        reason: "",
+        error: "",
       };
     default:
       return state;
   }
 };
-const initialState = {
+
+const initialState: OverrideFormState = {
   date: new Date(),
   reason: "",
   error: "",
@@ -52,7 +69,7 @@ export function CreateAvailableOverrideModal({
   const { date, reason, error } = state;
 
   async function handleCreateAvailableOverride(
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
 

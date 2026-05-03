@@ -5,18 +5,14 @@ import { useUser } from "@/contexts";
 import { api } from "@/services";
 import type { LoginDTO } from "@/types";
 
-export const fetchLogin = async (loginDTO: LoginDTO) => {
-  try {
-    const res = await api.post("/v1/auth/login/", loginDTO);
+export const fetchLogin = async (loginDTO: LoginDTO): Promise<void> => {
+  const res = await api.post("/v1/auth/login/", loginDTO);
 
-    if (res.status !== 200) throw new Error("Credenciais inválidas");
-
-    await AsyncStorage.setItem("auth_token", res.data.token);
-
-    return res.data;
-  } catch {
-    throw new Error("Credenciais inválidas");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Credenciais inválidas");
   }
+
+  await AsyncStorage.setItem("auth_token", res.data.token);
 };
 
 export const useLogin = () => {
@@ -24,7 +20,6 @@ export const useLogin = () => {
 
   const { mutateAsync: login, isPending } = useMutation({
     mutationFn: (loginDTO: LoginDTO) => fetchLogin(loginDTO),
-
     onSuccess: async () => {
       await findUser();
     },

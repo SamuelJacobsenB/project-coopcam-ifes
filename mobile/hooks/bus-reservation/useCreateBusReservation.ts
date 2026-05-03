@@ -9,8 +9,9 @@ export const fetchCreateBusReservation = async (
   try {
     const res = await api.post("/v1/bus-reservation/", dto);
 
-    if (res.status !== 201)
-      throw new Error("Ocorreu um erro ao criar a reserva");
+    if (res.code !== "SUCCESS") {
+      throw new Error(res.message || "Ocorreu um erro ao criar a reserva");
+    }
 
     return res.data;
   } catch {

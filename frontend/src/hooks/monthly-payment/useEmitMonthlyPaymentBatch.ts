@@ -2,27 +2,26 @@ import { useMutation } from "@tanstack/react-query";
 
 import { api } from "../../services";
 
-interface Data {
+interface EmitMonthlyPaymentBatchParams {
   month: number;
   year: number;
 }
 
-export const fetchEmitMonthlyPaymentBatch = async (data: Data) => {
-  try {
-    const res = await api.post("/v1/monthly-payment/emit-batch/", data);
+export const fetchEmitMonthlyPaymentBatch = async (
+  params: EmitMonthlyPaymentBatchParams,
+): Promise<void> => {
+  const res = await api.post("/v1/monthly-payment/emit-batch/", params);
 
-    if (res.status != 200)
-      throw new Error("Erro ao emitir configuração da taxa de pagamento");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao emitir configuração da taxa de pagamento");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao emitir lote de pagamentos mensais");
   }
 };
 
 export const useEmitMonthlyPaymentBatch = () => {
   const { mutateAsync: emitMonthlyPaymentBatch } = useMutation({
-    mutationFn: (data: Data) => fetchEmitMonthlyPaymentBatch(data),
+    mutationFn: (params: EmitMonthlyPaymentBatchParams) =>
+      fetchEmitMonthlyPaymentBatch(params),
+    retry: false,
   });
 
   return { emitMonthlyPaymentBatch };

@@ -7,7 +7,9 @@ export const fetchAllAvailableOverrides = async () => {
   try {
     const res = await api.get<AvailableOverride[]>(`/v1/available-override/`);
 
-    if (res.status !== 200) throw new Error("Erro ao buscar dias disponíveis");
+    if (res.code !== "SUCCESS") {
+      throw new Error(res.message || "Erro ao buscar dias disponíveis");
+    }
 
     return res.data || [];
   } catch {

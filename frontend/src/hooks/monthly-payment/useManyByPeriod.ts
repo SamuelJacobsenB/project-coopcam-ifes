@@ -3,28 +3,30 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { MonthlyPayment } from "../../types";
 
-interface Data {
+interface ManyByPeriodParams {
   month: number;
   year: number;
 }
 
-export const fetchManyByPeriod = async ({ year, month }: Data) => {
-  try {
-    const res = await api.get<MonthlyPayment[]>(
-      `/v1/monthly-payment/year/${year}/month/${month}/`,
-    );
+export const fetchManyByPeriod = async ({
+  year,
+  month,
+}: ManyByPeriodParams): Promise<MonthlyPayment[]> => {
+  const res = await api.get<MonthlyPayment[]>(
+    `/v1/monthly-payment/year/${year}/month/${month}/`,
+  );
 
-    if (res.status != 200) throw new Error("Erro ao buscar por pagamentos");
-
-    return res.data;
-  } catch {
-    throw new Error("Erro ao buscar por pagamentos");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar pagamentos");
   }
+
+  return res.data;
 };
 
 export const useManyByPeriod = () => {
   const { mutateAsync: getManyByPeriod } = useMutation({
-    mutationFn: (data: Data) => fetchManyByPeriod(data),
+    mutationFn: (params: ManyByPeriodParams) => fetchManyByPeriod(params),
+    retry: false,
   });
 
   return { getManyByPeriod };

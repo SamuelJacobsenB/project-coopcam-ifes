@@ -13,7 +13,7 @@ import { router } from "expo-router";
 import { Error, Input, Line } from "@/components";
 import { useLogin, useVerifyDriver } from "@/hooks";
 import { btnStyles, colors } from "@/styles";
-import { LoginDTO } from "@/types";
+import type { LoginDTO } from "@/types";
 import { validateLoginDTO } from "@/utils";
 
 interface State {
@@ -21,19 +21,25 @@ interface State {
   password: string;
   error: string;
 }
-const reducer = (state: State, action: any) => {
+
+type LoginAction =
+  | { type: "field"; payload: { field: "email" | "password"; value: string } }
+  | { type: "error"; payload: string };
+
+const reducer = (state: State, action: LoginAction): State => {
   switch (action.type) {
     case "field":
       return {
         ...state,
-        [action.payload.field as string]: action.payload.value as string,
+        [action.payload.field]: action.payload.value,
       };
     case "error":
-      return { ...state, error: action.payload as string };
+      return { ...state, error: action.payload };
     default:
       return state;
   }
 };
+
 const initialState: State = {
   email: "",
   password: "",
@@ -42,29 +48,32 @@ const initialState: State = {
 
 export default function LoginPage() {
   const { isVerified } = useVerifyDriver();
-
   const { login, isPending } = useLogin();
 
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password, error } = state;
 
+  function setError(message: string) {
+    dispatch({ type: "error", payload: message });
+  }
+
   async function handleLogin() {
     if (isPending) return;
 
-    dispatch({ type: "error", payload: "" });
+    setError("");
 
     const loginDTO: LoginDTO = { email, password };
+    const valError = validateLoginDTO(loginDTO);
 
-    const error = validateLoginDTO(loginDTO);
-    if (error) {
-      dispatch({ type: "error", payload: error });
+    if (valError) {
+      setError(valError);
       return;
     }
 
     try {
       await login(loginDTO);
     } catch {
-      dispatch({ type: "error", payload: "Email ou senha incorretos" });
+      setError("Email ou senha incorretos");
     }
   }
 
@@ -80,10 +89,7 @@ export default function LoginPage() {
       <View style={styles.loginContainer}>
         <Text style={styles.title}>Login</Text>
         <Line style={styles.line} />
-        <Error
-          error={error}
-          onClose={() => dispatch({ type: "error", payload: "" })}
-        />
+        <Error error={error} onClose={() => setError("")} />
         <Input
           label="Email"
           textContentType="emailAddress"

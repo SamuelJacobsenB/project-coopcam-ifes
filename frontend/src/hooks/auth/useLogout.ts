@@ -3,17 +3,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../../contexts";
 import { api } from "../../services";
 
-export const fetchLogout = async () => {
+export const fetchLogout = async (): Promise<string> => {
   try {
     const res = await api.get("/v1/auth/logout/");
+
+    if (res.code !== "SUCCESS") {
+      throw new Error(res.message || "Erro ao deslogar");
+    }
+  } finally {
     localStorage.removeItem("auth_token");
-
-    if (res.status !== 200) throw new Error("Erro ao deslogar");
-
-    return "Deslogado com sucesso";
-  } catch {
-    throw new Error("Erro ao deslogar");
   }
+
+  return "Deslogado com sucesso";
 };
 
 export const useLogout = () => {
@@ -23,8 +24,8 @@ export const useLogout = () => {
   const { mutateAsync: logout } = useMutation({
     mutationFn: fetchLogout,
     onSuccess: () => {
-      queryClient.invalidateQueries();
       setUser(null);
+      queryClient.clear();
     },
     retry: false,
   });

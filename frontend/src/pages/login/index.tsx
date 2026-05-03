@@ -15,18 +15,23 @@ interface State {
   error: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reducer = (state: State, action: any) => {
+type Action = {
+  type: "field";
+  payload: { field: keyof State; value: string };
+};
+
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "field":
       return {
         ...state,
-        [action.payload.field as string]: action.payload.value,
+        [action.payload.field]: action.payload.value,
       };
     default:
       return state;
   }
 };
+
 const initialState: State = {
   email: "",
   password: "",
@@ -36,40 +41,36 @@ const initialState: State = {
 export function LoginPage() {
   const navigate = useNavigate();
 
-  const { user, findUser } = useUser();
+  const { user } = useUser();
   const { showMessage } = useMessage();
   const { login } = useLogin();
 
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password, error } = state;
 
+  function setError(value: string) {
+    dispatch({ type: "field", payload: { field: "error", value } });
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const loginDTO: LoginDTO = {
-      email,
-      password,
-    };
+    const loginDTO: LoginDTO = { email, password };
 
-    const error = validateLoginDTO(loginDTO);
-    if (error) {
-      dispatch({ type: "field", payload: { field: "error", value: error } });
+    const validationError = validateLoginDTO(loginDTO);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    dispatch({ type: "field", payload: { field: "error", value: "" } });
+    setError("");
 
     try {
       await login(loginDTO);
-
-      await findUser();
       showMessage("Login realizado com sucesso", "success");
       navigate("/");
     } catch {
-      dispatch({
-        type: "field",
-        payload: { field: "error", value: "Email ou senha incorretos" },
-      });
+      setError("Email ou senha incorretos");
     }
   }
 
@@ -82,12 +83,7 @@ export function LoginPage() {
       <PageHeader title="Login" description="Faça seu login" size={3} />
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        <Error
-          error={error}
-          onClose={() =>
-            dispatch({ type: "field", payload: { field: "error", value: "" } })
-          }
-        />
+        <Error error={error} onClose={() => setError("")} />
         <Input
           label="Email"
           name="email"

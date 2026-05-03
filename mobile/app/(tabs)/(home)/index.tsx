@@ -1,17 +1,22 @@
-import React, { useCallback } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
 import { useRouter } from "expo-router";
+import React, { useCallback } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { DayCard, LoadPage, ReservationSection, Title } from "@/components";
 import { weekDays } from "@/constants";
-import { useAllAvailableOverrides, useAllUnavailableDays, useWeeklyPreferenceByUserId } from "@/hooks";
+import {
+  useAllAvailableOverrides,
+  useAllUnavailableDays,
+  useWeeklyPreferenceByUserId,
+} from "@/hooks";
 import { colors } from "@/styles";
-import { BusReservation, Direction, Period } from "@/types";
+import {
+  AvailableOverride,
+  BusReservation,
+  Direction,
+  Period,
+  UnavailableDay,
+} from "@/types";
 import { filterReservations, getDateOfWeekDay, getWeekDay } from "@/utils";
 
 const isSameDay = (d1: Date, d2: Date) =>
@@ -76,21 +81,28 @@ export default function HomePage() {
   const { availableOverrides } = useAllAvailableOverrides();
   const { unavailableDays } = useAllUnavailableDays();
 
-  const checkIsAvailable = useCallback((date: Date) => {
-    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+  const checkIsAvailable = useCallback(
+    (date: Date) => {
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
-    if (isWeekend) {
-      return availableOverrides?.some((override: any) =>
-        isSameDay(new Date(override.date), date)
-      ) ?? false;
-    } else {
-      return !(unavailableDays?.some((unav: any) =>
-        isSameDay(new Date(unav.date), date)
-      ) ?? false);
-    }
-  }, [availableOverrides, unavailableDays]);
+      if (isWeekend) {
+        return (
+          availableOverrides?.some((override: AvailableOverride) =>
+            isSameDay(new Date(override.date), date),
+          ) ?? false
+        );
+      } else {
+        return !(
+          unavailableDays?.some((unav: UnavailableDay) =>
+            isSameDay(new Date(unav.date), date),
+          ) ?? false
+        );
+      }
+    },
+    [availableOverrides, unavailableDays],
+  );
 
-  if (isLoading) return <LoadPage />
+  if (isLoading) return <LoadPage />;
 
   return (
     <View style={styles.container}>
