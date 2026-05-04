@@ -15,8 +15,9 @@ export function TripStatusControl({
   trip,
   onStatusUpdated,
 }: TripStatusControlProps) {
-  const { updateBusTripStatus } = useUpdateBusTripStatus();
   const { showMessage } = useMessage();
+  const { updateBusTripStatus } = useUpdateBusTripStatus();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const statusOptions: { value: Status; label: string }[] = [

@@ -1,4 +1,4 @@
-import { I } from "../../icons";
+import { I } from "../../../icons";
 
 import styles from "./styles.module.css";
 

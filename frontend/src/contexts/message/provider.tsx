@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { MessageContext, type Message, type MessageType } from "./context";
 
 export const MessageProvider = ({
@@ -8,19 +8,24 @@ export const MessageProvider = ({
 }) => {
   const [message, setMessage] = useState<Message | null>(null);
 
-  const showMessage = (text: string, type: MessageType) => {
+  const showMessage = useCallback((text: string, type: MessageType) => {
     setMessage({ text, type });
 
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setMessage(null);
     }, 6000);
-  };
 
-  const closeMessage = () => setMessage(null);
+    return timeoutId;
+  }, []);
+
+  const closeMessage = useCallback(() => setMessage(null), []);
+
+  const value = useMemo(
+    () => ({ message, showMessage, closeMessage }),
+    [message, showMessage, closeMessage],
+  );
 
   return (
-    <MessageContext.Provider value={{ message, showMessage, closeMessage }}>
-      {children}
-    </MessageContext.Provider>
+    <MessageContext.Provider value={value}>{children}</MessageContext.Provider>
   );
 };

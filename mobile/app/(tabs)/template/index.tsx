@@ -13,11 +13,7 @@ import {
 import { ConfirmModal, DayCard, ReservationSection, Title } from "@/components";
 import { weekDays } from "@/constants";
 import { useMessage } from "@/contexts";
-import {
-  useCreateTemplate,
-  useDeleteTemplate,
-  useTemplateByUserId,
-} from "@/hooks";
+import { useCreateTemplate, useDeleteTemplate, useTemplate } from "@/hooks";
 import { btnStyles, colors } from "@/styles";
 import type { TemplateRequestDTO } from "@/types";
 
@@ -25,7 +21,7 @@ export default function TemplatePage() {
   const { showMessage } = useMessage();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
-  const { template, isLoading, error, refetch } = useTemplateByUserId();
+  const { template, isLoading, error, refetch } = useTemplate();
   const { createTemplate, isPending: isCreating } = useCreateTemplate();
   const { deleteTemplate, isPending: isDeleting } = useDeleteTemplate();
 

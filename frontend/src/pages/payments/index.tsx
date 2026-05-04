@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ConfirmModal,
   DualPage,
+  EmptyState,
   I,
   MonthlyFeeItemCard,
   Navbar,
@@ -182,7 +183,11 @@ export function PaymentsPage() {
                 <UserPaymentsCard payments={payments} />
               </div>
             ) : (
-              <EmptyState />
+              <EmptyState
+                icon="calendar"
+                title="Selecione um mês"
+                description="Escolha uma configuração na lista à esquerda para gerir os pagamentos."
+              />
             )}
           </main>
         }
@@ -206,11 +211,3 @@ export function PaymentsPage() {
     </Private>
   );
 }
-
-const EmptyState = () => (
-  <section className={styles.rightPlaceholder} aria-live="polite">
-    <I.calendar size={48} color="#cbd5e1" style={{ marginBottom: "1rem" }} />
-    <h2>Selecione um mês</h2>
-    <p>Escolha uma configuração na lista lateral para gerir os pagamentos.</p>
-  </section>
-);

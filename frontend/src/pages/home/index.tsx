@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
   BusTripCard,
   Card,
   I,
-  Loader,
+  LoadPage,
   Navbar,
   Private,
 } from "../../components";
@@ -14,75 +14,57 @@ import {
   useManyBusTripReportsByDate,
   useManyBusTripsByDate,
 } from "../../hooks";
-import type { BusReservation, BusTrip, BusTripReport } from "../../types";
+import type { BusTrip } from "../../types";
 
 import styles from "./styles.module.css";
-
-interface DashboardData {
-  trips: BusTrip[];
-  reports: BusTripReport[];
-  reservations: BusReservation[];
-}
 
 export function DashboardPage() {
   const navigate = useNavigate();
 
-  const { getManyBusTripsByDate } = useManyBusTripsByDate();
-  const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
-  const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<DashboardData>({
-    trips: [],
-    reports: [],
-    reservations: [],
-  });
+  const { trips, isLoading: tripsLoading } = useManyBusTripsByDate(today);
+  const { reports, isLoading: reportsLoading } =
+    useManyBusTripReportsByDate(today);
+  const { reservations, isLoading: reservationsLoading } =
+    useManyBusReservationsByDate(today);
 
-  useEffect(() => {
-    let isMounted = true;
+  const isLoading = tripsLoading || reportsLoading || reservationsLoading;
 
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        // Garante o formato YYYY-MM-DD considerando o timezone local
-        const today = new Date().toISOString().split("T")[0];
+  const tripReportsMap = useMemo(
+    () =>
+      reports.reduce(
+        (acc, report) => {
+          if (!acc[report.bus_trip_id]) {
+            acc[report.bus_trip_id] = [];
+          }
+          acc[report.bus_trip_id].push(report);
+          return acc;
+        },
+        {} as Record<string, typeof reports>,
+      ),
+    [reports],
+  );
 
-        const [trips, reports, reservations] = await Promise.all([
-          getManyBusTripsByDate(today),
-          getManyBusTripReportsByDate(today),
-          getManyBusReservationsByDate(today),
-        ]);
-
-        if (isMounted) {
-          setData({ trips, reports, reservations });
-        }
-      } catch (error) {
-        console.error("Erro ao carregar dashboard:", error);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    }
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    getManyBusTripsByDate,
-    getManyBusTripReportsByDate,
-    getManyBusReservationsByDate,
-  ]);
+  const tripReservationsMap = useMemo(
+    () =>
+      reservations.reduce(
+        (acc, reservation) => {
+          if (!acc[reservation.bus_trip_id]) {
+            acc[reservation.bus_trip_id] = [];
+          }
+          acc[reservation.bus_trip_id].push(reservation);
+          return acc;
+        },
+        {} as Record<string, typeof reservations>,
+      ),
+    [reservations],
+  );
 
   if (isLoading) {
     return (
       <Private>
-        <Navbar />
-        <main className={styles.container}>
-          <h1>Análise de Ocupação</h1>
-          <h3>Carregando análise...</h3>
-          <Loader />
-        </main>
+        <LoadPage />
       </Private>
     );
   }
@@ -98,7 +80,7 @@ export function DashboardPage() {
           </p>
         </header>
 
-        {data.trips.length === 0 ? (
+        {trips.length === 0 ? (
           <Card className={styles.noTrips}>
             <I.calendar size={64} color="#cbd5e1" />
             <h2>Sem viagens hoje</h2>
@@ -106,16 +88,12 @@ export function DashboardPage() {
           </Card>
         ) : (
           <div className={styles.tripGrid}>
-            {data.trips.map((busTrip) => (
+            {trips.map((busTrip: BusTrip) => (
               <BusTripCard
                 key={busTrip.id}
                 busTrip={busTrip}
-                reports={data.reports.filter(
-                  (r) => r.bus_trip_id === busTrip.id,
-                )}
-                reservations={data.reservations.filter(
-                  (r) => r.bus_trip_id === busTrip.id,
-                )}
+                reports={tripReportsMap[busTrip.id] ?? []}
+                reservations={tripReservationsMap[busTrip.id] ?? []}
                 onClick={() => navigate(`/viagens/${busTrip.id}`)}
               />
             ))}

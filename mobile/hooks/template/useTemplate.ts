@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services";
 import { Template } from "@/types";
 
-export const fetchTemplateByUserId = async () => {
+export const fetchTemplate = async () => {
   const res = await api.get<Template>(`/v1/template/`);
 
   if (res.code !== "SUCCESS") {
@@ -13,7 +13,7 @@ export const fetchTemplateByUserId = async () => {
   return res.data;
 };
 
-export const useTemplateByUserId = () => {
+export const useTemplate = () => {
   const {
     data: template,
     isLoading,
@@ -21,7 +21,7 @@ export const useTemplateByUserId = () => {
     refetch,
   } = useQuery({
     queryKey: ["template"],
-    queryFn: fetchTemplateByUserId,
+    queryFn: fetchTemplate,
     retry: false,
   });
 

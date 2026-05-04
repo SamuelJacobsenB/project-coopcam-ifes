@@ -14,9 +14,9 @@ import { useAllAvailableOverrides, useAllUnavailableDays } from "../../hooks";
 import { isSameDate } from "../../utils";
 
 import { DayCard } from "./components";
+
 import styles from "./styles.module.css";
 
-// Helpers para manipulação de data sem bugs de fuso horário local
 const formatDateForInput = (d: Date) => {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -48,7 +48,6 @@ export function CalendarPage() {
     refetch: refetchUnavailableDays,
   } = useAllUnavailableDays();
 
-  // Memoização dos dados do dia selecionado para performance
   const dayStatus = useMemo(() => {
     return {
       unavailable:

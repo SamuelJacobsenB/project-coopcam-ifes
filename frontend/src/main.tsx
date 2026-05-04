@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 
@@ -21,16 +21,23 @@ const queryClient = new QueryClient({
   },
 });
 
-const router = createHashRouter(
-  routes.map((route) => {
-    return {
-      path: route.path,
-      element: <route.element />,
-    };
-  }),
-);
+// Memoize router configuration to prevent recreating routes on every render
+const Router = () => {
+  const router = useMemo(
+    () =>
+      createHashRouter(
+        routes.map((route) => ({
+          path: route.path,
+          element: <route.element />,
+        })),
+      ),
+    [],
+  );
 
-createRoot(document.getElementById("root")!).render(
+  return <RouterProvider router={router} />;
+};
+
+const App = () => (
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <main id="main">
@@ -38,10 +45,12 @@ createRoot(document.getElementById("root")!).render(
           <>
             <Message />
             <WindowControls />
-            <RouterProvider router={router} />
+            <Router />
           </>
         </Provider>
       </main>
     </QueryClientProvider>
-  </StrictMode>,
+  </StrictMode>
 );
+
+createRoot(document.getElementById("root")!).render(<App />);

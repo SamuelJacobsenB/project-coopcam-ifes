@@ -1,5 +1,5 @@
 import type React from "react";
-import { I } from "../../icons";
+import { I } from "../../../icons";
 import styles from "./styles.module.css";
 
 interface SearchProps {

@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 
 import { Error, Input, Modal } from "../../../../components";
 import { useMessage } from "../../../../contexts";
@@ -15,46 +15,6 @@ interface CreateUnavailableDayModalProps {
   onCreated: () => Promise<void>;
 }
 
-interface UnavailableFormState {
-  date: Date;
-  reason: string;
-  error: string;
-}
-
-type UnavailableFormAction =
-  | {
-      type: "field";
-      payload: { field: keyof UnavailableFormState; value: string | Date };
-    }
-  | { type: "reset" };
-
-const reducer = (
-  state: UnavailableFormState,
-  action: UnavailableFormAction,
-): UnavailableFormState => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field]: action.payload.value,
-      };
-    case "reset":
-      return {
-        date: new Date(),
-        reason: "",
-        error: "",
-      };
-    default:
-      return state;
-  }
-};
-
-const initialState: UnavailableFormState = {
-  date: new Date(),
-  reason: "",
-  error: "",
-};
-
 export function CreateUnavailableDayModal({
   isOpen,
   onClose,
@@ -65,15 +25,16 @@ export function CreateUnavailableDayModal({
 
   const { createUnavailableDay } = useCreateUnavailableDay();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { date, reason, error } = state;
+  const [date, setDate] = useState(selectedDate || new Date());
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
 
   async function handleCreateUnavailableDay(
     e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
 
-    dispatch({ type: "field", payload: { field: "error", value: "" } });
+    setError("");
 
     const unavailableDay: UnavailableDayRequestDTO = {
       date,
@@ -82,7 +43,7 @@ export function CreateUnavailableDayModal({
 
     const error = validateUnavailableDayRequestDTO(unavailableDay);
     if (error) {
-      dispatch({ type: "field", payload: { field: "error", value: error } });
+      setError(error);
       return;
     }
 
@@ -98,11 +59,7 @@ export function CreateUnavailableDayModal({
   }
 
   useEffect(() => {
-    if (selectedDate)
-      dispatch({
-        type: "field",
-        payload: { field: "date", value: selectedDate },
-      });
+    if (selectedDate) setDate(selectedDate);
   }, [selectedDate]);
 
   return (
@@ -110,35 +67,21 @@ export function CreateUnavailableDayModal({
       <h1>Criar indisponibilidade</h1>
       <hr />
       <form onSubmit={handleCreateUnavailableDay} className={styles.form}>
-        <Error
-          error={error}
-          onClose={() =>
-            dispatch({ type: "field", payload: { field: "error", value: "" } })
-          }
-        />
+        <Error error={error} onClose={() => setError("")} />
         <Input
           label="Data"
           type="date"
           value={date.toISOString().split("T")[0]}
-          onChange={(e) =>
-            dispatch({
-              type: "field",
-              payload: { field: "date", value: new Date(e.target.value) },
-            })
-          }
+          onChange={(e) => setDate(new Date(e.target.value))}
           required
         />
         <Input
           label="Motivo"
           type="text"
           value={reason}
-          onChange={(e) =>
-            dispatch({
-              type: "field",
-              payload: { field: "reason", value: e.target.value },
-            })
-          }
+          onChange={(e) => setReason(e.target.value)}
           placeholder="Motivo da disponibilidade"
+          maxLength={128}
           required
         />
         <button type="submit" className="btn btn-success">

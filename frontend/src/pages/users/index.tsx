@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import {
   Card,
   DualPage,
+  EmptyState,
   I,
   Loader,
   Navbar,
@@ -74,8 +75,6 @@ export function UsersPage() {
     };
   }, [id, getUserById]);
 
-  console.log(selectedUser?.birth);
-
   return (
     <Private>
       <Navbar />
@@ -121,8 +120,9 @@ export function UsersPage() {
                 users?.map((user) => (
                   <li key={user.id}>
                     <Card
-                      className={`${styles.userItem} ${selectedUser?.id === user.id ? styles.selectedUser : ""
-                        }`}
+                      className={`${styles.userItem} ${
+                        selectedUser?.id === user.id ? styles.selectedUser : ""
+                      }`}
                       onClick={() => setSelectedUser(user)}
                       tabIndex={0}
                       role="button"
@@ -167,7 +167,11 @@ export function UsersPage() {
                 </div>
               </div>
             ) : (
-              <EmptyState />
+              <EmptyState
+                icon="user"
+                title="Nenhum usuário selecionado"
+                description="Clique num usuário à esquerda para gerir os seus detalhes."
+              />
             )}
           </main>
         }
@@ -175,11 +179,3 @@ export function UsersPage() {
     </Private>
   );
 }
-
-const EmptyState = () => (
-  <section className={styles.rightPlaceholder} aria-live="polite">
-    <I.user size={48} color="#cbd5e1" style={{ marginBottom: "1.5rem" }} />
-    <h2>Nenhum usuário selecionado</h2>
-    <p>Clique num usuário à esquerda para gerir os seus detalhes.</p>
-  </section>
-);

@@ -71,23 +71,3 @@
   text-align: center;
   font-size: 0.95rem;
 }
-
-.rightPlaceholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  color: #64748b;
-  padding: 2rem;
-  border: 2px dashed #e2e8f0;
-  border-radius: 16px;
-  background-color: #f8fafc;
-}
-
-.rightPlaceholder h2 {
-  font-size: 1.25rem;
-  color: #334155;
-  margin-bottom: 0.5rem;
-}

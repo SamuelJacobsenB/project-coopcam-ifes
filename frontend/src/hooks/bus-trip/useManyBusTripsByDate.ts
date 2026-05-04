@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { api } from "../../services";
 import type { BusTrip } from "../../types";
@@ -15,11 +15,18 @@ export const fetchManyBusTripsByDate = async (
   return res.data;
 };
 
-export const useManyBusTripsByDate = () => {
-  const { mutateAsync: getManyBusTripsByDate } = useMutation({
-    mutationFn: (date: string) => fetchManyBusTripsByDate(date),
+export const useManyBusTripsByDate = (date?: string) => {
+  const {
+    data: trips,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["bustrips", date],
+    queryFn: () => fetchManyBusTripsByDate(date || ""),
+    enabled: !!date,
     retry: false,
   });
 
-  return { getManyBusTripsByDate };
+  return { trips: trips ?? [], isLoading, error, refetch };
 };

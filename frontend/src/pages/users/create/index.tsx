@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useReducer, type ChangeEvent, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Checkbox,
@@ -21,91 +21,51 @@ import {
 } from "../../../utils";
 import styles from "./styles.module.css";
 
-interface UserFormState {
-  name: string;
-  email: string;
-  password: string;
-  cpf: string;
-  phone: string;
-  address: string;
-  cep: string;
-  birth: string;
-  has_financial_aid: boolean;
-  error: string;
-}
-
-type UserFormAction = {
-  type: "field";
-  payload: { field: keyof UserFormState; value: string | boolean };
-};
-
-const reducer = (
-  state: UserFormState,
-  action: UserFormAction,
-): UserFormState => {
-  if (action.type === "field") {
-    return { ...state, [action.payload.field]: action.payload.value };
-  }
-  return state;
-};
-
-const initialState: UserFormState = {
-  name: "",
-  email: "",
-  password: "",
-  cpf: "",
-  phone: "",
-  address: "",
-  cep: "",
-  birth: "",
-  has_financial_aid: false,
-  error: "",
-};
-
 export function CreateUserPage() {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
 
-  const { createUser } = useCreateUser();
   const { showMessage } = useMessage();
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const { createUser } = useCreateUser();
 
-  const handleChange =
-    (field: keyof UserFormState) => (e: ChangeEvent<HTMLInputElement>) => {
-      const value =
-        e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
-      dispatch({
-        type: "field",
-        payload: { field, value },
-      });
-    };
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [cep, setCep] = useState("");
+  const [birth, setBirth] = useState("");
+  const [hasFinancialAid, setHasFinancialAid] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleCreateUser(e: FormEvent) {
     e.preventDefault();
 
-    const [year, month, day] = state.birth.split("-");
-    const birth = new Date(Number(year), Number(month) - 1, Number(day), 12);
+    const [year, month, day] = birth.split("-");
+    const birthDate = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      12,
+    );
 
-    const userData = {
-      name: state.name,
-      email: state.email,
-      password: state.password,
-      cpf: state.cpf,
-      phone: state.phone,
-      address: state.address,
-      cep: state.cep,
-      birth,
-      has_financial_aid: state.has_financial_aid,
-    } as UserRequestDTO;
+    const userData: UserRequestDTO = {
+      name,
+      email,
+      password,
+      cpf,
+      phone,
+      address,
+      cep,
+      birth: birthDate,
+      has_financial_aid: hasFinancialAid,
+    };
 
     const validationError = validateUserRequestDTO(userData);
     if (validationError) {
-      dispatch({
-        type: "field",
-        payload: { field: "error", value: validationError },
-      });
+      setError(validationError);
       return;
     }
 
@@ -136,25 +96,15 @@ export function CreateUserPage() {
         <hr />
 
         <form onSubmit={handleCreateUser} className={styles.form}>
-          <Error
-            error={state.error}
-            onClose={() =>
-              dispatch({
-                type: "field",
-                payload: { field: "error", value: "" },
-              })
-            }
-          />
+          <Error error={error} onClose={() => setError("")} />
 
           <div className={styles.inputGrid}>
             <Input
               label="Nome Completo"
               placeholder="Nome completo do usuário"
               required
-              min={3}
-              max={64}
-              value={state.name}
-              onChange={handleChange("name")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
 
             <Input
@@ -162,9 +112,8 @@ export function CreateUserPage() {
               type="email"
               placeholder="teste@exemplo.com"
               required
-              max={256}
-              value={state.email}
-              onChange={handleChange("email")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <Input
@@ -172,64 +121,55 @@ export function CreateUserPage() {
               type="password"
               placeholder="••••••••"
               required
-              min={12}
-              max={128}
-              value={state.password}
-              onChange={handleChange("password")}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <Input
               label="CPF"
-              placeholder="00000000000"
+              placeholder="000.000.000-00"
               required
-              min={11}
-              max={11}
-              value={formatCPF(state.cpf)}
-              onChange={handleChange("cpf")}
+              value={formatCPF(cpf)}
+              onChange={(e) => setCpf(e.target.value)}
             />
 
             <Input
               label="Número de Telefone"
-              placeholder="00000000000"
+              placeholder="(00) 00000-0000"
               required
-              min={10}
-              max={11}
-              value={formatPhone(state.phone)}
-              onChange={handleChange("phone")}
+              value={formatPhone(phone)}
+              onChange={(e) => setPhone(e.target.value)}
             />
 
             <Input
               label="Data de Nascimento"
               type="date"
               required
-              value={state.birth}
-              onChange={handleChange("birth")}
+              value={birth}
+              onChange={(e) => setBirth(e.target.value)}
             />
 
             <Input
               label="Endereço"
               placeholder="Rua, Número, Bairro..."
               required
-              max={128}
-              value={state.address}
-              onChange={handleChange("address")}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
             />
 
             <Input
               label="CEP"
-              placeholder="00000000"
+              placeholder="00000-000"
               required
-              min={8}
-              max={8}
-              value={formatCEP(state.cep)}
-              onChange={handleChange("cep")}
+              value={formatCEP(cep)}
+              onChange={(e) => setCep(e.target.value)}
             />
 
             <div className={styles.checkboxWrapper}>
               <Checkbox
                 label="Possui auxílio financeiro"
-                checked={state.has_financial_aid}
-                onChange={handleChange("has_financial_aid")}
+                checked={hasFinancialAid}
+                onChange={(e) => setHasFinancialAid(e.target.checked)}
               />
             </div>
           </div>

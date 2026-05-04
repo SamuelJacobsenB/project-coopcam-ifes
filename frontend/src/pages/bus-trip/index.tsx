@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
   BusTripItemCard,
   DateInput,
   DualPage,
-  I,
+  EmptyState,
   Navbar,
   PageHeader,
   Private,
@@ -16,7 +16,7 @@ import {
   useManyBusTripReportsByDate,
   useManyBusTripsByDate,
 } from "../../hooks";
-import type { BusReservation, BusTrip, BusTripReport } from "../../types";
+import type { BusTrip } from "../../types";
 
 import {
   BusReportsCard,
@@ -26,129 +26,44 @@ import {
 
 import styles from "./styles.module.css";
 
-// Formatação segura usando fuso horário local (evita bug do UTC/ISO)
-const formatDateForInput = (d: Date) => {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-const parseInputDate = (dateString: string) => {
-  const [y, m, d] = dateString.split("-").map(Number);
+const formatDate = (d: Date) => d.toISOString().split("T")[0];
+const parseDate = (s: string) => {
+  const [y, m, d] = s.split("-").map(Number);
   return new Date(y, m - 1, d);
 };
-
-interface BusTripState {
-  date: Date;
-  trips: BusTrip[];
-  reservations: BusReservation[];
-  reports: BusTripReport[];
-  selectedTrip: BusTrip | null;
-  isLoading: boolean;
-}
-
-type BusTripAction =
-  | {
-      type: "SET_FIELD";
-      payload: { field: keyof BusTripState; value: unknown };
-    }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_DATA"; payload: Partial<BusTripState> };
-
-function busTripReducer(
-  state: BusTripState,
-  action: BusTripAction,
-): BusTripState {
-  switch (action.type) {
-    case "SET_FIELD":
-      return { ...state, [action.payload.field]: action.payload.value };
-    case "SET_DATA":
-      return { ...state, ...action.payload };
-    case "SET_LOADING":
-      return { ...state, isLoading: action.payload };
-    default:
-      return state;
-  }
-}
 
 export function BusTripPage() {
   const { id } = useParams<{ id: string }>();
 
+  const [date, setDate] = useState(new Date());
+  const [selectedTrip, setSelectedTrip] = useState<BusTrip | null>(null);
+
+  const dateStr = useMemo(() => formatDate(date), [date]);
+
   const { getBusTripById } = useBusTripById();
-  const { getManyBusTripsByDate } = useManyBusTripsByDate();
-  const { getManyBusReservationsByDate } = useManyBusReservationsByDate();
-  const { getManyBusTripReportsByDate } = useManyBusTripReportsByDate();
+  const { trips, isLoading: tripsLoading } = useManyBusTripsByDate(dateStr);
+  const { reservations, isLoading: reservationsLoading } =
+    useManyBusReservationsByDate(dateStr);
+  const { reports, isLoading: reportsLoading } =
+    useManyBusTripReportsByDate(dateStr);
 
-  const [state, dispatch] = useReducer(busTripReducer, {
-    date: new Date(),
-    trips: [],
-    reservations: [],
-    reports: [],
-    selectedTrip: null,
-    isLoading: false,
-  });
+  const isLoading = tripsLoading || reservationsLoading || reportsLoading;
 
-  const { date, trips, selectedTrip, reservations, reports, isLoading } = state;
-
-  const tripReservations = useMemo(
-    () => reservations.filter((r) => r.bus_trip_id === selectedTrip?.id),
+  const currentTripReservations = useMemo(
+    () => reservations.filter((r) => r.bus_trip_id === selectedTrip?.id) ?? [],
     [reservations, selectedTrip?.id],
   );
 
-  const tripReports = useMemo(
-    () => reports.filter((r) => r.bus_trip_id === selectedTrip?.id),
+  const currentTripReports = useMemo(
+    () => reports.filter((r) => r.bus_trip_id === selectedTrip?.id) ?? [],
     [reports, selectedTrip?.id],
   );
 
-  const fetchData = useCallback(async () => {
-    dispatch({ type: "SET_LOADING", payload: true });
-    try {
-      const strDate = formatDateForInput(date);
-      const [fetchedTrips, fetchedReports, fetchedReservations] =
-        await Promise.all([
-          getManyBusTripsByDate(strDate),
-          getManyBusTripReportsByDate(strDate),
-          getManyBusReservationsByDate(strDate),
-        ]);
-
-      dispatch({
-        type: "SET_DATA",
-        payload: {
-          trips: fetchedTrips,
-          reports: fetchedReports,
-          reservations: fetchedReservations,
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar dados da rota:", error);
-    } finally {
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
-  }, [
-    date,
-    getManyBusTripsByDate,
-    getManyBusTripReportsByDate,
-    getManyBusReservationsByDate,
-  ]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   useEffect(() => {
     if (id) {
-      getBusTripById(id).then((trip) =>
-        dispatch({
-          type: "SET_FIELD",
-          payload: { field: "selectedTrip", value: trip },
-        }),
-      );
+      getBusTripById(id).then(setSelectedTrip);
     } else if (trips.length > 0 && !selectedTrip) {
-      dispatch({
-        type: "SET_FIELD",
-        payload: { field: "selectedTrip", value: trips[0] },
-      });
+      setSelectedTrip(trips[0]);
     }
   }, [id, trips, getBusTripById, selectedTrip]);
 
@@ -164,21 +79,11 @@ export function BusTripPage() {
                 description="Gerencie as rotas diárias"
               />
             </header>
-
             <hr />
-
             <nav>
               <DateInput
-                value={formatDateForInput(date)}
-                onChange={(e) =>
-                  dispatch({
-                    type: "SET_FIELD",
-                    payload: {
-                      field: "date",
-                      value: parseInputDate(e.target.value),
-                    },
-                  })
-                }
+                value={formatDate(date)}
+                onChange={(e) => setDate(parseDate(e.target.value))}
               />
             </nav>
 
@@ -188,12 +93,7 @@ export function BusTripPage() {
                   key={trip.id}
                   trip={trip}
                   isSelected={trip.id === selectedTrip?.id}
-                  onSelectTrip={(trip) =>
-                    dispatch({
-                      type: "SET_FIELD",
-                      payload: { field: "selectedTrip", value: trip },
-                    })
-                  }
+                  onSelectTrip={setSelectedTrip}
                 />
               ))}
               {!isLoading && trips.length === 0 && (
@@ -208,39 +108,33 @@ export function BusTripPage() {
               <article>
                 <SelectedBusTripCard
                   selectedTrip={selectedTrip}
-                  reservationsLength={tripReservations.length}
-                  reports={tripReports}
+                  reservationsLength={currentTripReservations.length}
+                  reports={currentTripReports}
                   onStatusUpdated={(status) =>
-                    dispatch({
-                      type: "SET_FIELD",
-                      payload: {
-                        field: "selectedTrip",
-                        value: { ...selectedTrip, status },
-                      },
-                    })
+                    setSelectedTrip({ ...selectedTrip, status })
                   }
                 />
 
                 <div className={styles.detailsGrid}>
-                  <section
-                    className={styles.gridColumn}
-                    aria-labelledby="res-title"
-                  >
-                    <h3 id="res-title">Reservas ({tripReservations.length})</h3>
-                    <BusReservationsCard reservations={tripReservations} />
+                  <section className={styles.gridColumn}>
+                    <h3>Reservas ({currentTripReservations.length})</h3>
+                    <BusReservationsCard
+                      reservations={currentTripReservations}
+                    />
                   </section>
 
-                  <section
-                    className={styles.gridColumn}
-                    aria-labelledby="rep-title"
-                  >
-                    <h3 id="rep-title">Relatórios ({tripReports.length})</h3>
-                    <BusReportsCard reports={tripReports} />
+                  <section className={styles.gridColumn}>
+                    <h3>Relatórios ({currentTripReports.length})</h3>
+                    <BusReportsCard reports={currentTripReports} />
                   </section>
                 </div>
               </article>
             ) : (
-              <EmptyState />
+              <EmptyState
+                icon="map"
+                title="Nenhuma viagem selecionada"
+                description="Clique numa viagem na lista à esquerda para ver os detalhes."
+              />
             )}
           </main>
         }
@@ -248,11 +142,3 @@ export function BusTripPage() {
     </Private>
   );
 }
-
-const EmptyState = () => (
-  <section className={styles.rightPlaceholder} role="region" aria-live="polite">
-    <I.map size={48} color="#cbd5e1" style={{ marginBottom: "1rem" }} />
-    <h2>Selecione uma viagem</h2>
-    <p>Clique numa viagem na lista à esquerda para ver os detalhes.</p>
-  </section>
-);

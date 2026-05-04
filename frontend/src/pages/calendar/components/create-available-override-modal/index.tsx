@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 
 import { Error, Input, Modal } from "../../../../components";
 import { useMessage } from "../../../../contexts";
@@ -15,46 +15,6 @@ interface CreateAvailableOverrideModalProps {
   onCreated: () => Promise<void>;
 }
 
-interface OverrideFormState {
-  date: Date;
-  reason: string;
-  error: string;
-}
-
-type OverrideFormAction =
-  | {
-      type: "field";
-      payload: { field: keyof OverrideFormState; value: string | Date };
-    }
-  | { type: "reset" };
-
-const reducer = (
-  state: OverrideFormState,
-  action: OverrideFormAction,
-): OverrideFormState => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field]: action.payload.value,
-      };
-    case "reset":
-      return {
-        date: new Date(),
-        reason: "",
-        error: "",
-      };
-    default:
-      return state;
-  }
-};
-
-const initialState: OverrideFormState = {
-  date: new Date(),
-  reason: "",
-  error: "",
-};
-
 export function CreateAvailableOverrideModal({
   isOpen,
   onClose,
@@ -65,15 +25,16 @@ export function CreateAvailableOverrideModal({
 
   const { createAvailableOverride } = useCreateAvailableOverride();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { date, reason, error } = state;
+  const [date, setDate] = useState(selectedDate || new Date());
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
 
   async function handleCreateAvailableOverride(
     e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
 
-    dispatch({ type: "field", payload: { field: "error", value: "" } });
+    setError("");
 
     const availableOverride: AvailableOverrideRequestDTO = {
       date,
@@ -82,7 +43,7 @@ export function CreateAvailableOverrideModal({
 
     const error = validateAvailableOverrideRequestDTO(availableOverride);
     if (error) {
-      dispatch({ type: "field", payload: { field: "error", value: error } });
+      setError(error);
       return;
     }
 
@@ -98,11 +59,7 @@ export function CreateAvailableOverrideModal({
   }
 
   useEffect(() => {
-    if (selectedDate)
-      dispatch({
-        type: "field",
-        payload: { field: "date", value: selectedDate },
-      });
+    if (selectedDate) setDate(selectedDate);
   }, [selectedDate]);
 
   return (
@@ -110,35 +67,21 @@ export function CreateAvailableOverrideModal({
       <h1>Criar disponibilidade</h1>
       <hr />
       <form onSubmit={handleCreateAvailableOverride} className={styles.form}>
-        <Error
-          error={error}
-          onClose={() =>
-            dispatch({ type: "field", payload: { field: "error", value: "" } })
-          }
-        />
+        <Error error={error} onClose={() => setError("")} />
         <Input
           label="Data"
           type="date"
           value={date.toISOString().split("T")[0]}
-          onChange={(e) =>
-            dispatch({
-              type: "field",
-              payload: { field: "date", value: new Date(e.target.value) },
-            })
-          }
+          onChange={(e) => setDate(new Date(e.target.value))}
           required
         />
         <Input
           label="Motivo"
           type="text"
           value={reason}
-          onChange={(e) =>
-            dispatch({
-              type: "field",
-              payload: { field: "reason", value: e.target.value },
-            })
-          }
+          onChange={(e) => setReason(e.target.value)}
           placeholder="Motivo da disponibilidade"
+          maxLength={128}
           required
         />
         <button type="submit" className="btn btn-success">

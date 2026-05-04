@@ -2,11 +2,14 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUser } from "../../contexts";
 import { api } from "../../services";
-import type { LoginDTO } from "../../types";
+import type { APIResponse, LoginDTO } from "../../types";
 import { fetchLogout, fetchVerifyAdmin } from "./";
 
 export const fetchLogin = async (loginDTO: LoginDTO): Promise<string> => {
-  const res = await api.post("/v1/auth/login/", loginDTO);
+  const res = await api.post<unknown, APIResponse<{ token: string }>>(
+    "/v1/auth/login/",
+    loginDTO,
+  );
 
   if (res.code !== "SUCCESS") {
     throw new Error(res.message || "Credenciais inválidas");

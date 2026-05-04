@@ -1,28 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { config } from "../config";
 
-export interface APIResponse<T = any> {
-  code: string;
-  data: T;
-  message?: string;
-  request_id?: string;
-}
+import { config } from "../config";
+import type { APIResponse } from "../types";
 
 declare module "axios" {
   interface AxiosInstance {
-    get<T = any, R = APIResponse<T>>(url: string, config?: any): Promise<R>;
-    post<T = any, R = APIResponse<T>>(
+    get<T = unknown, R = APIResponse<T>>(
       url: string,
-      data?: any,
-      config?: any,
+      config?: AxiosRequestConfig,
     ): Promise<R>;
-    put<T = any, R = APIResponse<T>>(
+    post<T = unknown, R = APIResponse<T>>(
       url: string,
-      data?: any,
-      config?: any,
+      data?: unknown,
+      config?: AxiosRequestConfig,
     ): Promise<R>;
-    delete<T = any, R = APIResponse<T>>(url: string, config?: any): Promise<R>;
+    put<T = unknown, R = APIResponse<T>>(
+      url: string,
+      data?: unknown,
+      config?: AxiosRequestConfig,
+    ): Promise<R>;
+    delete<T = unknown, R = APIResponse<T>>(
+      url: string,
+      config?: AxiosRequestConfig,
+    ): Promise<R>;
   }
 }
 

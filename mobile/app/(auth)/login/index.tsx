@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -16,46 +16,13 @@ import { btnStyles, colors } from "@/styles";
 import type { LoginDTO } from "@/types";
 import { validateLoginDTO } from "@/utils";
 
-interface State {
-  email: string;
-  password: string;
-  error: string;
-}
-
-type LoginAction =
-  | { type: "field"; payload: { field: "email" | "password"; value: string } }
-  | { type: "error"; payload: string };
-
-const reducer = (state: State, action: LoginAction): State => {
-  switch (action.type) {
-    case "field":
-      return {
-        ...state,
-        [action.payload.field]: action.payload.value,
-      };
-    case "error":
-      return { ...state, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-const initialState: State = {
-  email: "",
-  password: "",
-  error: "",
-};
-
 export default function LoginPage() {
   const { isVerified } = useVerifyUser();
   const { login, isPending } = useLogin();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { email, password, error } = state;
-
-  function setError(message: string) {
-    dispatch({ type: "error", payload: message });
-  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   async function handleLogin() {
     if (isPending) return;
@@ -95,12 +62,7 @@ export default function LoginPage() {
           textContentType="emailAddress"
           placeholder="Email"
           value={email}
-          onChangeText={(email) =>
-            dispatch({
-              type: "field",
-              payload: { field: "email", value: email },
-            })
-          }
+          onChangeText={(email) => setEmail(email)}
         />
         <Input
           label="Senha"
@@ -108,12 +70,7 @@ export default function LoginPage() {
           placeholder="Senha"
           secureTextEntry
           value={password}
-          onChangeText={(password) =>
-            dispatch({
-              type: "field",
-              payload: { field: "password", value: password },
-            })
-          }
+          onChangeText={(password) => setPassword(password)}
         />
         <TouchableOpacity onPress={handleLogin} style={styles.btn}>
           <Text

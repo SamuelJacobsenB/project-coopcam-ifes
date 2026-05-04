@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useOwnUser } from "../../hooks";
 import type { User } from "../../types";
@@ -9,20 +9,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (userData) setUser(userData);
+    if (userData) {
+      setUser(userData);
+    }
   }, [userData]);
 
-  const findUser = async () => {
+  const findUser = useCallback(async () => {
     const { data, isError } = await refetch();
 
     if (!isError) {
       setUser(data ?? null);
     }
-  };
+  }, [refetch]);
+
+  const value = useMemo(
+    () => ({ user, setUser, findUser }),
+    [user, findUser],
+  );
 
   return (
-    <UserContext.Provider value={{ user, setUser, findUser }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={value}>{children}</UserContext.Provider>
   );
 };
