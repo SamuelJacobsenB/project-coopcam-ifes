@@ -4,17 +4,13 @@ import { api } from "@/services";
 import type { AvailableOverride } from "@/types";
 
 export const fetchAllAvailableOverrides = async () => {
-  try {
-    const res = await api.get<AvailableOverride[]>(`/v1/available-override/`);
+  const res = await api.get<AvailableOverride[]>(`/v1/available-override/`);
 
-    if (res.code !== "SUCCESS") {
-      throw new Error(res.message || "Erro ao buscar dias disponíveis");
-    }
-
-    return res.data || [];
-  } catch {
-    throw new Error("Erro ao buscar dias disponíveis");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Erro ao buscar dias disponíveis");
   }
+
+  return res.data || [];
 };
 
 export const useAllAvailableOverrides = () => {

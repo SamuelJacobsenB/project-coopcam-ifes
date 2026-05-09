@@ -22,6 +22,7 @@ import type { MonthlyFeeConfig, MonthlyPayment } from "../../types";
 
 import { FeeConfigDetailsCard, UserPaymentsCard } from "./components";
 
+import { getErrorMessage } from "../../services";
 import styles from "./styles.module.css";
 
 export function PaymentsPage() {
@@ -68,8 +69,8 @@ export function PaymentsPage() {
       );
       setIsEmitModalOpen(false);
       showMessage("Pagamentos emitidos com sucesso", "success");
-    } catch {
-      showMessage("Erro ao emitir pagamentos", "error");
+    } catch (error) {
+      showMessage(getErrorMessage(error), "error");
     }
   };
 
@@ -86,8 +87,8 @@ export function PaymentsPage() {
       setPayments([]);
       setIsDeleteModalOpen(false);
       showMessage("Configuração deletada com sucesso", "success");
-    } catch {
-      showMessage("Erro ao deletar configuração", "error");
+    } catch (error) {
+      showMessage(getErrorMessage(error), "error");
     }
   };
 

@@ -31,7 +31,9 @@ const parseInputDate = (dateString: string) => {
 
 export function CalendarPage() {
   const navigate = useNavigate();
+
   const { showMessage } = useMessage();
+
   const [date, setDate] = useState(new Date());
 
   const {
@@ -64,10 +66,8 @@ export function CalendarPage() {
   }
 
   if (availableOverridesError || unavailableDaysError) {
-    showMessage(
-      "Erro ao carregar os dados. Tente novamente mais tarde.",
-      "error",
-    );
+    showMessage("Erro ao carregar os dados. Tente novamente", "error");
+
     navigate("/");
     return <LoadPage />;
   }

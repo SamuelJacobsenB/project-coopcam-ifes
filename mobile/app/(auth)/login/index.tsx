@@ -12,6 +12,7 @@ import { router } from "expo-router";
 
 import { Error, Input, Line } from "@/components";
 import { useLogin, useVerifyUser } from "@/hooks";
+import { getErrorMessage } from "@/services";
 import { btnStyles, colors } from "@/styles";
 import type { LoginDTO } from "@/types";
 import { validateLoginDTO } from "@/utils";
@@ -39,8 +40,8 @@ export default function LoginPage() {
 
     try {
       await login(loginDTO);
-    } catch {
-      setError("Email ou senha incorretos");
+    } catch (err) {
+      setError(getErrorMessage(err));
     }
   }
 

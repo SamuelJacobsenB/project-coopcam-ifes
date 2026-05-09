@@ -14,9 +14,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userData]);
 
   const findUser = async () => {
-    const { data, isError } = await refetch();
+    // ⚠️ CRÍTICO: refetch retorna { data, error, ... }, não { data, isError }
+    // isError não existe na API do tanstack-query, causaria lógica quebrada
+    const { data, error } = await refetch();
 
-    if (!isError) {
+    if (!error) {
       setUser(data ?? null);
     }
   };

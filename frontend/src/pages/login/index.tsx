@@ -7,6 +7,7 @@ import { useLogin } from "../../hooks";
 import type { LoginDTO } from "../../types";
 import { validateLoginDTO } from "../../utils";
 
+import { getErrorMessage } from "../../services";
 import styles from "./styles.module.css";
 
 export function LoginPage() {
@@ -17,14 +18,16 @@ export function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      setError("");
+
       setIsLoading(true);
+      setError("");
 
       const loginDTO: LoginDTO = { email, password };
 
@@ -39,8 +42,8 @@ export function LoginPage() {
         await login(loginDTO);
         showMessage("Login realizado com sucesso", "success");
         navigate("/");
-      } catch {
-        setError("Email ou senha incorretos");
+      } catch (error) {
+        setError(getErrorMessage(error));
       } finally {
         setIsLoading(false);
       }

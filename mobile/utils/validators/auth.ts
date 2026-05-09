@@ -11,11 +11,11 @@ export function validateLoginDTO(dto: LoginDTO): string {
   if (dto.password == null || dto.password === "") {
     return "Senha requerida";
   }
-  if (dto.password.length < 12) {
-    return "Senha deve ter no mínimo 12 caracteres";
+  if (dto.password.length < 8) {
+    return "Senha deve ter no mínimo 8 caracteres";
   }
-  if (dto.password.length > 128) {
-    return "Senha deve ter no máximo 128 caracteres";
+  if (dto.password.length > 15) {
+    return "Senha deve ter no máximo 15 caracteres";
   }
 
   return "";

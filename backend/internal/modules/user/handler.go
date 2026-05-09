@@ -26,7 +26,7 @@ func (handler *UserHandler) FindMany(ctx *gin.Context) {
 	namePrefix := ctx.Query("name")
 
 	// Validar parâmetro de busca
-	if len(namePrefix) > 50 || (namePrefix != "" && !regexp.MustCompile(`^[a-zA-Z0-9\s\-]*$`).MatchString(namePrefix)) {
+	if len(namePrefix) > 64 || (namePrefix != "" && !regexp.MustCompile(`^[a-zA-Z0-9\s\-]*$`).MatchString(namePrefix)) {
 		api.BadRequest(ctx, "parâmetros de busca inválidos")
 		return
 	}
@@ -133,7 +133,7 @@ func (handler *UserHandler) Update(ctx *gin.Context) {
 	user := userRequest.ToEntity()
 	user.ID = id
 	if err := handler.service.Update(user); err != nil {
-		api.InternalError(ctx, errors.New("err interno ao atualizar usuário"))
+		api.InternalError(ctx, errors.New("erro interno ao atualizar usuário"))
 		return
 	}
 
@@ -243,5 +243,5 @@ func (handler *UserHandler) Delete(ctx *gin.Context) {
 		ctx.ClientIP(),
 	)
 
-	api.RespondWithSuccess(ctx, http.StatusNoContent, nil)
+	api.RespondWithSuccess(ctx, http.StatusOK, nil)
 }

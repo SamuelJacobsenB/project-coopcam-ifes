@@ -1,4 +1,5 @@
 import { Input } from "../../../../../../components";
+import { formatDateForInput, normalizeDate } from "../../../../../../utils";
 
 interface EditableFieldProps {
   label: string;
@@ -19,6 +20,8 @@ export function EditableField({
   placeholder,
   onChange,
 }: EditableFieldProps) {
+  const displayValue = type === "date" ? formatDateForInput(value) : value;
+
   return editMode ? (
     <Input
       label={label}
@@ -26,31 +29,20 @@ export function EditableField({
       type={type}
       placeholder={placeholder}
       required
-      value={
-        type === "date"
-          ? value.includes("T")
-            ? value.split("T")[0]
-            : value.split("/").reverse().join("-")
-          : value
-      }
+      value={displayValue}
       onChange={(e) => {
-        let value;
+        const val = e.target.value;
         if (type === "date") {
-          const [year, month, day] = e.target.value.split("-");
-          value = new Date(
-            Number(year),
-            Number(month) - 1,
-            Number(day),
-            12,
-          ).toISOString();
-        } else value = e.target.value;
-
-        onChange(value);
+          onChange(normalizeDate(val));
+        } else {
+          onChange(val);
+        }
       }}
     />
   ) : (
     <p>
-      <strong>{label}:</strong> {value}
+      <strong>{label}:</strong>{" "}
+      {type === "date" ? new Date(value).toLocaleDateString("pt-BR") : value}
     </p>
   );
 }

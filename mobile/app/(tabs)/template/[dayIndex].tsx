@@ -10,14 +10,15 @@ import {
 } from "@/components";
 import { weekDays } from "@/constants";
 import { useMessage } from "@/contexts";
-import { useTemplateByUserId, useUpdateTemplate } from "@/hooks";
+import { useTemplate, useUpdateTemplate } from "@/hooks";
+import { getErrorMessage } from "@/services";
 import { colors } from "@/styles";
 import { updateDays, validateWeekDay } from "@/utils";
 
 export default function TemplateDayPage() {
   const { dayIndex } = useLocalSearchParams();
   const { showMessage } = useMessage();
-  const { template, refetch } = useTemplateByUserId();
+  const { template, refetch } = useTemplate();
   const { updateTemplate } = useUpdateTemplate();
 
   const index = Number(dayIndex);
@@ -48,11 +49,11 @@ export default function TemplateDayPage() {
     (template.go_schedule.morning_days.includes(index) !==
       selections.isMorningGo ||
       template.return_schedule.morning_days.includes(index) !==
-        selections.isMorningReturn ||
+      selections.isMorningReturn ||
       template.go_schedule.afternoon_days.includes(index) !==
-        selections.isAfternoonGo ||
+      selections.isAfternoonGo ||
       template.return_schedule.afternoon_days.includes(index) !==
-        selections.isAfternoonReturn);
+      selections.isAfternoonReturn);
 
   const toggle = (field: keyof typeof selections) => {
     setSelections((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -91,9 +92,9 @@ export default function TemplateDayPage() {
     try {
       await updateTemplate(dto);
       await refetch();
-      showMessage("Predefinição atualizada!", "success");
-    } catch {
-      showMessage("Erro ao atualizar predefinição", "error");
+      showMessage("Predefinição atualizada", "success");
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     }
   }
 

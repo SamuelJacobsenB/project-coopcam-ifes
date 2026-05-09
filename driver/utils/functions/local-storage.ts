@@ -8,8 +8,8 @@ async function getScannedUsersByTripId(id: string) {
   try {
     const storedScanned = await AsyncStorage.getItem(STORAGE_KEYS.SCANNED(id));
     return storedScanned ? (JSON.parse(storedScanned) as ScannedUser[]) : [];
-  } catch (error) {
-    console.error("Erro ao acessar usuários escaneados:", error);
+  } catch {
+    console.error("Erro ao acessar usuários escaneados");
     return [];
   }
 }
@@ -22,8 +22,8 @@ async function getReservationsByTripId(id: string) {
     return storedReservations
       ? (JSON.parse(storedReservations) as BusReservation[])
       : [];
-  } catch (error) {
-    console.error("Erro ao acessar reservas:", error);
+  } catch {
+    console.error("Erro ao acessar reservas");
     return [];
   }
 }
@@ -32,8 +32,8 @@ async function getBusTripById(id: string) {
   try {
     const storedBusTrip = await AsyncStorage.getItem(STORAGE_KEYS.BUS_TRIP(id));
     return storedBusTrip ? (JSON.parse(storedBusTrip) as BusTrip) : null;
-  } catch (error) {
-    console.error("Erro ao acessar viagem:", error);
+  } catch {
+    console.error("Erro ao acessar viagem");
     return null;
   }
 }
@@ -44,8 +44,8 @@ async function getBusTripsByDate(date: string) {
       STORAGE_KEYS.BUS_TRIPS_BY_DATE(date),
     );
     return storedBusTrips ? (JSON.parse(storedBusTrips) as BusTrip[]) : [];
-  } catch (error) {
-    console.error("Erro ao acessar viagens:", error);
+  } catch {
+    console.error("Erro ao acessar viagens");
     return [];
   }
 }
@@ -61,8 +61,8 @@ export {
 async function setScannedUsersByTripId(id: string, users: ScannedUser[]) {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.SCANNED(id), JSON.stringify(users));
-  } catch (error) {
-    console.error("Erro ao salvar usuários escaneados:", error);
+  } catch {
+    console.error("Erro ao salvar usuários escaneados");
   }
 }
 
@@ -75,8 +75,8 @@ async function setReservationsByTripId(
       STORAGE_KEYS.RESERVATIONS(id),
       JSON.stringify(reservations),
     );
-  } catch (error) {
-    console.error("Erro ao salvar reservas:", error);
+  } catch {
+    console.error("Erro ao salvar reservas");
   }
 }
 
@@ -86,8 +86,8 @@ async function setBusTripById(id: string, busTrip: BusTrip) {
       STORAGE_KEYS.BUS_TRIP(id),
       JSON.stringify(busTrip),
     );
-  } catch (error) {
-    console.error("Erro ao salvar viagem:", error);
+  } catch {
+    console.error("Erro ao salvar viagem");
   }
 }
 
@@ -97,8 +97,8 @@ async function setBusTripsByDate(date: string, busTrips: BusTrip[]) {
       STORAGE_KEYS.BUS_TRIPS_BY_DATE(date),
       JSON.stringify(busTrips),
     );
-  } catch (error) {
-    console.error("Erro ao salvar viagens:", error);
+  } catch {
+    console.error("Erro ao salvar viagens");
   }
 }
 

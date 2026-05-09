@@ -95,5 +95,5 @@ func (h *MonthlyFeeConfigHandler) Delete(ctx *gin.Context) {
 		ctx.ClientIP(),
 	)
 
-	api.RespondWithSuccess(ctx, http.StatusNoContent, nil)
+	api.RespondWithSuccess(ctx, http.StatusOK, nil)
 }

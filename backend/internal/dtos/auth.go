@@ -13,7 +13,7 @@ type LoginDTO struct {
 
 func (loginDTO *LoginDTO) Validate() error {
 	if loginDTO.Email == "" || loginDTO.Password == "" {
-		return errors.New("email and password are required")
+		return errors.New("email e senha requeridos")
 	}
 
 	if err := security.ValidateEmail(loginDTO.Email); err != nil {

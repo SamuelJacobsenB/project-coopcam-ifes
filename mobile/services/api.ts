@@ -28,15 +28,26 @@ declare module "axios" {
   }
 }
 
+const validateSecureUrl = (url: string): void => {
+  if (process.env.NODE_ENV === "production" && !url.startsWith("https://")) {
+    console.error("HTTPS obrigatório em produção");
+    throw new Error("HTTPS obrigatório em produção");
+  }
+};
+
+validateSecureUrl(config.api_url);
+
 export const api = axios.create({
   baseURL: config.api_url,
   withCredentials: true,
+  timeout: 10000,
 });
 
 api.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem("auth_token");
 
   if (token) {
+    // Bearer token
     config.headers.Authorization = token;
   }
 

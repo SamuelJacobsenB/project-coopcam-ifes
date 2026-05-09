@@ -1,7 +1,6 @@
 package weekly_preference
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/SamuelJacobsenB/project-coopcam-ifes/backend/internal/api"
@@ -27,7 +26,7 @@ func (handler *WeeklyPreferenceHandler) FindByUserID(ctx *gin.Context) {
 
 	weeklyPreference, err := handler.service.FindByUserID(userID)
 	if err != nil {
-		api.InternalError(ctx, errors.New("erro ao buscar preferência semanal"))
+		api.NotFound(ctx, "preferência semanais não encontrada para este usuário")
 		return
 	}
 

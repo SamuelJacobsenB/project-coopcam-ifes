@@ -44,19 +44,19 @@ const (
 	CPFPattern      = `^\d{11}$`
 	CEPPattern      = `^\d{8}$`
 	PhonePattern    = `^\d{10,11}$`
-	PasswordPattern = `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{12,128}$`
+	PasswordPattern = `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,15}$`
 )
 
 // ERROR MESSAGES
 const (
-	ErrMsgInvalidEmail     = "email format is invalid"
-	ErrMsgInvalidPassword  = "password does not meet requirements"
-	ErrMsgInvalidCPF       = "invalid CPF"
-	ErrMsgInvalidCEP       = "invalid CEP"
-	ErrMsgInvalidPhone     = "invalid phone number"
-	ErrMsgUserNotFound     = "user not found"
-	ErrMsgEmailExists      = "email already exists"
-	ErrMsgInvalidToken     = "invalid or expired token"
-	ErrMsgInsufficientRole = "insufficient permissions"
-	ErrMsgDatabaseError    = "database operation failed"
+	ErrMsgInvalidEmail     = "formato de email inválido"
+	ErrMsgInvalidPassword  = "senha deve ter entre 8 e 15 caracteres, com pelo menos uma letra maiúscula, um número e um caractere especial"
+	ErrMsgInvalidCPF       = "o CPF deve ser válido"
+	ErrMsgInvalidCEP       = "o CEP deve ter 8 dígitos"
+	ErrMsgInvalidPhone     = "telefone deve ter 10 ou 11 dígitos"
+	ErrMsgUserNotFound     = "usuário não encontrado"
+	ErrMsgEmailExists      = "email ja cadastrado"
+	ErrMsgInvalidToken     = "token inválido"
+	ErrMsgInsufficientRole = "permissão insuficiente"
+	ErrMsgDatabaseError    = "erro ao acessar o banco de dados"
 )

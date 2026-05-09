@@ -66,5 +66,5 @@ func (handler *UnavailableDayHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	api.RespondWithSuccess(ctx, http.StatusNoContent, nil)
+	api.RespondWithSuccess(ctx, http.StatusOK, nil)
 }

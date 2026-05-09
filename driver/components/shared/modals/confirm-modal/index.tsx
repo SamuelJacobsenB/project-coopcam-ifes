@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { Modal } from "../default";
 
@@ -27,8 +27,6 @@ export const ConfirmModal = ({
     try {
       await onConfirm();
       onClose();
-    } catch (error) {
-      console.error("Erro ao confirmar:", error);
     } finally {
       setLoading(false);
     }

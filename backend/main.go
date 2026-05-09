@@ -15,9 +15,7 @@ import (
 )
 
 func main() {
-	if err := config.LoadEnv(); err != nil {
-		log.Fatalf("Failed to load environment configuration: %v", err)
-	}
+	config.LoadEnv()
 
 	if err := db.ConnectDB(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)

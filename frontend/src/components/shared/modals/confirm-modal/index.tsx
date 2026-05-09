@@ -29,8 +29,6 @@ export const ConfirmModal = ({
     try {
       await onConfirm();
       onClose();
-    } catch (error) {
-      console.error("Erro ao confirmar:", error);
     } finally {
       setLoading(false);
     }

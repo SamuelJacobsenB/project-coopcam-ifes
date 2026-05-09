@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { MessageContext, type Message, type MessageType } from "./context";
 
 export const MessageProvider = ({

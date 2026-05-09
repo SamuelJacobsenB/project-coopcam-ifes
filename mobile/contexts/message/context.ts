@@ -14,5 +14,5 @@ export interface MessageContextProps {
 }
 
 export const MessageContext = createContext<MessageContextProps>(
-  {} as MessageContextProps
+  {} as MessageContextProps,
 );

@@ -151,7 +151,7 @@ func (h *MonthlyPaymentHandler) UpdateStatus(ctx *gin.Context) {
 		ctx.ClientIP(),
 	)
 
-	api.RespondWithSuccess(ctx, http.StatusNoContent, nil)
+	api.RespondWithSuccess(ctx, http.StatusOK, nil)
 }
 
 func (h *MonthlyPaymentHandler) HandleWebhook(ctx *gin.Context) {

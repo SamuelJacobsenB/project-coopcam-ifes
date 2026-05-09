@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 
 import { Card, ConfirmModal, I } from "../../../../components";
 import { useMessage } from "../../../../contexts";
@@ -6,6 +6,7 @@ import {
   useDeleteAvailableOverride,
   useDeleteUnavailableDay,
 } from "../../../../hooks";
+import { getErrorMessage } from "../../../../services";
 import type { AvailableOverride, UnavailableDay } from "../../../../types";
 
 import { CreateAvailableOverrideModal, CreateUnavailableDayModal } from "../";
@@ -20,36 +21,6 @@ interface DayCardProps {
   onUnavailableDayCreated: () => Promise<void>;
 }
 
-interface State {
-  isPast: boolean;
-  isWeekend: boolean;
-  isDeleteAvailableOverrideModalOpen: boolean;
-  isDeleteUnavailableDayModalOpen: boolean;
-  isCreateAvailableOverrideModalOpen: boolean;
-  isCreateUnavailableDayModalOpen: boolean;
-}
-
-type Action = {
-  type: "field";
-  payload: { field: keyof State; value: boolean };
-};
-
-const reducer = (state: State, action: Action): State => {
-  if (action.type === "field") {
-    return { ...state, [action.payload.field]: action.payload.value };
-  }
-  return state;
-};
-
-const initialState: State = {
-  isPast: false,
-  isWeekend: false,
-  isDeleteAvailableOverrideModalOpen: false,
-  isDeleteUnavailableDayModalOpen: false,
-  isCreateAvailableOverrideModalOpen: false,
-  isCreateUnavailableDayModalOpen: false,
-};
-
 export function DayCard({
   date,
   unavailable,
@@ -57,16 +28,27 @@ export function DayCard({
   onAvailableOverrideCreated,
   onUnavailableDayCreated,
 }: DayCardProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const { showMessage } = useMessage();
   const { deleteAvailableOverride } = useDeleteAvailableOverride();
   const { deleteUnavailableDay } = useDeleteUnavailableDay();
 
-  const currentReason = override?.reason || unavailable?.reason;
+  const [isPast, setIsPast] = useState(false);
+  const [isWeekend, setIsWeekend] = useState(false);
 
-  const setModal = useCallback((field: keyof State, value: boolean) => {
-    dispatch({ type: "field", payload: { field, value } });
-  }, []);
+  const [
+    isDeleteAvailableOverrideModalOpen,
+    setIsDeleteAvailableOverrideModalOpen,
+  ] = useState(false);
+  const [isDeleteUnavailableDayModalOpen, setIsDeleteUnavailableDayModalOpen] =
+    useState(false);
+  const [
+    isCreateAvailableOverrideModalOpen,
+    setIsCreateAvailableOverrideModalOpen,
+  ] = useState(false);
+  const [isCreateUnavailableDayModalOpen, setIsCreateUnavailableDayModalOpen] =
+    useState(false);
+
+  const currentReason = override?.reason || unavailable?.reason;
 
   useEffect(() => {
     const today = new Date();
@@ -76,14 +58,9 @@ export function DayCard({
     compareDate.setHours(0, 0, 0, 0);
 
     const day = date.getDay();
-    dispatch({
-      type: "field",
-      payload: { field: "isPast", value: compareDate < today },
-    });
-    dispatch({
-      type: "field",
-      payload: { field: "isWeekend", value: day === 0 || day === 6 },
-    });
+
+    setIsPast(compareDate < today);
+    setIsWeekend(day === 0 || day === 6);
   }, [date]);
 
   const handleDeleteOverride = async () => {
@@ -92,8 +69,9 @@ export function DayCard({
       await deleteAvailableOverride(override.id);
       await onAvailableOverrideCreated();
       showMessage("Exceção removida com sucesso", "success");
-    } catch {
-      showMessage("Erro ao remover exceção", "error");
+      setIsDeleteAvailableOverrideModalOpen(false);
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     }
   };
 
@@ -103,20 +81,21 @@ export function DayCard({
       await deleteUnavailableDay(unavailable.id);
       await onUnavailableDayCreated();
       showMessage("Dia liberado com sucesso", "success");
-    } catch {
-      showMessage("Erro ao liberar dia", "error");
+      setIsDeleteUnavailableDayModalOpen(false);
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     }
   };
 
   const statusClass = override
     ? styles.statusAvailable
-    : unavailable || state.isWeekend
+    : unavailable || isWeekend
       ? styles.statusUnavailable
       : styles.statusAvailable;
 
   const statusText = override
     ? "Disponível (Exceção)"
-    : unavailable || state.isWeekend
+    : unavailable || isWeekend
       ? "Indisponível"
       : "Disponível";
 
@@ -146,14 +125,12 @@ export function DayCard({
           </div>
         </div>
         <div className={styles.buttonContainer}>
-          {!state.isPast ? (
+          {!isPast ? (
             <>
               {override && (
                 <button
                   className={styles.btnActionOutline}
-                  onClick={() =>
-                    setModal("isDeleteAvailableOverrideModalOpen", true)
-                  }
+                  onClick={() => setIsDeleteAvailableOverrideModalOpen(true)}
                 >
                   Remover Exceção
                 </button>
@@ -161,29 +138,23 @@ export function DayCard({
               {unavailable && (
                 <button
                   className={styles.btnActionPrimary}
-                  onClick={() =>
-                    setModal("isDeleteUnavailableDayModalOpen", true)
-                  }
+                  onClick={() => setIsDeleteUnavailableDayModalOpen(true)}
                 >
                   Liberar Dia
                 </button>
               )}
-              {!unavailable && !override && !state.isWeekend && (
+              {!unavailable && !override && !isWeekend && (
                 <button
                   className={styles.btnActionOutline}
-                  onClick={() =>
-                    setModal("isCreateUnavailableDayModalOpen", true)
-                  }
+                  onClick={() => setIsCreateUnavailableDayModalOpen(true)}
                 >
                   Bloquear Dia
                 </button>
               )}
-              {!unavailable && !override && state.isWeekend && (
+              {!unavailable && !override && isWeekend && (
                 <button
                   className={styles.btnActionPrimary}
-                  onClick={() =>
-                    setModal("isCreateAvailableOverrideModalOpen", true)
-                  }
+                  onClick={() => setIsCreateAvailableOverrideModalOpen(true)}
                 >
                   Abrir Exceção
                 </button>
@@ -196,25 +167,25 @@ export function DayCard({
       </Card>
 
       <ConfirmModal
-        isOpen={state.isDeleteAvailableOverrideModalOpen}
-        onClose={() => setModal("isDeleteAvailableOverrideModalOpen", false)}
+        isOpen={isDeleteAvailableOverrideModalOpen}
+        onClose={() => setIsDeleteAvailableOverrideModalOpen(false)}
         onConfirm={handleDeleteOverride}
       />
       <ConfirmModal
-        isOpen={state.isDeleteUnavailableDayModalOpen}
-        onClose={() => setModal("isDeleteUnavailableDayModalOpen", false)}
+        isOpen={isDeleteUnavailableDayModalOpen}
+        onClose={() => setIsDeleteUnavailableDayModalOpen(false)}
         onConfirm={handleDeleteUnavailable}
       />
       <CreateAvailableOverrideModal
         selectedDate={date}
-        isOpen={state.isCreateAvailableOverrideModalOpen}
-        onClose={() => setModal("isCreateAvailableOverrideModalOpen", false)}
+        isOpen={isCreateAvailableOverrideModalOpen}
+        onClose={() => setIsCreateAvailableOverrideModalOpen(false)}
         onCreated={onAvailableOverrideCreated}
       />
       <CreateUnavailableDayModal
         selectedDate={date}
-        isOpen={state.isCreateUnavailableDayModalOpen}
-        onClose={() => setModal("isCreateUnavailableDayModalOpen", false)}
+        isOpen={isCreateUnavailableDayModalOpen}
+        onClose={() => setIsCreateUnavailableDayModalOpen(false)}
         onCreated={onUnavailableDayCreated}
       />
     </>

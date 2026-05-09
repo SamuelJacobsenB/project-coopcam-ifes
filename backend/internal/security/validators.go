@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"unicode"
@@ -13,11 +14,11 @@ func ValidateEmail(email string) error {
 	email = strings.TrimSpace(email)
 
 	if email == "" {
-		return errors.New("email is required")
+		return errors.New("email é obrigatório")
 	}
 
 	if len(email) > 254 {
-		return errors.New("email is too long")
+		return errors.New("email é muito longo")
 	}
 
 	matched, err := regexp.MatchString(config.EmailPattern, email)
@@ -33,7 +34,7 @@ func ValidateCPF(cpf string) error {
 	cpf = regexp.MustCompile(`\D`).ReplaceAllString(cpf, "")
 
 	if len(cpf) != 11 {
-		return errors.New("CPF must have 11 digits")
+		return errors.New("o CPF deve ter 11 dígitos")
 	}
 
 	invalidSequences := []string{
@@ -62,7 +63,7 @@ func ValidateCPF(cpf string) error {
 	}
 
 	if int(cpf[9]-'0') != firstVerifier {
-		return errors.New("invalid CPF checksum")
+		return errors.New("o primeiro dígito verificador do CPF é inválido")
 	}
 
 	// Validar segundo dígito verificador
@@ -79,7 +80,7 @@ func ValidateCPF(cpf string) error {
 	}
 
 	if int(cpf[10]-'0') != secondVerifier {
-		return errors.New("invalid CPF checksum")
+		return errors.New("o segundo dígito verificador do CPF é inválido")
 	}
 
 	return nil
@@ -89,7 +90,7 @@ func ValidateCEP(cep string) error {
 	cep = regexp.MustCompile(`\D`).ReplaceAllString(cep, "")
 
 	if len(cep) != 8 {
-		return errors.New("CEP must have 8 digits")
+		return errors.New("o CEP deve ter 8 dígitos")
 	}
 
 	matched, err := regexp.MatchString(config.CEPPattern, cep)
@@ -104,7 +105,7 @@ func ValidatePhone(phone string) error {
 	phone = regexp.MustCompile(`\D`).ReplaceAllString(phone, "")
 
 	if len(phone) < 10 || len(phone) > 11 {
-		return errors.New("phone must have 10 or 11 digits")
+		return errors.New(config.ErrMsgInvalidPhone)
 	}
 
 	return nil
@@ -114,15 +115,15 @@ func ValidateName(name string) error {
 	name = strings.TrimSpace(name)
 
 	if name == "" {
-		return errors.New("name is required")
+		return errors.New("nome é obrigatório")
 	}
 
 	if len(name) < 3 {
-		return errors.New("name must have at least 3 characters")
+		return errors.New("nome deve ter pelo menos 3 caracteres")
 	}
 
 	if len(name) > 64 {
-		return errors.New("name is too long")
+		return errors.New("nome deve ter no máximo 64 caracteres")
 	}
 
 	return nil
@@ -130,16 +131,16 @@ func ValidateName(name string) error {
 
 func ValidatePassword(password string) error {
 	if len(password) < config.PasswordMinLength {
-		return errors.New("password is too short (minimum " +
-			string(rune(config.PasswordMinLength)) + " characters)")
+		return errors.New("senha deve ter no mínimo " +
+			fmt.Sprint(config.PasswordMinLength) + " caracteres")
 	}
 
 	if len(password) > config.PasswordMaxLength {
-		return errors.New("password is too long")
+		return errors.New("senha deve ter no máximo " + fmt.Sprint(config.PasswordMaxLength) + " caracteres")
 	}
 
 	if strings.Contains(password, " ") {
-		return errors.New("password cannot contain spaces")
+		return errors.New("senha não pode conter espaços")
 	}
 
 	hasUpper := false
@@ -161,16 +162,16 @@ func ValidatePassword(password string) error {
 	}
 
 	if !hasUpper {
-		return errors.New("password must contain uppercase letter")
+		return errors.New("senha deve conter letra maiúscula")
 	}
 	if !hasLower {
-		return errors.New("password must contain lowercase letter")
+		return errors.New("senha deve conter letra minúscula")
 	}
 	if !hasDigit {
-		return errors.New("password must contain number")
+		return errors.New("senha deve conter um número")
 	}
 	if !hasSpecial {
-		return errors.New("password must contain special character (!@#$%^&*)")
+		return errors.New("senha deve conter um caractere especial (!@#$%^&*)")
 	}
 
 	return nil

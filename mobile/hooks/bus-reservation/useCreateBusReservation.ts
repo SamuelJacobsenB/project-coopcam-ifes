@@ -6,17 +6,13 @@ import { BusReservationRequestDTO } from "@/types";
 export const fetchCreateBusReservation = async (
   dto: BusReservationRequestDTO,
 ) => {
-  try {
-    const res = await api.post("/v1/bus-reservation/", dto);
+  const res = await api.post("/v1/bus-reservation/", dto);
 
-    if (res.code !== "SUCCESS") {
-      throw new Error(res.message || "Ocorreu um erro ao criar a reserva");
-    }
-
-    return res.data;
-  } catch {
-    throw new Error("Ocorreu um erro ao criar a reserva");
+  if (res.code !== "SUCCESS") {
+    throw new Error(res.message || "Ocorreu um erro ao criar a reserva");
   }
+
+  return res.data;
 };
 
 export const useCreateBusReservation = () => {

@@ -55,9 +55,8 @@ export default function ProfilePage() {
       });
 
       await Sharing.shareAsync(uri);
-      showMessage("Cartão gerado com sucesso!", "success");
-    } catch (error) {
-      console.error("Erro ao gerar cartão:", error);
+      showMessage("Cartão gerado com sucesso", "success");
+    } catch {
       showMessage("Erro ao gerar o cartão", "error");
     } finally {
       setIsDownloading(false);
@@ -86,14 +85,8 @@ export default function ProfilePage() {
           <Text style={styles.cardTitle}>Dados do Usuário</Text>
           <InfoRow label="Telefone" value={formatPhone(user.phone)} />
           <InfoRow label="Endereço" value={user.address} />
-          <InfoRow
-            label="CEP"
-            value={formatCEP(user.cep)}
-          />
-          <InfoRow
-            label="CPF"
-            value={formatCPF(user.cpf)}
-          />
+          <InfoRow label="CEP" value={formatCEP(user.cep)} />
+          <InfoRow label="CPF" value={formatCPF(user.cpf)} />
           <InfoRow label="Nascimento" value={user.birth.toString()} />
         </View>
 

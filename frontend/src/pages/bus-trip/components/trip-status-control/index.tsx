@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useMessage } from "../../../../contexts";
 import { useUpdateBusTripStatus } from "../../../../hooks";
+import { getErrorMessage } from "../../../../services";
 import type { BusTrip, Status } from "../../../../types";
 
 import styles from "./styles.module.css";
@@ -38,8 +39,8 @@ export function TripStatusControl({
 
       showMessage("Status atualizado com sucesso", "success");
       onStatusUpdated(updated.status);
-    } catch {
-      showMessage("Erro ao atualizar status da viagem", "error");
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     } finally {
       setIsLoading(false);
     }

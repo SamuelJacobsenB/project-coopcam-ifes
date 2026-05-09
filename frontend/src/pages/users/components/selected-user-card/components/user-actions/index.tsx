@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { ConfirmModal } from "../../../../../../components";
@@ -8,175 +9,164 @@ import {
   usePromoteUser,
   useUpdateUserById,
 } from "../../../../../../hooks";
+import { getErrorMessage } from "../../../../../../services";
 import type { User, UserUpdateDTO } from "../../../../../../types";
+import { validateUserUpdateDTO } from "../../../../../../utils";
 
-import { useQueryClient } from "@tanstack/react-query";
 import styles from "./styles.module.css";
 
 interface UserActionsProps {
   editMode: boolean;
   selectedUser: User | null;
   setSelectedUser: (user: User | null) => void;
-
   currentUserData: UserUpdateDTO;
-
+  setError: (error: string) => void;
   onToggleEdit: () => void;
+}
+
+interface ModalConfig {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  onConfirm: () => Promise<void>;
 }
 
 export function UserActions({
   editMode,
   selectedUser,
   setSelectedUser,
-
   currentUserData,
-
+  setError,
   onToggleEdit,
 }: UserActionsProps) {
   const queryClient = useQueryClient();
-
   const { showMessage } = useMessage();
+
+  const [modal, setModal] = useState<ModalConfig>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   const { updateUserById } = useUpdateUserById();
   const { deleteUserById } = useDeleteUserById();
   const { promoteUser } = usePromoteUser();
   const { demoteUser } = useDemoteUser();
 
-  const [modalConfig, setModalConfig] = useState<{
-    isOpen: boolean;
-    title: string;
-    description: string;
-    onConfirm: () => Promise<void>;
-  }>({ isOpen: false, title: "", description: "", onConfirm: async () => {} });
-
-  const handleUpdate = async () => {
-    try {
-      if (!selectedUser) return;
-
-      const updatedUser = await updateUserById({
-        id: selectedUser.id,
-        user: currentUserData,
-      });
-
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user", selectedUser.id] });
-
-      setSelectedUser(updatedUser);
-      showMessage("Usuário atualizado com sucesso", "success");
-    } catch {
-      showMessage("Erro ao atualizar usuário", "error");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      if (!selectedUser) return;
-
-      await deleteUserById(selectedUser.id);
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      setSelectedUser(null);
-      showMessage("Usuário deletado com sucesso", "success");
-    } catch {
-      showMessage("Erro ao deletar usuário", "error");
-    }
-  };
-
-  const handlePromote = async (role: "driver" | "admin") => {
-    try {
-      if (!selectedUser) return;
-
-      await promoteUser({ user_id: selectedUser.id, targetRole: role });
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user", selectedUser.id] });
-      setSelectedUser({ ...selectedUser, role });
-      showMessage(`Usuário promovido para ${role} com sucesso`, "success");
-    } catch {
-      showMessage("Erro ao promover usuário", "error");
-    }
-  };
-
-  const handleDemote = async () => {
-    try {
-      if (!selectedUser) return;
-
-      await demoteUser(selectedUser.id);
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user", selectedUser.id] });
-      setSelectedUser({ ...selectedUser, role: "user" });
-      showMessage("Privilégios removidos com sucesso", "success");
-    } catch {
-      showMessage("Erro ao rebaixar usuário", "error");
-    }
-  };
-
-  const openConfirm = (
-    title: string,
-    description: string,
-    action: () => Promise<void>,
-  ) => {
-    setModalConfig({ isOpen: true, title, description, onConfirm: action });
-  };
-
   if (!selectedUser) return null;
+
+  const { id, name, role } = selectedUser;
+
+  const execute = async <T,>(
+    fn: () => Promise<T>,
+    msg: string,
+  ): Promise<T | undefined> => {
+    try {
+      const result = await fn();
+
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      await queryClient.invalidateQueries({ queryKey: ["user", id] });
+
+      if (msg) showMessage(msg, "success");
+      return result;
+    } catch (err) {
+      setError(getErrorMessage(err));
+      return undefined;
+    } finally {
+      setModal((p) => ({ ...p, isOpen: false }));
+    }
+  };
+
+  const confirm = (
+    title: string,
+    desc: string,
+    onConfirm: () => Promise<void>,
+  ) => setModal({ isOpen: true, title, description: desc, onConfirm });
+
+  const handleUpdate = () =>
+    confirm("Salvar", `Salvar alterações de ${name}?`, async () => {
+      const err = validateUserUpdateDTO(currentUserData);
+      if (err) {
+        setError(err);
+        return;
+      }
+
+      const updated = await execute(
+        () => updateUserById({ id, user: currentUserData }),
+        "Usuário atualizado",
+      );
+      if (updated) setSelectedUser(updated);
+    });
+
+  const handleDelete = () =>
+    confirm(
+      "Deletar",
+      `Deseja excluir ${name} e todas as suas informações permanentemente?`,
+      async () => {
+        await execute(async () => {
+          await deleteUserById(id);
+          setSelectedUser(null);
+        }, "Usuário deletado");
+      },
+    );
 
   return (
     <div className={styles.actions}>
-      {!editMode && (
+      {!editMode ? (
         <>
-          {selectedUser.role === "user" ? (
+          {role === "user" ? (
             <>
               <button
                 className="btn-sm btn-warning"
                 onClick={() =>
-                  openConfirm(
-                    "Promover para Motorista",
-                    `Deseja tornar ${selectedUser.name} um motorista?`,
-                    () => handlePromote("driver"),
+                  confirm(
+                    "Promover",
+                    "Deseja promover usuário a motorista?",
+                    async () => {
+                      await execute(
+                        () => promoteUser({ userId: id, targetRole: "driver" }),
+                        "Usuário promovido",
+                      );
+                    },
                   )
                 }
               >
-                Promover para Motorista
+                Motorista
               </button>
               <button
                 className="btn-sm btn-warning"
                 onClick={() =>
-                  openConfirm(
-                    "Promover para Admin",
-                    `Deseja dar privilégios de Administrador para ${selectedUser.name}?`,
-                    () => handlePromote("admin"),
+                  confirm(
+                    "Promover",
+                    "Deseja promover usuário a administrador?",
+                    async () => {
+                      await execute(
+                        () => promoteUser({ userId: id, targetRole: "admin" }),
+                        "Usuário promovido",
+                      );
+                    },
                   )
                 }
               >
-                Promover para Administrador
+                Admin
               </button>
             </>
           ) : (
             <button
               className="btn-sm btn-warning"
               onClick={() =>
-                openConfirm(
-                  "Remover Privilégios",
-                  `Deseja rebaixar ${selectedUser.name} para usuário comum?`,
-                  handleDemote,
-                )
+                confirm("Rebaixar", "Deseja rebaixar usuário?", async () => {
+                  await execute(() => demoteUser(id), "Privilégios removidos");
+                })
               }
             >
-              Rebaixar a Usuário
+              Rebaixar
             </button>
           )}
         </>
-      )}
-
-      {editMode && (
-        <button
-          className="btn-sm btn-success"
-          onClick={() => {
-            openConfirm(
-              "Salvar Alterações",
-              `Deseja salvar as alterações feitas em ${selectedUser.name}?`,
-              handleUpdate,
-            );
-          }}
-        >
+      ) : (
+        <button className="btn-sm btn-success" onClick={handleUpdate}>
           Concluir
         </button>
       )}
@@ -185,28 +175,13 @@ export function UserActions({
         {editMode ? "Cancelar" : "Editar"}
       </button>
 
-      <button
-        className="btn-sm btn-danger"
-        onClick={() => {
-          openConfirm(
-            "Deletar Usuário",
-            `Deseja deletar ${selectedUser.name} e todos os seus dados? Essa ação pode ser irreversível`,
-            handleDelete,
-          );
-        }}
-      >
+      <button className="btn-sm btn-danger" onClick={handleDelete}>
         Deletar
       </button>
 
       <ConfirmModal
-        isOpen={modalConfig.isOpen}
-        title={modalConfig.title}
-        description={modalConfig.description}
-        onConfirm={async () => {
-          await modalConfig.onConfirm();
-          setModalConfig({ ...modalConfig, isOpen: false });
-        }}
-        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        {...modal}
+        onClose={() => setModal((p) => ({ ...p, isOpen: false }))}
       />
     </div>
   );

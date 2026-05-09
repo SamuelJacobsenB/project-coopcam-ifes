@@ -55,8 +55,8 @@ export default function HomePage() {
           "Offline ou erro de API: mantendo estado atual (cache ou vazio).",
         );
       }
-    } catch (error) {
-      console.error("Erro ao carregar rotas:", error);
+    } catch {
+      console.error("Erro ao carregar rotas");
       setBusTrips([]);
     } finally {
       setLoading(false);

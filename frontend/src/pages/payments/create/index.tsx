@@ -1,4 +1,4 @@
-import { useReducer, type ChangeEvent, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -6,93 +6,65 @@ import {
   FormPage,
   I,
   Input,
+  Loader,
   PageHeader,
   Private,
   Select,
 } from "../../../components";
 import { useMessage } from "../../../contexts";
 import { useCreateMonthlyFeeConfig } from "../../../hooks";
+import { getErrorMessage } from "../../../services";
 import type { MonthlyFeeConfigRequestDTO } from "../../../types";
 import { months, validateMonthlyFeeConfigRequestDTO } from "../../../utils";
 
 import styles from "./styles.module.css";
 
-interface FeeConfigFormState {
-  month: number;
-  year: number;
-  base_amount: number;
-  financial_aid_amount: number;
-  due_date: string;
-  error: string;
-}
-
-type FeeConfigAction = {
-  type: "field";
-  payload: { field: keyof FeeConfigFormState; value: number | string };
-};
-
-const reducer = (
-  state: FeeConfigFormState,
-  action: FeeConfigAction,
-): FeeConfigFormState => {
-  if (action.type === "field") {
-    return { ...state, [action.payload.field]: action.payload.value };
-  }
-  return state;
-};
-
-const initialState: FeeConfigFormState = {
-  month: new Date().getMonth() + 1,
-  year: new Date().getFullYear(),
-  base_amount: 0,
-  financial_aid_amount: 0,
-  due_date: new Date(new Date().setMonth(new Date().getMonth() + 1))
-    .toISOString()
-    .split("T")[0],
-  error: "",
-};
-
 export function CreatePaymentFeeConfigPage() {
   const navigate = useNavigate();
-  const { createMonthlyFeeConfig } = useCreateMonthlyFeeConfig();
+
   const { showMessage } = useMessage();
+  const { createMonthlyFeeConfig } = useCreateMonthlyFeeConfig();
 
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [baseAmount, setBaseAmount] = useState<number>(0);
+  const [financialAidAmount, setFinancialAidAmount] = useState<number>(0);
+  const [dueDateStr, setDueDateStr] = useState<string>(
+    new Date(new Date().setMonth(new Date().getMonth() + 1))
+      .toISOString()
+      .split("T")[0],
+  );
 
-  const handleChange =
-    (field: keyof FeeConfigFormState) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { value, type } = e.target;
-
-      const processedValue = type === "number" ? Number(value) : value;
-
-      dispatch({
-        type: "field",
-        payload: { field, value: processedValue },
-      });
-    };
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleCreateMonthlyFeeConfig(e: FormEvent) {
     e.preventDefault();
 
-    const [year, month, day] = state.due_date.split("-");
-    const dueDate = new Date(Number(year), Number(month) - 1, Number(day), 12);
+    setIsLoading(true);
+    setError("");
+
+    const [dYear, dMonth, dDay] = dueDateStr.split("-");
+    const dueDate = new Date(
+      Number(dYear),
+      Number(dMonth) - 1,
+      Number(dDay),
+      12,
+    );
 
     const monthlyFeeConfig: MonthlyFeeConfigRequestDTO = {
-      month: Number(state.month),
-      year: Number(state.year),
-      base_amount: Number(state.base_amount) * 100,
-      financial_aid_amount: Number(state.financial_aid_amount) * 100,
+      month: Number(month),
+      year: Number(year),
+      base_amount: Number(baseAmount) * 100, // Converte para centavos
+      financial_aid_amount: Number(financialAidAmount) * 100, // Converte para centavos
       due_date: dueDate,
     };
 
     const validationError =
       validateMonthlyFeeConfigRequestDTO(monthlyFeeConfig);
     if (validationError) {
-      dispatch({
-        type: "field",
-        payload: { field: "error", value: validationError },
-      });
+      setIsLoading(false);
+      setError(validationError);
       return;
     }
 
@@ -100,8 +72,10 @@ export function CreatePaymentFeeConfigPage() {
       await createMonthlyFeeConfig(monthlyFeeConfig);
       showMessage("Configuração de taxa criada com sucesso!", "success");
       navigate("/pagamentos");
-    } catch {
-      showMessage("Erro ao criar configuração de taxa", "error");
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -119,34 +93,28 @@ export function CreatePaymentFeeConfigPage() {
           />
         </header>
 
-        <hr />
+        <form
+          onSubmit={handleCreateMonthlyFeeConfig}
+          className={styles.form}
+          noValidate
+        >
+          <Error error={error} onClose={() => setError("")} />
 
-        <form onSubmit={handleCreateMonthlyFeeConfig} className={styles.form}>
-          <Error
-            error={state.error}
-            onClose={() =>
-              dispatch({
-                type: "field",
-                payload: { field: "error", value: "" },
-              })
-            }
-          />
-
-          <div className={styles.inputGrid}>
+          <fieldset disabled={isLoading} className={styles.inputGrid}>
             <Select
               label="Mês de Referência"
               name="month"
-              value={state.month}
+              value={month}
               options={months.map((m, i) => ({ value: i + 1, label: m }))}
-              onChange={handleChange("month")}
+              onChange={(e) => setMonth(Number(e.target.value))}
             />
 
             <Input
               label="Ano"
               name="year"
               type="number"
-              value={state.year}
-              onChange={handleChange("year")}
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
             />
 
             <Input
@@ -155,8 +123,8 @@ export function CreatePaymentFeeConfigPage() {
               type="number"
               step="0.01"
               placeholder="0.00"
-              value={state.base_amount}
-              onChange={handleChange("base_amount")}
+              value={baseAmount}
+              onChange={(e) => setBaseAmount(Number(e.target.value))}
             />
 
             <Input
@@ -165,8 +133,8 @@ export function CreatePaymentFeeConfigPage() {
               type="number"
               step="0.01"
               placeholder="0.00"
-              value={state.financial_aid_amount}
-              onChange={handleChange("financial_aid_amount")}
+              value={financialAidAmount}
+              onChange={(e) => setFinancialAidAmount(Number(e.target.value))}
             />
 
             <div className={styles.fullWidth}>
@@ -174,14 +142,14 @@ export function CreatePaymentFeeConfigPage() {
                 label="Data de Vencimento"
                 name="due_date"
                 type="date"
-                value={state.due_date}
-                onChange={handleChange("due_date")}
+                value={dueDateStr}
+                onChange={(e) => setDueDateStr(e.target.value)}
               />
             </div>
-          </div>
+          </fieldset>
 
           <button className="btn btn-secondary" type="submit">
-            Salvar Configuração
+            {isLoading ? <Loader color="white" /> : "Criar Configuração"}
           </button>
         </form>
       </FormPage>

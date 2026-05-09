@@ -6,5 +6,8 @@ import (
 )
 
 func MigrateDB() error {
-	return DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{}, &entities.MonthlyFeeConfig{}, &entities.MonthlyPayment{}, &entities.BusReservation{}, &entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{}, &audit.AuditEvent{})
+	return DB.AutoMigrate(&entities.User{}, &entities.WeeklyPreference{}, &entities.Template{},
+		&entities.MonthlyFeeConfig{}, &entities.MonthlyPayment{}, &entities.BusReservation{},
+		&entities.BusTripReport{}, &entities.AvailableOverride{}, &entities.UnavailableDay{},
+		&audit.AuditEvent{})
 }

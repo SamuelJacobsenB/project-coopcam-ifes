@@ -61,10 +61,9 @@
   filter: brightness(0.9);
 }
 
-/* Responsividade */
 @media screen and (max-width: 600px) {
   .inputGrid {
-    grid-template-columns: 1fr; /* Um campo por linha no mobile */
+    grid-template-columns: 1fr;
   }
 
   .fullWidth {

@@ -27,7 +27,7 @@ func CreateAdminUser(db *gorm.DB) {
 		Name:            "Admin",
 		Email:           "admin@email.com",
 		Password:        hashedPassword,
-		CPF:             "00000000000",
+		CPF:             "12312312312",
 		Phone:           "27000000000",
 		Address:         "Admin Address",
 		CEP:             "00000000",

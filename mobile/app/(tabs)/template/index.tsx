@@ -14,6 +14,7 @@ import { ConfirmModal, DayCard, ReservationSection, Title } from "@/components";
 import { weekDays } from "@/constants";
 import { useMessage } from "@/contexts";
 import { useCreateTemplate, useDeleteTemplate, useTemplate } from "@/hooks";
+import { getErrorMessage } from "@/services";
 import { btnStyles, colors } from "@/styles";
 import type { TemplateRequestDTO } from "@/types";
 
@@ -37,8 +38,8 @@ export default function TemplatePage() {
       await createTemplate(dto);
       await refetch();
       showMessage("Predefinição criada com sucesso!", "success");
-    } catch {
-      showMessage("Erro ao criar predefinição", "error");
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     }
   };
 
@@ -46,9 +47,9 @@ export default function TemplatePage() {
     try {
       await deleteTemplate();
       await refetch();
-      showMessage("Predefinição excluída com sucesso!", "success");
-    } catch {
-      showMessage("Erro ao excluir predefinição", "error");
+      showMessage("Predefinição excluída com sucesso", "success");
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     } finally {
       setIsDeleteModalVisible(false);
     }

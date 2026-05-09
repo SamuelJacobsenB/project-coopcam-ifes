@@ -85,8 +85,8 @@ export default function BusTripPage() {
       } catch {
         console.log("Offline: Usando dados persistidos localmente.");
       }
-    } catch (criticalError) {
-      console.error("Erro ao acessar Storage:", criticalError);
+    } catch {
+      console.error("Erro ao acessar Storage");
       showMessage("Erro ao carregar dados locais", "error");
     } finally {
       setLoading(false);

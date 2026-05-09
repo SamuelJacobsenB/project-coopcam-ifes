@@ -10,7 +10,7 @@ export function Input({ label, ...props }: InputProps) {
       <label htmlFor={props.name} className={styles.label}>
         {label}
       </label>
-      <input className={styles.input} {...props} />
+      <input className={styles.input} {...props} id={props.name} />
     </div>
   );
 }

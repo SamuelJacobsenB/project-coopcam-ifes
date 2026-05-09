@@ -1,7 +1,9 @@
 export function formatPhone(phone: string): string {
-    if (phone.length !== 10 && phone.length !== 11) {
-        return phone;
-    }
+  const cleanedPhone = phone.replace(/\D/g, "");
 
-    return phone.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3")
+  if (cleanedPhone.length !== 10 && cleanedPhone.length !== 11) {
+    return cleanedPhone;
+  }
+
+  return cleanedPhone.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
 }

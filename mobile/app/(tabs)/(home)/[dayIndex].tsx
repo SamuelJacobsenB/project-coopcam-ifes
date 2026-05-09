@@ -1,7 +1,8 @@
-import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocalSearchParams } from "expo-router";
 
 import {
   GoBack,
@@ -16,8 +17,9 @@ import {
   useDeleteBusReservation,
   useWeeklyPreferenceByUserId,
 } from "@/hooks";
+import { getErrorMessage } from "@/services";
 import { colors } from "@/styles";
-import type { BusReservation, Period, Direction } from "@/types";
+import type { BusReservation, Direction, Period } from "@/types";
 import { validateWeekDay } from "@/utils";
 
 export default function DayPreferencePage() {
@@ -114,37 +116,92 @@ export default function DayPreferencePage() {
       const promises: Promise<void>[] = [];
 
       if (selections.isMorningGo && !initialState.isMorningGo) {
-        promises.push(createBusReservation({ date: targetDate, period: "morning", direction: "go" }));
-      } else if (!selections.isMorningGo && initialState.isMorningGo && existingReservations.mGo) {
-        promises.push(deleteBusReservation(existingReservations.mGo.id));
+        promises.push(
+          createBusReservation({
+            date: targetDate,
+            period: "morning",
+            direction: "go",
+          }).then(() => undefined),
+        );
+      } else if (
+        !selections.isMorningGo &&
+        initialState.isMorningGo &&
+        existingReservations.mGo
+      ) {
+        promises.push(
+          deleteBusReservation(existingReservations.mGo.id).then(
+            () => undefined,
+          ),
+        );
       }
 
       if (selections.isMorningReturn && !initialState.isMorningReturn) {
-        promises.push(createBusReservation({ date: targetDate, period: "morning", direction: "return" }));
-      } else if (!selections.isMorningReturn && initialState.isMorningReturn && existingReservations.mRet) {
-        promises.push(deleteBusReservation(existingReservations.mRet.id));
+        promises.push(
+          createBusReservation({
+            date: targetDate,
+            period: "morning",
+            direction: "return",
+          }).then(() => undefined),
+        );
+      } else if (
+        !selections.isMorningReturn &&
+        initialState.isMorningReturn &&
+        existingReservations.mRet
+      ) {
+        promises.push(
+          deleteBusReservation(existingReservations.mRet.id).then(
+            () => undefined,
+          ),
+        );
       }
 
       if (selections.isAfternoonGo && !initialState.isAfternoonGo) {
-        promises.push(createBusReservation({ date: targetDate, period: "afternoon", direction: "go" }));
-      } else if (!selections.isAfternoonGo && initialState.isAfternoonGo && existingReservations.aGo) {
-        promises.push(deleteBusReservation(existingReservations.aGo.id));
+        promises.push(
+          createBusReservation({
+            date: targetDate,
+            period: "afternoon",
+            direction: "go",
+          }).then(() => undefined),
+        );
+      } else if (
+        !selections.isAfternoonGo &&
+        initialState.isAfternoonGo &&
+        existingReservations.aGo
+      ) {
+        promises.push(
+          deleteBusReservation(existingReservations.aGo.id).then(
+            () => undefined,
+          ),
+        );
       }
 
       if (selections.isAfternoonReturn && !initialState.isAfternoonReturn) {
-        promises.push(createBusReservation({ date: targetDate, period: "afternoon", direction: "return" }));
-      } else if (!selections.isAfternoonReturn && initialState.isAfternoonReturn && existingReservations.aRet) {
-        promises.push(deleteBusReservation(existingReservations.aRet.id));
+        promises.push(
+          createBusReservation({
+            date: targetDate,
+            period: "afternoon",
+            direction: "return",
+          }).then(() => undefined),
+        );
+      } else if (
+        !selections.isAfternoonReturn &&
+        initialState.isAfternoonReturn &&
+        existingReservations.aRet
+      ) {
+        promises.push(
+          deleteBusReservation(existingReservations.aRet.id).then(
+            () => undefined,
+          ),
+        );
       }
 
       await Promise.all(promises);
 
-      // Invalida a query para o refetch dos dados e atualização da view
       await queryClient.invalidateQueries({ queryKey: ["weekly-preference"] });
 
       showMessage("Preferência semanal atualizada", "success");
-    } catch {
-      showMessage("Erro ao atualizar as preferências", "error");
+    } catch (err) {
+      showMessage(getErrorMessage(err), "error");
     }
   }
 

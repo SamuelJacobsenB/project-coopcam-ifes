@@ -49,7 +49,7 @@ export function CreateUnavailableDayModal({
 
     try {
       await createUnavailableDay(unavailableDay);
-      await onCreated().then((a) => console.log(a));
+      await onCreated();
       onClose();
 
       showMessage("Indisponibilidade criada com sucesso", "success");
